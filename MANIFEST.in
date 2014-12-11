@@ -3,3 +3,4 @@ include LICENSE.txt
 include README.md
 include django_webpack/bundle.js
 include django_webpack/package.json
+include django_webpack/tests/test_bundle.js

@@ -1,84 +1,96 @@
 import os
-import hashlib
 from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
-from .exceptions import SourceFileNotFound
-from .settings import STATIC_URL, STATIC_ROOT
-from .utils import bundle
+import exceptions
+import settings
+import webpack
 
 
 class WebpackBundle(object):
     source = None
-    path_to_bundled_source = None
-    bundle_variable = None
+    path_to_output = None
+    path_to_bundle = None
+    library = None
+    externals = None
+    loaders = None
+    no_parse = None
+    paths_to_loaders = None
+    devtool = 'eval-source-map' if settings.DEBUG else None
+    bail = True
 
-    def render_source(self):
+    def render_bundle(self):
         rendered_source = '<script src="{url_to_bundled_source}"></script>'.format(
-            url_to_bundled_source=self.get_url_to_bundled_source()
+            url_to_bundled_source=self.get_url_to_bundle()
         )
         return mark_safe(rendered_source)
 
     def get_source(self):
+        if not self.source:
+            raise exceptions.BundleHasNoSourceFile(self)
         return self.source
 
     def get_path_to_source(self):
         source = self.get_source()
         path_to_source = finders.find(source)
-        if not os.path.exists(path_to_source):
-            raise SourceFileNotFound(path_to_source)
+        if not path_to_source or not os.path.exists(path_to_source):
+            raise exceptions.SourceFileNotFound(path_to_source)
         return path_to_source
 
-    def generate_bundle_source_hash(self, bundled_source):
-        md5 = hashlib.md5()
-        md5.update(bundled_source)
-        return md5.hexdigest()
-
-    def generate_bundle_source_filename(self, bundled_source):
-        # TODO: should use the relative path of self.get_source(), rather than just the filename
-        filename_with_extension = os.path.basename(self.get_path_to_source())
-        filename, _ = os.path.splitext(filename_with_extension)
-        return '{filename}-{hash}.js'.format(
-            filename=filename,
-            hash=self.generate_bundle_source_hash(bundled_source)
+    def get_path_to_output(self):
+        if self.path_to_output:
+            return self.path_to_output
+        source, _ = os.path.splitext(self.get_source())
+        rel_path = '{source}-[hash].js'.format(
+            source=source,
         )
+        return os.path.join(settings.STATIC_ROOT, rel_path)
 
-    def generate_path_to_bundled_source(self, bundled_source):
-        filename = self.generate_bundle_source_filename(bundled_source)
-        rel_path = os.path.join('django_react', 'bundles', filename)
-        return os.path.join(STATIC_ROOT, rel_path)
+    def get_library(self):
+        return self.library
 
-    def write_bundled_source_file(self, bundled_source, path_to_file):
-        directory = os.path.dirname(path_to_file)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
-        with open(path_to_file, 'w+') as bundled_source_file:
-            bundled_source_file.write(bundled_source)
-        return path_to_file
+    def get_externals(self):
+        return self.externals
 
-    def get_bundle_variable(self):
-        if self.bundle_variable:
-            return self.bundle_variable
+    def get_loaders(self):
+        return self.loaders
 
-    def generate_bundled_source_file(self):
-        bundled_source = bundle(
+    def get_paths_to_loaders(self):
+        return self.paths_to_loaders
+
+    def get_no_parse(self):
+        return self.no_parse
+
+    def get_devtool(self):
+        return self.devtool
+
+    def get_bail(self):
+        return self.bail
+
+    def generate_bundle(self):
+        return webpack.bundle(
             entry=self.get_path_to_source(),
-            library=self.get_bundle_variable(),
+            output=self.get_path_to_output(),
+            library=self.get_library(),
+            externals=self.get_externals(),
+            loaders=self.get_loaders(),
+            paths_to_loaders=self.get_paths_to_loaders(),
+            no_parse=self.get_no_parse(),
+            devtool=self.get_devtool(),
+            bail=self.get_bail(),
         )
-        path_to_bundled_source = self.generate_path_to_bundled_source(bundled_source)
-        return self.write_bundled_source_file(bundled_source, path_to_bundled_source)
 
-    def get_path_to_bundled_source(self):
-        if not self.path_to_bundled_source:
-            self.path_to_bundled_source = self.generate_bundled_source_file()
-        return self.path_to_bundled_source
+    def get_path_to_bundle(self):
+        if not self.path_to_bundle:
+            self.path_to_bundle = self.generate_bundle()
+        return self.path_to_bundle
 
-    def get_rel_path_to_bundled_source(self):
-        path_to_bundled_source = self.get_path_to_bundled_source()
-        _, rel_path = path_to_bundled_source.split(STATIC_ROOT)
-        if rel_path.startswith('/') or rel_path.startswith('\\'):
-            rel_path = rel_path[1:]
-        return rel_path
+    def get_rel_path_to_bundle(self):
+        path_to_bundle = self.get_path_to_bundle()
+        _, rel_path_to_bundle = path_to_bundle.split(settings.STATIC_ROOT)
+        if rel_path_to_bundle.startswith('/') or rel_path_to_bundle.startswith('\\'):
+            rel_path_to_bundle = rel_path_to_bundle[1:]
+        return rel_path_to_bundle
 
-    def get_url_to_bundled_source(self):
-        rel_path_to_bundled_source = self.get_rel_path_to_bundled_source()
-        return os.path.join(STATIC_URL, rel_path_to_bundled_source)
+    def get_url_to_bundle(self):
+        rel_path_to_bundle = self.get_rel_path_to_bundle()
+        return os.path.join(settings.STATIC_URL, rel_path_to_bundle)

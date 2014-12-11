@@ -17,7 +17,44 @@ if (!output) {
 	throw new Error('No output path specified for the bundle, ex: `--output=/path/to/some/file.js`');
 }
 
-var library = argv.library || undefined;
+var library = argv.library;
+
+var externals = argv.externals;
+if (externals) {
+	externals = JSON.parse(externals);
+}
+
+var loaders = argv.loaders;
+if (loaders) {
+	// Serialise the loaders and convert the conditions to regex instances
+	loaders = JSON.parse(loaders);
+	var conditions = ['test', 'include', 'exclude'];
+	loaders = loaders.map(function(loader) {
+		conditions.forEach(function(condition) {
+			if (loader.hasOwnProperty(condition)) {
+				loader[condition] = new RegExp(loader[condition]);
+			}
+		});
+		return loader;
+	});
+}
+
+var pathsToLoaders = argv.pathsToLoaders;
+if (pathsToLoaders) {
+	pathsToLoaders = pathsToLoaders.split(':');
+}
+
+var noParse = argv.noParse;
+if (noParse) {
+	noParse = JSON.parse(noParse);
+	noParse = noParse.map(function(regex) {
+		return new RegExp(regex);
+	});
+}
+
+var devtool = argv.devtool;
+
+var bail = argv.bail !== undefined;
 
 webpack({
     entry: entry,
@@ -25,28 +62,24 @@ webpack({
         filename: output,
 		library: library
     },
-	// TODO: make this extensible
-	externals: {
-		// Rather than bundling React, we use the browser's global
-		react: 'window.React',
-		'react/addons': 'window.React'
-	},
+	externals: externals,
 	module: {
-		loaders: [
-			// Pass *.jsx files through the jsx-loader transform
-			{ test: /\.jsx$/, loader: 'jsx' }
-		]
+		loaders: loaders,
+		noParse: noParse
 	},
 	resolveLoader: {
-		// Instruct webpack to use our node_modules for resolving loaders
-		root: [path.join(__dirname, 'node_modules')]
+		root: pathsToLoaders
 	},
-	// TODO: make this configurable
-	devtool: 'eval-source-map'
-	// TODO: make this configurable, and try to see if we can resolve the file where the error is triggered
-//	bail: true
-}, function(err) {
+	devtool: devtool,
+	bail: bail
+}, function(err, stats) {
     if (err) {
 		throw new Error(err);
 	}
+    var jsonStats = stats.toJson();
+    if (jsonStats.errors.length) {
+		throw new Error(jsonStats.errors);
+	}
+	var paths = Object.keys(stats.compilation.assets);
+	console.log(paths[0]);
 });
