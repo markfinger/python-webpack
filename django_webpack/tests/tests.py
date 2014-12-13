@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 from django_webpack.models import WebpackBundle
-from django_webpack.exceptions import BundleHasNoSourceFile, SourceFileNotFound
+from django_webpack.exceptions import NoEntryFileDefined, EntryFileNotFound
 from test_settings import settings
 
 
@@ -12,37 +12,28 @@ class TestDjangoWebpack(unittest.TestCase):
             shutil.rmtree(settings['STATIC_ROOT'])
 
     def test_can_instantiate_a_webpack_bundle(self):
-        class Bundle(WebpackBundle):
-            pass
-        Bundle()
+        WebpackBundle()
 
-    def test_bundles_without_sources_raise_as_exception(self):
-        class Bundle(WebpackBundle):
-            pass
-        self.assertRaises(BundleHasNoSourceFile, Bundle().get_source)
+    def test_bundles_without_entry_raise_as_exception(self):
+        self.assertRaises(NoEntryFileDefined, WebpackBundle().get_path_to_entry)
 
-    def test_bundles_with_missing_sources_raise_an_exception(self):
-        class Bundle(WebpackBundle):
-            source = 'file/that/does/not/exist.js'
-        self.assertRaises(SourceFileNotFound, Bundle().get_path_to_source)
+    def test_bundles_with_nonexistent_entry_raise_an_exception(self):
+        bundle = WebpackBundle(entry='file/that/does/not/exist.js')
+        self.assertRaises(EntryFileNotFound, bundle.get_path_to_entry)
 
     def test_bundles_create_a_file_with_contents(self):
-        class Bundle(WebpackBundle):
-            source = 'test_bundle.js'
-        path = Bundle().get_path_to_bundle()
+        path = WebpackBundle(entry='test_bundle.js').get_path_to_bundle()
         self.assertTrue(os.path.exists(path))
         self.assertGreater(os.path.getsize(path), 0)
 
     def test_can_render_a_webpack_bundle(self):
-        class Bundle(WebpackBundle):
-            source = 'test_bundle.js'
-        bundle = Bundle()
-        rendered = bundle.render_bundle()
+        bundle = WebpackBundle(entry='test_bundle.js')
+        rendered = bundle.render()
         self.assertEqual(
-            bundle.get_url_to_bundle(),
+            bundle.get_url(),
             '/static/test_bundle-70e51300713754ab4a9a.js',
         )
         self.assertIn(
-            bundle.get_url_to_bundle(),
+            bundle.get_url(),
             rendered,
         )

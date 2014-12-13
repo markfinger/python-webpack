@@ -1,14 +1,10 @@
-class BundleHasNoSourceFile(Exception):
+class NoEntryFileDefined(Exception):
     pass
 
 
-class SourceFileNotFound(Exception):
+class EntryFileNotFound(Exception):
     pass
 
 
 class BundlingError(Exception):
-    pass
-
-
-class LoaderAlreadyDefined(Exception):
     pass

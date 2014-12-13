@@ -4,7 +4,6 @@ from django_node import npm, node
 import settings
 import exceptions
 
-
 # Ensure that the external dependencies are met
 node.ensure_version_gte(settings.NODE_VERSION_REQUIRED)
 npm.ensure_version_gte(settings.NPM_VERSION_REQUIRED)
@@ -44,8 +43,8 @@ def bundle(
     if bail:
         arguments += ('--bail', 'true',)
 
-    # Django will silently ignore some types of exceptions, so we need to
-    # intercept them and raise our own class of exception
+    # While rendering templates Django will silently ignore some types of exceptions,
+    # so we need to intercept them and raise our own class of exception
     try:
         stderr, stdout = node.run(*arguments)
     except (TypeError, AttributeError) as e:
