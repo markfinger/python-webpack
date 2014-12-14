@@ -1,6 +1,13 @@
 Changelog
 =========
 
+### 1.0.0 (14/12/2014)
+
+The default value for `WebpackBundle.devtool` is now defined by a setting, DJANGO_WEBPACK['DEVTOOL']
+
+The default value for the `DJANGO_WEBPACK['CACHE']` setting is now toggled by `DJANGO_WEBPACK['DEBUG']`,
+rather than `django.conf.settings.DEBUG`.
+
 ### 0.2.0 (14/12/2014)
 
 API changes:
