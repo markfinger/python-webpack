@@ -355,7 +355,7 @@ not django_webpack.settings.DEBUG
 
 ### DJANGO_WEBPACK['DEVTOOL']
 
-The default tool that Webpack will use to assist in development.
+The default tool that [WebpackBundles](#webpackbundle) will use to assist in development.
 
 Default:
 ```python
