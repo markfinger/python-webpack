@@ -2,18 +2,17 @@ Django Webpack
 ==============
 
 Generate Webpack bundles from a Django application.
-
-
 ```python
 from django_webpack.models import WebpackBundle
 
-# Define your bundle
 bundle = WebpackBundle(entry='path/to/entry.js')
+
+url_to_bundle = bundle.get_url()
+path_to_bundle = bundle.get_path()
 ```
 
+You can also render a `<script>` element pointing to your bundle
 ```html
-{# Render a script element pointing to the bundle #}
-
 {{ bundle.render }}
 ```
 
