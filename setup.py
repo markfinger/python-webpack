@@ -20,7 +20,7 @@ setup(
     description='Django Webpack',
     long_description=\
 '''
-Provides an interface for Django to use Webpack to generate bundles.
+An interface to leverage Webpack's frontend tooling and Django's static asset configuration and introspection.
 
 Documentation at https://github.com/markfinger/django-webpack
 ''',
