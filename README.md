@@ -1,7 +1,7 @@
 Django Webpack
 ==============
 
-An interface to leverage Webpack's frontend tooling and Django's static asset configuration and introspection.
+Generate Webpack bundles from a Django application.
 
 
 ```python
@@ -61,7 +61,7 @@ WebpackBundle
 -------------
 
 `django_webpack.models.WebpackBundle` provide a simple, yet extensible, interface to Webpack's
-frontend tooling.
+frontend tooling and Django's static asset configuration and introspection.
 
 A `WebpackBundle` instance must be instantiated with an argument or attribute named `entry` which
 is a relative path to the entry file of a bundle. The absolute path to the file will be resolved 
