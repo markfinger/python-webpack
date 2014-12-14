@@ -1,8 +1,7 @@
 Django Webpack
 ==============
 
-An interface to leverage Webpack's frontend tooling and Django's static asset
-configuration and introspection.
+An interface to leverage Webpack's frontend tooling and Django's static asset configuration and introspection.
 
 
 ```python
@@ -22,13 +21,30 @@ Documentation
 -------------
 
 - [Installation](#installation)
-- [Basic Usage](#basicusage)
 - [WebpackBundle](#webpackbundle)
-  - [is_installed](#django_webpacknodeis_installed)
+  - [Basic usage](#basic-usage)
+  - [WebpackBundle.render()](#webpackbundlerender)
+  - [WebpackBundle.get_url()](#webpackbundleget_url)
+  - [WebpackBundle.get_path()](#webpackbundleget_path)
+  - [WebpackBundle.get_rel_path()](#webpackbundleget_rel_path)
 - [bundle()](#bundle)
-  - [is_installed](#django_webpacknpmis_installed)
+- [Bundle configuration](#bundle-configuration)
+  - [path_to_output](#path_to_output)
+  - [library](#library)
+  - [externals](#externals)
+  - [loaders](#loaders)
+  - [paths_to_loaders](#paths_to_loaders)
+  - [no_parse](#no_parse)
+  - [devtool](#devtool)
+  - [bail](#bail)
 - [Settings](#settings)
-  - [PATH_TO_NODE](#django_webpackpath_to_node)
+  - [NODE_VERSION_REQUIRED](#django_webpacknode_version_required)
+  - [NPM_VERSION_REQUIRED](#django_webpacknpm_version_required)
+  - [PATH_TO_BUNDLER](#django_webpackpath_to_bundler)
+  - [STATIC_ROOT](#django_webpackstatic_root)
+  - [STATIC_URL](#django_webpackstatic_url)
+  - [DEBUG](#django_webpackdebug)
+  - [CACHE](#django_webpackcache)
 - [Running the tests](#running-the-tests)
 
 
@@ -46,12 +62,12 @@ WebpackBundle
 `django_webpack.models.WebpackBundle` provide a simple, yet extensible, interface to Webpack's
 frontend tooling.
 
-A `WebpackBundle` instance must be instantiated with argument or attribute named `entry` which
-is a relative path to the entry file of a bundle. The file will be resolved via Django's static
-file finders.
+A `WebpackBundle` instance must be instantiated with an argument or attribute named `entry` which
+is a relative path to the entry file of a bundle. The absolute path to the file will be resolved 
+via Django's static file finders.
 
-A `WebpackBundle` will accept configuration options via keyword arguments or attributes which
-correspond to the options specified in (Bundle configuration)[#bundleconfiguration].
+A `WebpackBundle` will also accept the configuration options specified in [Bundle configuration](#bundle-configuration).
+Options must be provided as either keyword arguments or attributes.
 
 ### Basic usage
 
@@ -81,7 +97,7 @@ context and invoke its `render` method, which will output a script element.
 {{ bundle.render }}
 ```
 
-### render()
+### WebpackBundle.render()
 
 Returns a HTML script element with a src attribute pointing to the bundle.
 
@@ -89,7 +105,7 @@ Returns a HTML script element with a src attribute pointing to the bundle.
 {{ bundle.render }}
 ```
 
-### get_url()
+### WebpackBundle.get_url()
 
 Returns a url to the bundle.
 
@@ -99,7 +115,7 @@ The url is inferred from Django's STATIC_ROOT and STATIC_URL settings.
 bundle.get_url()
 ```
 
-### get_path()
+### WebpackBundle.get_path()
 
 Returns an absolute path to the bundle's file on your filesystem.
 
@@ -107,7 +123,7 @@ Returns an absolute path to the bundle's file on your filesystem.
 bundle.get_path()
 ```
 
-### get_rel_path()
+### WebpackBundle.get_rel_path()
 
 Returns a path to the bundle's file relative to the STATIC_ROOT.
 
@@ -119,7 +135,7 @@ bundle.get_rel_path()
 bundle()
 --------
 
-A method that allows you to invoke Webpack more directly.
+A method which allows you to interface with Webpack more directly.
 
 Arguments:
 
@@ -127,8 +143,8 @@ Arguments:
 - `path_to_output`: an absolute path to the output file of the bundle. The output filename may take advantage of
   Webpack's file hashing by including a `[hash]` substring within the path - for example:
   `'/path/to/file/bundle-[hash].js'`.
-- `bundle` will also accept keyword arguments corresponding to the options specified in
-  (Bundle configuration)[#bundleconfiguration].
+
+`bundle` will also accept keyword arguments corresponding to the options specified in [Bundle configuration](#bundle-configuration).
 
 ```python
 from django_webpack import webpack
@@ -143,15 +159,15 @@ path_to_bundle = webpack.bundle(
 Bundle configuration
 --------------------
 
-The following options can be either passed into the constructor of a `WebpackBundle`,
-defined as attributes on a class inheriting from `WebpackBundle`, or passed into
-`django_webpack.webpack.bundle` as keyword arguments.
+The following options can be passed into the constructor of a [WebpackBundle](#webpackbundle),
+defined as attributes on a class inheriting from [WebpackBundle](#webpackbundle), or passed into
+[bundle](#bundle)` as keyword arguments.
 
 ### path_to_output
 
 An absolute path to the output of your bundle. Output filenames can take advantage of
 Webpack's filename hashing to easily circumvent stale file caches. If you wish to take advantage
-of the rendering or urls of `WebpackBundle`, the path should include your `STATIC_ROOT`.
+of the rendering or urls of [WebpackBundle](#webpackbundle), the path should include your `STATIC_ROOT`.
 
 ```python
 from django.conf.settings import STATIC_ROOT
