@@ -32,3 +32,8 @@ DEBUG = setting_overrides.get(
     'DEBUG',
     settings.DEBUG,
 )
+
+CACHE = setting_overrides.get(
+    'CACHE',
+    not settings.DEBUG,
+)

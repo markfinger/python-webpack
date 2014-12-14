@@ -22,7 +22,7 @@ class TestDjangoWebpack(unittest.TestCase):
         self.assertRaises(EntryFileNotFound, bundle.get_path_to_entry)
 
     def test_bundles_create_a_file_with_contents(self):
-        path = WebpackBundle(entry='test_bundle.js').get_path_to_bundle()
+        path = WebpackBundle(entry='test_bundle.js').get_path()
         self.assertTrue(os.path.exists(path))
         self.assertGreater(os.path.getsize(path), 0)
 

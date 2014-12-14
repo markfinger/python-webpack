@@ -8,7 +8,7 @@ import webpack
 
 class WebpackBundle(object):
     entry = None
-    output = None
+    path_to_output = None
     library = None
     externals = None
     loaders = None
@@ -16,16 +16,16 @@ class WebpackBundle(object):
     no_parse = None
     devtool = 'eval-entry-map' if settings.DEBUG else None
     bail = True
-    path_to_bundle = None
+    path = None
 
     def __init__(
-        self, entry=None, output=None, library=None, externals=None, loaders=None, paths_to_loaders=None, no_parse=None,
+        self, entry=None, path_to_output=None, library=None, externals=None, loaders=None, paths_to_loaders=None, no_parse=None,
         devtool=None, bail=None
     ):
         if entry is not None:
             self.entry = entry
-        if output is not None:
-            self.output = output
+        if path_to_output is not None:
+            self.path_to_output = path_to_output
         if library is not None:
             self.library = library
         if externals is not None:
@@ -42,20 +42,31 @@ class WebpackBundle(object):
             self.bail = bail
 
     def render(self):
+        """
+        Returns a HTML script element with a src attribute pointing to the bundle.
+        """
         rendered = '<script src="{url}"></script>'.format(
             url=self.get_url()
         )
         return mark_safe(rendered)
 
     def get_url(self):
-        rel_path_to_bundle = self.get_rel_path_to_bundle()
+        """
+        Returns a url to the bundle.
+
+        The url is inferred via Django's STATIC_ROOT and STATIC_URL settings.
+        """
+        rel_path_to_bundle = self.get_rel_path()
         return os.path.join(settings.STATIC_URL, rel_path_to_bundle)
 
-    def get_path_to_bundle(self):
-        if not self.path_to_bundle:
-            self.path_to_bundle = webpack.bundle(
-                entry=self.get_path_to_entry(),
-                output=self.get_output(),
+    def get_path(self):
+        """
+        Returns an absolute path to the bundle's file on your filesystem.
+        """
+        if not self.path:
+            self.path = webpack.bundle(
+                path_to_entry=self.get_path_to_entry(),
+                path_to_output=self.get_path_to_output(),
                 library=self.get_library(),
                 externals=self.get_externals(),
                 loaders=self.get_loaders(),
@@ -64,11 +75,14 @@ class WebpackBundle(object):
                 devtool=self.get_devtool(),
                 bail=self.get_bail(),
             )
-        return self.path_to_bundle
+        return self.path
 
-    def get_rel_path_to_bundle(self):
-        path_to_bundle = self.get_path_to_bundle()
-        _, rel_path_to_bundle = path_to_bundle.split(settings.STATIC_ROOT)
+    def get_rel_path(self):
+        """
+        Returns a path to the bundle's file relative to the STATIC_ROOT.
+        """
+        path = self.get_path()
+        _, rel_path_to_bundle = path.split(settings.STATIC_ROOT)
         if rel_path_to_bundle.startswith('/') or rel_path_to_bundle.startswith('\\'):
             rel_path_to_bundle = rel_path_to_bundle[1:]
         return rel_path_to_bundle
@@ -85,14 +99,14 @@ class WebpackBundle(object):
             raise exceptions.EntryFileNotFound(entry)
         return path_to_entry
 
-    def get_output(self):
-        if not self.output:
+    def get_path_to_output(self):
+        if not self.path_to_output:
             entry, _ = os.path.splitext(self.get_entry())
             rel_path = '{entry}-[hash].js'.format(
                 entry=entry,
             )
-            self.output = os.path.join(settings.STATIC_ROOT, rel_path)
-        return self.output
+            self.path_to_output = os.path.join(settings.STATIC_ROOT, rel_path)
+        return self.path_to_output
 
     def get_library(self):
         return self.library

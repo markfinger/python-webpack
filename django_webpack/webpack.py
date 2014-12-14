@@ -12,14 +12,17 @@ npm.ensure_version_gte(settings.NPM_VERSION_REQUIRED)
 npm.install(os.path.dirname(__file__))
 
 
+_bundle_cache = {}
+
+
 def bundle(
-    entry, output, library=None, externals=None, loaders=None, paths_to_loaders=None, no_parse=None,
+    path_to_entry, path_to_output, library=None, externals=None, loaders=None, paths_to_loaders=None, no_parse=None,
     devtool=None, bail=None,
 ):
     arguments = (
         settings.PATH_TO_BUNDLER,
-        '--entry', entry,
-        '--output', output,
+        '--entry', path_to_entry,
+        '--output', path_to_output,
     )
 
     if library:
@@ -43,6 +46,9 @@ def bundle(
     if bail:
         arguments += ('--bail', 'true',)
 
+    if settings.CACHE and _bundle_cache.get(arguments, None):
+        return _bundle_cache[arguments]
+
     # While rendering templates Django will silently ignore some types of exceptions,
     # so we need to intercept them and raise our own class of exception
     try:
@@ -54,5 +60,8 @@ def bundle(
         raise exceptions.BundlingError(stderr)
 
     path_to_bundle = stdout.strip()
+
+    if settings.CACHE:
+        _bundle_cache[arguments] = path_to_bundle
 
     return path_to_bundle
