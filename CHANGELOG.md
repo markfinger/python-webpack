@@ -1,6 +1,10 @@
 Changelog
 =========
 
+### 1.0.1 (14/12/2014)
+
+Improving the test harness and updating django-node to the latest.
+
 ### 1.0.0 (14/12/2014)
 
 The default value for `WebpackBundle.devtool` is now defined by a setting, DJANGO_WEBPACK['DEVTOOL']
