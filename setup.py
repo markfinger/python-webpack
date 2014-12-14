@@ -11,19 +11,15 @@ setup(
             '*.js',
             '*.json',
             'tests/*.py'
+            'tests/test_bundle.js'
         ]
     },
     install_requires=[
         'django',
         'django-node >= 2.0.1',
     ],
-    description='Django Webpack',
-    long_description=\
-'''
-Generate Webpack bundles from a Django application.
-
-Documentation at https://github.com/markfinger/django-webpack
-''',
+    description='Generate Webpack bundles from a Django application.',
+    long_description='Documentation at https://github.com/markfinger/django-webpack',
     author='Mark Finger',
     author_email='markfinger@gmail.com',
     url='https://github.com/markfinger/django-webpack',
