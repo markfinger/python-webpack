@@ -36,4 +36,8 @@ DEBUG = setting_overrides.get(
 CACHE = setting_overrides.get(
     'CACHE',
     not settings.DEBUG,
+
+DEVTOOL = setting_overrides.get(
+    'DEVTOOL',
+    'eval-entry-map' if DEBUG else None,
 )

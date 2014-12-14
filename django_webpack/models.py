@@ -14,7 +14,7 @@ class WebpackBundle(object):
     loaders = None
     paths_to_loaders = None
     no_parse = None
-    devtool = 'eval-entry-map' if settings.DEBUG else None
+    devtool = settings.DEVTOOL
     bail = True
     path = None
 
