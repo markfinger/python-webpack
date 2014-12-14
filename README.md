@@ -66,7 +66,7 @@ A `WebpackBundle` instance must be instantiated with an argument or attribute na
 is a relative path to the entry file of a bundle. The absolute path to the file will be resolved 
 via Django's static file finders.
 
-A `WebpackBundle` will also accept the configuration options specified in [Bundle configuration](#bundleconfiguration).
+A `WebpackBundle` will also accept the configuration options specified in [Bundle configuration](#bundle-configuration).
 Options must be provided as either keyword arguments or attributes.
 
 ### Basic usage
@@ -144,7 +144,7 @@ Arguments:
   Webpack's file hashing by including a `[hash]` substring within the path - for example:
   `'/path/to/file/bundle-[hash].js'`.
 
-`bundle` will also accept keyword arguments corresponding to the options specified in [Bundle configuration](#bundleconfiguration).
+`bundle` will also accept keyword arguments corresponding to the options specified in [Bundle configuration](#bundle-configuration).
 
 ```python
 from django_webpack import webpack
