@@ -21,7 +21,6 @@ Documentation
 -------------
 
 - [Installation](#installation)
-- [Basic Usage](#basicusage)
 - [WebpackBundle](#webpackbundle)
   - [Basic usage](#basic-usage)
   - [WebpackBundle.render()](#webpackbundlerender)
@@ -98,7 +97,7 @@ context and invoke its `render` method, which will output a script element.
 {{ bundle.render }}
 ```
 
-### render()
+### WebpackBundle.render()
 
 Returns a HTML script element with a src attribute pointing to the bundle.
 
@@ -106,7 +105,7 @@ Returns a HTML script element with a src attribute pointing to the bundle.
 {{ bundle.render }}
 ```
 
-### get_url()
+### WebpackBundle.get_url()
 
 Returns a url to the bundle.
 
@@ -116,7 +115,7 @@ The url is inferred from Django's STATIC_ROOT and STATIC_URL settings.
 bundle.get_url()
 ```
 
-### get_path()
+### WebpackBundle.get_path()
 
 Returns an absolute path to the bundle's file on your filesystem.
 
@@ -124,7 +123,7 @@ Returns an absolute path to the bundle's file on your filesystem.
 bundle.get_path()
 ```
 
-### get_rel_path()
+### WebpackBundle.get_rel_path()
 
 Returns a path to the bundle's file relative to the STATIC_ROOT.
 
