@@ -1,15 +1,15 @@
 import os
 import shutil
 import unittest
+from django.conf import settings
 from django_webpack.models import WebpackBundle
 from django_webpack.exceptions import NoEntryFileDefined, EntryFileNotFound
-from test_settings import settings
 
 
 class TestDjangoWebpack(unittest.TestCase):
     def tearDown(self):
-        if os.path.exists(settings['STATIC_ROOT']):
-            shutil.rmtree(settings['STATIC_ROOT'])
+        if os.path.exists(settings.STATIC_ROOT):
+            shutil.rmtree(settings.STATIC_ROOT)
 
     def test_can_instantiate_a_webpack_bundle(self):
         WebpackBundle()

@@ -1,0 +1,2 @@
+django
+django-node==2.0.1
