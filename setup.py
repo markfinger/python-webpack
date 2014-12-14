@@ -15,7 +15,7 @@ setup(
     },
     install_requires=[
         'django',
-        'django-node >= 1.0.0',
+        'django-node >= 2.0.0',
     ],
     description='Django Webpack',
     long_description=\
