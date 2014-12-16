@@ -150,8 +150,8 @@ Arguments:
 from django_webpack import webpack
 
 path_to_bundle = webpack.bundle(
-    path_to_entry='/path/to/entry.js'),
-    path_to_output='/path/to/output-[hash].js'),
+    path_to_entry='/path/to/entry.js',
+    path_to_output='/path/to/output-[hash].js',
 )
 ```
 
