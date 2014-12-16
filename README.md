@@ -142,7 +142,7 @@ Arguments:
 - `path_to_entry`: an absolute path to the entry file of the bundle.
 - `path_to_output`: an absolute path to the output file of the bundle. The output filename may take advantage of
   Webpack's file hashing by including a `[hash]` substring within the path - for example:
-  `'/path/to/file/bundle-[hash].js'`.
+  `'/path/to/output-[hash].js'`.
 
 `bundle` will also accept keyword arguments corresponding to the options specified in [Bundle configuration](#bundle-configuration).
 
