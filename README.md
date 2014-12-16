@@ -225,7 +225,6 @@ A tuple of paths that will be used to resolve Webpack loaders. If your project u
 available by default, you will have to provide paths to the directories where Webpack can find them.
 
 ```python
-import os
 from django_webpack.models import WebpackBundle
 
 path_to_loader_packages = '/path/to/node_modules'
