@@ -26,7 +26,7 @@ Documentation
   - [WebpackBundle.get_url()](#webpackbundleget_url)
   - [WebpackBundle.get_path()](#webpackbundleget_path)
   - [WebpackBundle.get_rel_path()](#webpackbundleget_rel_path)
-- [webpack.bundle()](#webpackbundle)
+- [webpack.bundle()](#webpackbundle-1)
 - [Bundle configuration](#bundle-configuration)
   - [path_to_output](#path_to_output)
   - [library](#library)
