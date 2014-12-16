@@ -26,7 +26,7 @@ Documentation
   - [WebpackBundle.get_url()](#webpackbundleget_url)
   - [WebpackBundle.get_path()](#webpackbundleget_path)
   - [WebpackBundle.get_rel_path()](#webpackbundleget_rel_path)
-- [bundle()](#bundle)
+- [webpack.bundle()](#webpackbundle)
 - [Bundle configuration](#bundle-configuration)
   - [path_to_output](#path_to_output)
   - [library](#library)
@@ -132,8 +132,8 @@ bundle.get_rel_path()
 ```
 
 
-bundle()
---------
+webpack.bundle()
+----------------
 
 A method which allows you to interface with Webpack more directly.
 
