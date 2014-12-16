@@ -170,8 +170,9 @@ Webpack's filename hashing to easily circumvent stale file caches. If you wish t
 of the rendering or urls of [WebpackBundle](#webpackbundle), the path should include your `STATIC_ROOT`.
 
 ```python
+import os
 from django.conf.settings import STATIC_ROOT
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 class MyBundle(WebpackBundle):
     path_to_output = os.path.join(STATIC_ROOT, 'path/to/output-[hash].js')
@@ -183,7 +184,7 @@ A variable name which your bundle will expose to the global scope. Use `library`
 to allow your bundle to be accessed from the browser's global scope.
 
 ```python
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 class MyBundle(WebpackBundle):
     library = 'someVariableName'
@@ -196,7 +197,7 @@ resolve to the specified variable from the browser's global scope. This is usefu
 libraries or integrating bundles into environments with pre-defined libraries.
 
 ```python
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 class MyBundle(WebpackBundle):
     externals = {
@@ -210,7 +211,7 @@ class MyBundle(WebpackBundle):
 A tuple of dictionaries that define which Webpack loader to use for loading particular types of files.
 
 ```python
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 class MyBundle(WebpackBundle):
     loaders = (
@@ -225,7 +226,7 @@ available by default, you will have to provide paths to the directories where We
 
 ```python
 import os
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 path_to_loader_packages = '/path/to/node_modules'
 
@@ -239,7 +240,7 @@ A tuple of package name that Webpack will not parse for 'require' calls. This ca
 performance of building a bundl which depends on large packages such as jQuery.
 
 ```python
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 class MyBundle(WebpackBundle):
     no_parse = ('jquery',)
@@ -250,7 +251,7 @@ class MyBundle(WebpackBundle):
 A string that defines a tool which Webpack will use to assist with development. The default value is defined by [`DJANGO_WEBPACK['DEVTOOL']`](#django_webpackdevtool).
 
 ```python
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 class MyBundle(WebpackBundle):
     devtool = 'inline-source-map'
@@ -262,7 +263,7 @@ A boolean that indicates if Webpack should raise an error when it first encounte
 `True`. Setting this to `False` may cause Webpack to silently fail.
 
 ```python
-from django_webpack import WebpackBundle
+from django_webpack.models import WebpackBundle
 
 class MyBundle(WebpackBundle):
     bail = False
