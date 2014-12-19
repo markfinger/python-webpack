@@ -235,8 +235,8 @@ class MyBundle(WebpackBundle):
 
 ### no_parse
 
-A tuple of package name that Webpack will not parse for 'require' calls. This can help to improve the
-performance of building a bundl which depends on large packages such as jQuery.
+A tuple of package names that Webpack will not parse for 'require' calls. This can help to improve the
+performance of building a bundle that depends on large packages such as jQuery.
 
 ```python
 from django_webpack.models import WebpackBundle
