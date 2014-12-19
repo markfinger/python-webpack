@@ -161,7 +161,7 @@ Bundle configuration
 
 The following options can be passed into the constructor of a [WebpackBundle](#webpackbundle),
 defined as attributes on a class inheriting from [WebpackBundle](#webpackbundle), or passed into
-[bundle](#bundle) as keyword arguments.
+[webpack.bundle()](#webpackbundle-1) as keyword arguments.
 
 ### path_to_output
 
