@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '1.0.1'
+VERSION = '1.1.0'
 
 setup(
     name='django-webpack',
@@ -16,7 +16,7 @@ setup(
     },
     install_requires=[
         'django',
-        'django-node >= 2.0.1',
+        'django-node >= 2.1.1',
     ],
     description='Generate Webpack bundles from a Django application.',
     long_description='Documentation at https://github.com/markfinger/django-webpack',
