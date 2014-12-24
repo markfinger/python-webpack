@@ -3,7 +3,7 @@ Django Webpack
 
 Generate Webpack bundles from a Django application.
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 bundle = WebpackBundle(entry='path/to/entry.js')
 
@@ -74,7 +74,7 @@ Options must be provided as either keyword arguments or attributes.
 Bundles can be defined by invoking `WebpackBundle` with a path to an entry file.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 bundle = WebpackBundle(entry='path/to/entry.js')
 ```
@@ -82,7 +82,7 @@ bundle = WebpackBundle(entry='path/to/entry.js')
 Alternatively, you can inherit from `WebpackBundle`.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class SomeBundle(WebpackBundle):
     entry='path/to/entry.js'
@@ -172,7 +172,7 @@ of the rendering or urls of [WebpackBundle](#webpackbundle), the path should inc
 ```python
 import os
 from django.conf.settings import STATIC_ROOT
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class MyBundle(WebpackBundle):
     path_to_output = os.path.join(STATIC_ROOT, 'path/to/output-[hash].js')
@@ -184,7 +184,7 @@ A variable name which your bundle will expose to the global scope. Use `library`
 to allow your bundle to be accessed from the browser's global scope.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class MyBundle(WebpackBundle):
     library = 'someVariableName'
@@ -197,7 +197,7 @@ resolve to the specified variable from the browser's global scope. This is usefu
 libraries or integrating bundles into environments with pre-defined libraries.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class MyBundle(WebpackBundle):
     externals = {
@@ -211,7 +211,7 @@ class MyBundle(WebpackBundle):
 A tuple of dictionaries that define which Webpack loader to use for loading particular types of files.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class MyBundle(WebpackBundle):
     loaders = (
@@ -225,7 +225,7 @@ A tuple of paths that will be used to resolve Webpack loaders. If your project u
 available by default, you will have to provide paths to the directories where Webpack can find them.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 path_to_loader_packages = '/path/to/node_modules'
 
@@ -239,7 +239,7 @@ A tuple of package names that Webpack will not parse for 'require' calls. This c
 performance of building a bundle that depends on large packages such as jQuery.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class MyBundle(WebpackBundle):
     no_parse = ('jquery',)
@@ -250,7 +250,7 @@ class MyBundle(WebpackBundle):
 A string that defines a tool which Webpack will use to assist with development. The default value is defined by [`DJANGO_WEBPACK['DEVTOOL']`](#django_webpackdevtool).
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class MyBundle(WebpackBundle):
     devtool = 'inline-source-map'
@@ -262,7 +262,7 @@ A boolean that indicates if Webpack should raise an error when it first encounte
 `True`. Setting this to `False` may cause Webpack to silently fail.
 
 ```python
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 
 class MyBundle(WebpackBundle):
     bail = False

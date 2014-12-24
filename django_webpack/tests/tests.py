@@ -2,7 +2,7 @@ import os
 import shutil
 import unittest
 from django.conf import settings
-from django_webpack.models import WebpackBundle
+from django_webpack import WebpackBundle
 from django_webpack.exceptions import NoEntryFileDefined, EntryFileNotFound
 
 
