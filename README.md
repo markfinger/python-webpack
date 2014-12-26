@@ -17,8 +17,8 @@ a script element pointing to the generated bundle
 {{ bundle.render }}
 ```
 
-Rather than using the `WebpackBundle` helper class, you can also explicitly
-invoke Webpack with absolute paths
+If you would rather have more explicit control, you can also invoke
+Webpack with absolute paths
 ```python
 path_to_bundle = bundle(
     path_to_entry='/path/to/entry.js',
