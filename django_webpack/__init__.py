@@ -1,1 +1,1 @@
-from .models import WebpackBundle
+from .bundle import bundle, WebpackBundle
