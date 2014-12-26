@@ -1,6 +1,11 @@
 Changelog
 =========
 
+### 2.0.0 (26/12/2014)
+
+- `django_webpack.webpack.bundle` is now available at `django_webpack.bundle`.
+- `django_webpack.models.WebpackBundle` is now available at `django_webpack.WebpackBundle`.
+
 ### 1.0.1 (14/12/2014)
 
 - Improving the test harness and updating django-node to the latest.
