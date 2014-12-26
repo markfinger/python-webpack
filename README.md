@@ -11,9 +11,19 @@ url_to_bundle = bundle.get_url()
 path_to_bundle = bundle.get_path()
 ```
 
-You can also render a `<script>` element pointing to your bundle
+You can also pass a bundle into a template and render
+a script element pointing to the generated bundle
 ```html
 {{ bundle.render }}
+```
+
+Rather than using the `WebpackBundle` helper class, you can also explicitly
+invoke Webpack with absolute paths
+```python
+path_to_bundle = bundle(
+    path_to_entry='/path/to/entry.js',
+    path_to_output='/path/to/output-[hash].js',
+)
 ```
 
 Documentation
