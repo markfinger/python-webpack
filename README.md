@@ -11,18 +11,20 @@ url_to_bundle = bundle.get_url()
 path_to_bundle = bundle.get_path()
 ```
 
-You can also pass a bundle into a template and render
+You can also pass a `WebpackBundle` into a template and render
 a script element pointing to the generated bundle
 ```html
 {{ bundle.render }}
 ```
 
 If you would rather have more explicit control, you can also invoke
-Webpack with absolute paths
+Webpack more directly with absolute paths
 ```python
+from django_webpack import bundle
+
 path_to_bundle = bundle(
-    path_to_entry='/path/to/entry.js',
-    path_to_output='/path/to/output-[hash].js',
+    path_to_entry='/absolute/path/to/entry.js',
+    path_to_output='/absolute/path/to/output-[hash].js',
 )
 ```
 
