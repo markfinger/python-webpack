@@ -1,6 +1,6 @@
 from setuptools import setup
 
-VERSION = '2.0.1'
+VERSION = '2.0.2'
 
 setup(
     name='django-webpack',
