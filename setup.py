@@ -16,7 +16,7 @@ setup(
     },
     install_requires=[
         'django',
-        'django-node >= 2.1.0',
+        'django-node == 2.2.0',
     ],
     description='Generate Webpack bundles from a Django application.',
     long_description='Documentation at https://github.com/markfinger/django-webpack',

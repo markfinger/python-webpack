@@ -1,2 +1,2 @@
 django
-django-node==2.1.0
+django-node==2.2.0
