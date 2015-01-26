@@ -8,10 +8,8 @@ setup(
     packages=['django_webpack'],
     package_data={
         'django_webpack': [
-            '*.js',
-            '*.json',
-            'tests/*.py'
-            'tests/test_bundle.js'
+            'bundle.js',
+            'package.json',
         ]
     },
     install_requires=[
