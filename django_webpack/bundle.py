@@ -1,7 +1,7 @@
 import os
+import json
 from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
-import json
 from django_node import npm, node
 from .exceptions import NoEntryFileDefined, EntryFileNotFound, BundlingError
 from .settings import (
