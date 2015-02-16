@@ -1,6 +1,8 @@
 Django Webpack
 ==============
 
+[![Build Status](https://travis-ci.org/markfinger/django-webpack.svg?branch=master)](https://travis-ci.org/markfinger/django-webpack)
+
 Generate Webpack bundles from a Django application.
 ```python
 from django_webpack import WebpackBundle
