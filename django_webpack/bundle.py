@@ -1,6 +1,5 @@
 import os
 import json
-from django.contrib.staticfiles import finders
 from django.utils.safestring import mark_safe
 from django_node import npm, node
 from .exceptions import NoEntryFileDefined, EntryFileNotFound, BundlingError
@@ -157,6 +156,9 @@ class WebpackBundle(object):
         return self.entry
 
     def get_path_to_entry(self):
+        # Imported here to prevent early settings access in Django 1.6
+        from django.contrib.staticfiles import finders
+
         entry = self.get_entry()
         if not entry:
             raise NoEntryFileDefined(self)
