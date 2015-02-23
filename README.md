@@ -385,5 +385,5 @@ Running the tests
 ```bash
 mkvirtualenv django-webpack
 pip install -r requirements.txt
-python django_webpack/tests/run_tests.py
+python runtests.py
 ```

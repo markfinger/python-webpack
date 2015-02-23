@@ -22,4 +22,4 @@ install:
   # This needs to install with -e in order for test settings file to be visible.
   - "pip install -e ."
 
-script: python django_webpack/tests/run_tests.py
+script: python runtests.py

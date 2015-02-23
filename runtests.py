@@ -1,12 +1,9 @@
 import os
 import sys
-
 import django
 
-
 if __name__ == '__main__':
-    sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-    os.environ['DJANGO_SETTINGS_MODULE'] = 'django_webpack.tests.test_settings'
+    os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
     if hasattr(django, 'setup'):  # Only compatible with Django >= 1.7
         django.setup()
 
@@ -16,5 +13,5 @@ if __name__ == '__main__':
 
     TestRunner = get_runner(settings)
     test_runner = TestRunner()
-    failures = test_runner.run_tests(['django_webpack'])
+    failures = test_runner.run_tests(['tests'])
     sys.exit(bool(failures))

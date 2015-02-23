@@ -28,12 +28,13 @@ class TestDjangoWebpack(unittest.TestCase):
 
     def test_can_render_a_webpack_bundle(self):
         bundle = WebpackBundle(entry='test_bundle.js')
-        rendered = bundle.render()
-        self.assertEqual(
-            bundle.get_url(),
-            '/static/test_bundle-70e51300713754ab4a9a.js',
+        self.assertTrue(
+            bundle.get_url().startswith('/static/test_bundle-')
+        )
+        self.assertTrue(
+            bundle.get_url().endswith('.js')
         )
         self.assertIn(
             bundle.get_url(),
-            rendered,
+            bundle.render(),
         )
