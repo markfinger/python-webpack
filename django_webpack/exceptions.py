@@ -1,8 +1,4 @@
-class NoEntryFileDefined(Exception):
-    pass
-
-
-class EntryFileNotFound(Exception):
+class ConfigNotFound(Exception):
     pass
 
 
