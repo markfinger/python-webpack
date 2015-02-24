@@ -21,7 +21,7 @@ class WebpackService(BaseService):
         stats = json.loads(response.text)
 
         if stats['errors']:
-            raise BundlingError(stats['errors'])
+            raise BundlingError('\n\n'.join([path_to_config] + stats['errors']))
 
         if stats['warnings']:
             warnings.warn(stats['warnings'], Warning)
