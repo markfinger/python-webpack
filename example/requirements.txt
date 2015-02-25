@@ -1,0 +1,2 @@
+django
+-e git+ssh://git@github.com/markfinger/django-webpack.git#egg=django-webpack
