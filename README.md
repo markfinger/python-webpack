@@ -4,35 +4,39 @@ django-webpack
 [![Build Status](https://travis-ci.org/markfinger/django-webpack.svg?branch=master)](https://travis-ci.org/markfinger/django-webpack)
 
 Generate JS bundles from Django.
+
+django-webpack calls webpack on your [webpack config files](webpack.github.io/docs/configuration.html) and returns paths to the bundled assets.
+
 ```python
 from django_webpack import WebpackBundle
 
-bundle = WebpackBundle('path/to/webpack.config.js')
+webpack_bundle = WebpackBundle('path/to/webpack.config.js')
 
-urls = bundle.get_urls()
+urls = webpack_bundle.get_urls()
 ```
 
-You can also pass the bundle into a template and render script elements pointing to your bundle.
+You can also pass a WebpackBundle into a template and render script elements pointing to your bundle.
 ```html
-{{ bundle.render }}
+{{ webpack_bundle.render }}
 ```
 
-A helper is provided when [configuring webpack](webpack.github.io/docs/configuration.html), when defining your output path you can insert the token `{{ BUNDLE_ROOT }}` and it will be replaced with the `BUNDLE_ROOT` setting.
+A helper is provided when [configuring webpack](webpack.github.io/docs/configuration.html), when defining your output path you can insert the token `{{ BUNDLE_ROOT }}` and it will be replaced with the [BUNDLE_ROOT](#django_webpackbundle_root) setting.
 
 ```javascript
 var path = require('path');
 
 module.exports = {
-  context: path.join(__dirname, 'app'),
-  entry: './entry.js',
+  // ...
   output: {
     // The token `{{ BUNDLE_ROOT }}` will be replaced with the
     // DJANGO_WEBPACK['BUNDLE_ROOT'] setting
     path: '{{ BUNDLE_ROOT }}',
-    filename: 'bundle-[hash].js'
+    // ..
   }
 };
 ```
+
+If you provide a relative path to a config file to a WebpackBundle, django-webpack will attempt to use django's static file finders to resolve the file's location. For example, `WebpackBundle('my_app/webpack.config.js')` could match a file within an app's static directory - eg: `<app>/static/my_app/webpack.config.js`. 
 
 Documentation
 -------------
@@ -72,6 +76,8 @@ The following setup provides a basic configuration to enable django-webpack in b
 
 import os
 
+DEBUG = True
+
 # Configure your django project's static and media handling
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
@@ -80,14 +86,15 @@ STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
 if DEBUG:
-    # During development, we have to circumvent some of the devserver's 
-    # limitations, so we use the MEDIA_ROOT and MEDIA_URL
+    # During development, you have to circumvent some of the devserver's 
+    # limitations with handling static files, so we rely on the MEDIA_ROOT 
+    # and MEDIA_URL settings.
     DJANGO_WEBPACK = {
         'BUNDLE_ROOT': os.path.join(MEDIA_ROOT, 'bundles'),
         'BUNDLE_URL': MEDIA_URL + 'bundles/',
     }
 else:
-    # In production, you can rely on your static file server to serve
+    # In production, you should rely on your static file server to serve
     # from the STATIC_ROOT and STATIC_URL
     DJANGO_WEBPACK = {
         'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
