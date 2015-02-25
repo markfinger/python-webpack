@@ -1,357 +1,136 @@
-Django Webpack
+django-webpack
 ==============
 
 [![Build Status](https://travis-ci.org/markfinger/django-webpack.svg?branch=master)](https://travis-ci.org/markfinger/django-webpack)
 
-Generate Webpack bundles from a Django application.
+Generates JS bundles from Django by calling webpack on your [webpack config files](webpack.github.io/docs/configuration.html) and provides helpers to integrate the bundles into your frontend.
+
 ```python
 from django_webpack import WebpackBundle
 
-bundle = WebpackBundle(entry='path/to/entry.js')
+webpack_bundle = WebpackBundle('path/to/webpack.config.js')
 
-url_to_bundle = bundle.get_url()
-path_to_bundle = bundle.get_path()
+urls = webpack_bundle.get_urls()
 ```
 
-You can also pass a `WebpackBundle` into a template and render
-a script element pointing to the generated bundle
+You can pass a WebpackBundle into a template and render script elements pointing to the bundle.
 ```html
-{{ bundle.render }}
+{{ webpack_bundle.render }}
 ```
 
-If you would rather have more explicit control, you can also invoke
-Webpack more directly with absolute paths
-```python
-from django_webpack import bundle
+A helper is provided when [configuring webpack](webpack.github.io/docs/configuration.html), when defining your output path you can insert the token `{{ BUNDLE_ROOT }}` and it will be replaced with the [BUNDLE_ROOT](#django_webpackbundle_root) setting.
 
-path_to_bundle = bundle(
-    path_to_entry='/absolute/path/to/entry.js',
-    path_to_output='/absolute/path/to/output-[hash].js',
-)
+```javascript
+var path = require('path');
+
+module.exports = {
+  // ...
+  output: {
+    // The token `{{ BUNDLE_ROOT }}` will be replaced with the
+    // DJANGO_WEBPACK['BUNDLE_ROOT'] setting
+    path: '{{ BUNDLE_ROOT }}',
+    // ..
+  }
+};
 ```
+
+If you provide a relative path to a config file to a WebpackBundle, django-webpack will attempt to use django's static file finders to resolve the file's location. For example, `WebpackBundle('my_app/webpack.config.js')` could match a file within an app's static directory - eg: `<app>/static/my_app/webpack.config.js`. 
 
 Documentation
 -------------
 
 - [Installation](#installation)
-- [WebpackBundle](#webpackbundle)
-  - [Basic usage](#basic-usage)
-  - [WebpackBundle.render()](#webpackbundlerender)
-  - [WebpackBundle.get_url()](#webpackbundleget_url)
-  - [WebpackBundle.get_path()](#webpackbundleget_path)
-  - [WebpackBundle.get_rel_path()](#webpackbundleget_rel_path)
-- [bundle()](#bundle)
-- [Bundle configuration](#bundle-configuration)
-  - [path_to_output](#path_to_output)
-  - [library](#library)
-  - [externals](#externals)
-  - [loaders](#loaders)
-  - [paths_to_loaders](#paths_to_loaders)
-  - [no_parse](#no_parse)
-  - [devtool](#devtool)
-  - [bail](#bail)
+- [Recommended configuration](#recommended-configuration)
 - [Settings](#settings)
-  - [NODE_VERSION_REQUIRED](#django_webpacknode_version_required)
-  - [NPM_VERSION_REQUIRED](#django_webpacknpm_version_required)
-  - [PATH_TO_BUNDLER](#django_webpackpath_to_bundler)
-  - [STATIC_ROOT](#django_webpackstatic_root)
-  - [STATIC_URL](#django_webpackstatic_url)
-  - [DEBUG](#django_webpackdebug)
+  - [BUNDLE_ROOT](#django_webpackbundle_root)
+  - [BUNDLE_URL](#django_webpackbundle_url)
   - [CACHE](#django_webpackcache)
-  - [DEVTOOL](#django_webpackdevtool)
 - [Running the tests](#running-the-tests)
 
 
 Installation
 ------------
 
+**Please note** that django-webpack is a work in progress. At this point, you will likely need to `pip install` both django-webpack and django-node from their respective `master` branches. The PyPI versions of both are out of date and are unlikely to be updated shortly due to their fluctating APIs.
+
+```bash
+pip install -e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
+pip install -e git+ssh://git@github.com/markfinger/django-webpack.git#egg=django-webpack
+```
+
+If you wish, you can install a more stable version of django-webpack, however be aware that the performance will be significantly slower and the configuration API is completely different. Check this repository's tags for the respective version's documentation.
+
 ```bash
 pip install django-webpack
 ```
 
+Recommended configuration
+-------------------------
 
-WebpackBundle
--------------
-
-`django_webpack.WebpackBundle` provide a simple, yet extensible, interface to Webpack's
-frontend tooling and Django's static asset configuration and introspection.
-
-A `WebpackBundle` instance must be instantiated with an argument or attribute named `entry` which
-is a relative path to the entry file of a bundle. The absolute path to the file will be resolved 
-via Django's static file finders.
-
-A `WebpackBundle` will also accept the configuration options specified in [Bundle configuration](#bundle-configuration).
-Options must be provided as either keyword arguments or attributes.
-
-### Basic usage
-
-Bundles can be defined by invoking `WebpackBundle` with a path to an entry file.
+The following setup provides a basic configuration to enable django-webpack in both development and production.
 
 ```python
-from django_webpack import WebpackBundle
+# in settings.py
 
-bundle = WebpackBundle(entry='path/to/entry.js')
-```
-
-Alternatively, you can inherit from `WebpackBundle`.
-
-```python
-from django_webpack import WebpackBundle
-
-class SomeBundle(WebpackBundle):
-    entry='path/to/entry.js'
-
-bundle = SomeBundle()
-```
-
-The easiest way to integrate a bundle into your frontend is to pass the bundle into your template's
-context and invoke its `render` method, which will output a script element.
-
-```html
-{{ bundle.render }}
-```
-
-### WebpackBundle.render()
-
-Returns a HTML script element with a src attribute pointing to the bundle.
-
-```html
-{{ bundle.render }}
-```
-
-### WebpackBundle.get_url()
-
-Returns a url to the bundle.
-
-The url is inferred from Django's STATIC_ROOT and STATIC_URL settings.
-
-```python
-bundle.get_url()
-```
-
-### WebpackBundle.get_path()
-
-Returns an absolute path to the bundle's file on your filesystem.
-
-```python
-bundle.get_path()
-```
-
-### WebpackBundle.get_rel_path()
-
-Returns a path to the bundle's file relative to the STATIC_ROOT.
-
-```python
-bundle.get_rel_path()
-```
-
-
-bundle()
-----------------
-
-A method which allows you to interface with Webpack more directly.
-
-Arguments:
-
-- `path_to_entry`: an absolute path to the entry file of the bundle.
-- `path_to_output`: an absolute path to the output file of the bundle. The output filename may take advantage of
-  Webpack's file hashing by including a `[hash]` substring within the path - for example:
-  `'/path/to/output-[hash].js'`.
-
-`bundle` will also accept keyword arguments corresponding to the options specified in [Bundle configuration](#bundle-configuration).
-
-```python
-from django_webpack import bundle
-
-path_to_bundle = bundle(
-    path_to_entry='/path/to/entry.js',
-    path_to_output='/path/to/output-[hash].js',
-)
-```
-
-
-Bundle configuration
---------------------
-
-The following options can be passed into the constructor of a [WebpackBundle](#webpackbundle),
-defined as attributes on a class inheriting from [WebpackBundle](#webpackbundle), or passed into
-[bundle()](#bundle) as keyword arguments.
-
-### path_to_output
-
-An absolute path to the output of your bundle. Output filenames can take advantage of
-Webpack's filename hashing to easily circumvent stale file caches. If you wish to take advantage
-of the rendering or urls of [WebpackBundle](#webpackbundle), the path should include your `STATIC_ROOT`.
-
-```python
 import os
-from django.conf.settings import STATIC_ROOT
-from django_webpack import WebpackBundle
 
-class MyBundle(WebpackBundle):
-    path_to_output = os.path.join(STATIC_ROOT, 'path/to/output-[hash].js')
-```
+DEBUG = True
 
-### library
+# Configure your django project's static and media handling
+BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
 
-A variable name which your bundle will expose to the global scope. Use `library`
-to allow your bundle to be accessed from the browser's global scope.
-
-```python
-from django_webpack import WebpackBundle
-
-class MyBundle(WebpackBundle):
-    library = 'someVariableName'
-```
-
-### externals
-
-A dictionary of packages which will not be bundled, instead the `require('package')` statements will
-resolve to the specified variable from the browser's global scope. This is useful for accessing 3rd-party
-libraries or integrating bundles into environments with pre-defined libraries.
-
-```python
-from django_webpack import WebpackBundle
-
-class MyBundle(WebpackBundle):
-    externals = {
-        # Rather than bundling jQuery, we rely on its global variable
-        'jquery': 'window.$',
+if DEBUG:
+    # During development, you have to circumvent some of the devserver's 
+    # limitations with handling static files, so we rely on the MEDIA_ROOT 
+    # and MEDIA_URL settings.
+    DJANGO_WEBPACK = {
+        'BUNDLE_ROOT': os.path.join(MEDIA_ROOT, 'bundles'),
+        'BUNDLE_URL': MEDIA_URL + 'bundles/',
+    }
+else:
+    # In production, you should rely on your static file server to serve
+    # from the STATIC_ROOT and STATIC_URL
+    DJANGO_WEBPACK = {
+        'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
+        'BUNDLE_URL': STATIC_URL + 'bundles/',
     }
 ```
 
-### loaders
-
-A tuple of dictionaries that define which Webpack loader to use for loading particular types of files.
-
 ```python
-from django_webpack import WebpackBundle
+# in urls.py
 
-class MyBundle(WebpackBundle):
-    loaders = (
-        {'loader': 'jsx', 'test': '.jsx$'},
-    )
-```
+from django.conf.urls import patterns
+from django.conf import settings
+from django.conf.urls.static import static
 
-### paths_to_loaders
 
-A tuple of paths that will be used to resolve Webpack loaders. If your project uses loaders that are not
-available by default, you will have to provide paths to the directories where Webpack can find them.
+urlpatterns = patterns('',
+   # ...
+)
 
-```python
-from django_webpack import WebpackBundle
-
-path_to_loader_packages = '/path/to/node_modules'
-
-class MyBundle(WebpackBundle):
-    paths_to_loaders = (path_to_loader_packages,)
-```
-
-### no_parse
-
-A tuple of package names that Webpack will not parse for 'require' calls. This can help to improve the
-performance of building a bundle that depends on large packages such as jQuery.
-
-```python
-from django_webpack import WebpackBundle
-
-class MyBundle(WebpackBundle):
-    no_parse = ('jquery',)
-```
-
-### devtool
-
-A string that defines a tool which Webpack will use to assist with development. The default value is defined by [`DJANGO_WEBPACK['DEVTOOL']`](#django_webpackdevtool).
-
-```python
-from django_webpack import WebpackBundle
-
-class MyBundle(WebpackBundle):
-    devtool = 'inline-source-map'
-```
-
-### bail
-
-A boolean that indicates if Webpack should raise an error when it first encounters a problem. By default, this is
-`True`. Setting this to `False` may cause Webpack to silently fail.
-
-```python
-from django_webpack import WebpackBundle
-
-class MyBundle(WebpackBundle):
-    bail = False
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ```
 
 
 Settings
 --------
 
-Settings can be overridden by defining a dictionary named `DJANGO_WEBPACK` in your settings file.
+### DJANGO_WEBPACK['BUNDLE_ROOT']
 
-```python
-DJANGO_WEBPACK = {
-    'DEBUG': False,
-}
-```
+An absolute path to the directory which django-webpack will try to infer urls from.
 
-### DJANGO_WEBPACK['NODE_VERSION_REQUIRED']
+**This setting must be defined**
 
-The version of Node.js required to use Django Webpack. Dependencies are checked when Django Webpack is
-first initialised.
+### DJANGO_WEBPACK['BUNDLE_URL']
 
-Default:
-```python
-(0, 10, 0)
-```
+The url which is prepended to the paths of bundles relative to the BUNDLE_ROOT.
 
-### DJANGO_WEBPACK['NPM_VERSION_REQUIRED']
-
-The version of NPM required to use Django Webpack. Dependencies are checked when Django Webpack is
-first initialised.
-
-Default:
-```python
-(1, 2, 0)
-```
-
-### DJANGO_WEBPACK['PATH_TO_BUNDLER']
-
-An absolute path to the bundler which is used as an interface to Webpack.
-
-Default:
-```python
-# __file__ = django_webpack.settings.__file__
-os.path.abspath(os.path.join(os.path.dirname(__file__), 'bundle.js'))
-```
-
-### DJANGO_WEBPACK['STATIC_ROOT']
-
-An absolute path to the directory which Django Webpack's static file helpers
-should consider to be the root.
-
-Default:
-```python
-django.conf.settings.STATIC_ROOT
-```
-
-### DJANGO_WEBPACK['STATIC_URL']
-
-The url which is prepended to the relative path of bundle in order to generate a bundle's url.
-
-Default:
-```python
-django.conf.settings.STATIC_URL
-```
-
-### DJANGO_WEBPACK['DEBUG']
-
-If True, Django Webpack activates more tooling to assist development. Setting this to `False` is recommended
-for production, but may introduce problems during development.
-
-Default:
-```python
-django.conf.settings.DEBUG
-```
+**This setting must be defined**
 
 ### DJANGO_WEBPACK['CACHE']
 
@@ -361,21 +140,9 @@ Webpack and return paths to previously-generated bundles.
 Using the cache will massively improve the speed of rendering bundles, but is only
 recommended for use in production environments.
 
-Cache keys are generated from the arguments piped to Webpack, which include entry/output
-files and the bundle's configuration options.
-
 Default:
 ```python
-not django_webpack.settings.DEBUG
-```
-
-### DJANGO_WEBPACK['DEVTOOL']
-
-The default tool that [WebpackBundles](#webpackbundle) will use to assist in development.
-
-Default:
-```python
-'eval-entry-map' if django_webpack.settings.DEBUG else None
+not django.conf.settings.DEBUG
 ```
 
 
