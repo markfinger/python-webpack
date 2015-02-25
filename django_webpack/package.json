@@ -1,7 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "webpack": "^1.5.3",
-    "yargs": "^3.2.1"
+    "webpack": "^1.5.3"
   }
 }
