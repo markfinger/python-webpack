@@ -82,6 +82,12 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+MEDIA_URL = '/media/'
+
 DJANGO_NODE = {
     'SERVICES': (
         'django_webpack.services',
@@ -91,14 +97,11 @@ DJANGO_NODE = {
 # Django does not serve up the STATIC_ROOT when using runserver, to
 # get around this we use the MEDIA_ROOT.
 if DEBUG:
-    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-    MEDIA_URL = '/media/'
     DJANGO_WEBPACK = {
         'BUNDLE_ROOT': os.path.join(MEDIA_ROOT, 'bundles'),
         'BUNDLE_URL': MEDIA_URL + 'bundles/',
     }
 else:
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     DJANGO_WEBPACK = {
         'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
         'BUNDLE_URL': STATIC_URL + 'bundles/',
