@@ -18,15 +18,17 @@ a script element pointing to the generated bundle
 {{ bundle.render }}
 ```
 
-When defining your webpack config file, place `{{ BUNDLE_ROOT }}` within your config's `output.path` property to have it replaced with the `DJANGO_WEBPACK['BUNDLE_ROOT']` setting.
+django-webpack provides a `{{ BUNDLE_ROOT }}` helper that you can use when defining your [webpack config's](webpack.github.io/docs/configuration.html) output path.
 
 ```javascript
 var path = require('path');
 
 module.exports = {
   context: path.join(__dirname, 'app'),
-	entry: './entry.js',
+  entry: './entry.js',
   output: {
+    // The token `{{ BUNDLE_ROOT }}` will be replaced with the
+    // DJANGO_WEBPACK['BUNDLE_ROOT'] setting
     path: '{{ BUNDLE_ROOT }}',
     filename: 'bundle-[hash].js'
   }
@@ -47,14 +49,14 @@ Documentation
 Installation
 ------------
 
-*Please note* that django-webpack is a work in progress. At this point, you will likely need to `pip install` both django-webpack and django-node from their respective `master` branches. The PyPI versions of both are out of date and are unlikely to be updated shortly due to their fluctating APIs.
+**Please note** that django-webpack is a work in progress. At this point, you will likely need to `pip install` both django-webpack and django-node from their respective `master` branches. The PyPI versions of both are out of date and are unlikely to be updated shortly due to their fluctating APIs.
 
 ```bash
--e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
--e git+ssh://git@github.com/markfinger/django-webpack.git#egg=django-webpack
+pip install -e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
+pip install -e git+ssh://git@github.com/markfinger/django-webpack.git#egg=django-webpack
 ```
 
-If you wish, you can install a more stable version of django-webpack, however be aware that the performance will be significantly slower and the configuration API is completely different.
+If you wish, you can install a more stable version of django-webpack, however be aware that the performance will be significantly slower and the configuration API is completely different. Check this repositories tags for the respective version's documentation.
 
 ```bash
 pip install django-webpack
@@ -65,26 +67,28 @@ Settings
 
 Settings can be overridden by defining a dictionary named `DJANGO_WEBPACK` in your settings file.
 
-The following settings will enable you to use django-webpack in both development
-and production.
+The following settings provide a way of configuring your `settings.py` to enable django-webpack in both development and production.
 
 ```python
 import os
 
-# Django static/media settings
+# Configure your django project's static and media handling
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-# django-webpack settings
 if DEBUG:
+    # During development, we have to circumvent some of the devserver's 
+    # limitations, so we use the MEDIA_ROOT and MEDIA_URL
     DJANGO_WEBPACK = {
         'BUNDLE_ROOT': os.path.join(MEDIA_ROOT, 'bundles'),
         'BUNDLE_URL': MEDIA_URL + 'bundles/',
     }
 else:
+    # In production, you can rely on your static file server to serve
+    # from the STATIC_ROOT and STATIC_URL
     STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     DJANGO_WEBPACK = {
         'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
