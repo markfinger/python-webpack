@@ -12,8 +12,7 @@ bundle = WebpackBundle('path/to/webpack.config.js')
 urls = bundle.get_urls()
 ```
 
-You can also pass a `WebpackBundle` into a template and render
-a script element pointing to the generated bundle
+You can also pass the bundle into a template and render script elements pointing to your bundle.
 ```html
 {{ bundle.render }}
 ```
@@ -39,6 +38,7 @@ Documentation
 -------------
 
 - [Installation](#installation)
+- [Recommended configuration](#recommended-configuration)
 - [Settings](#settings)
   - [BUNDLE_ROOT](#django_webpackbundle_root)
   - [BUNDLE_URL](#django_webpackbundle_url)
@@ -56,20 +56,20 @@ pip install -e git+ssh://git@github.com/markfinger/django-node.git#egg=django-no
 pip install -e git+ssh://git@github.com/markfinger/django-webpack.git#egg=django-webpack
 ```
 
-If you wish, you can install a more stable version of django-webpack, however be aware that the performance will be significantly slower and the configuration API is completely different. Check this repositories tags for the respective version's documentation.
+If you wish, you can install a more stable version of django-webpack, however be aware that the performance will be significantly slower and the configuration API is completely different. Check this repository's tags for the respective version's documentation.
 
 ```bash
 pip install django-webpack
 ```
 
-Settings
---------
+Recommended configuration
+-------------------------
 
-Settings can be overridden by defining a dictionary named `DJANGO_WEBPACK` in your settings file.
-
-The following settings provide a way of configuring your `settings.py` to enable django-webpack in both development and production.
+The following setup provides a basic configuration to enable django-webpack in both development and production.
 
 ```python
+# in settings.py
+
 import os
 
 # Configure your django project's static and media handling
@@ -89,12 +89,31 @@ if DEBUG:
 else:
     # In production, you can rely on your static file server to serve
     # from the STATIC_ROOT and STATIC_URL
-    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
     DJANGO_WEBPACK = {
         'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
         'BUNDLE_URL': STATIC_URL + 'bundles/',
     }
 ```
+
+```python
+# in urls.py
+
+from django.conf.urls import patterns
+from django.conf import settings
+from django.conf.urls.static import static
+
+
+urlpatterns = patterns('',
+   # ...
+)
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+```
+
+
+Settings
+--------
 
 ### DJANGO_WEBPACK['BUNDLE_ROOT']
 
