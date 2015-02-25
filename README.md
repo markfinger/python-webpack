@@ -17,7 +17,7 @@ You can also pass the bundle into a template and render script elements pointing
 {{ bundle.render }}
 ```
 
-django-webpack provides a `{{ BUNDLE_ROOT }}` helper that you can use when defining your [webpack config's](webpack.github.io/docs/configuration.html) output path.
+A helper is provided when [configuring webpack](webpack.github.io/docs/configuration.html), when defining your output path you can insert the token `{{ BUNDLE_ROOT }}` and it will be replaced with the `BUNDLE_ROOT` setting.
 
 ```javascript
 var path = require('path');
