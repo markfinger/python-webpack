@@ -1,9 +1,9 @@
-Django Webpack
+django-webpack
 ==============
 
 [![Build Status](https://travis-ci.org/markfinger/django-webpack.svg?branch=master)](https://travis-ci.org/markfinger/django-webpack)
 
-Generate Webpack bundles from a Django application.
+Generate JS bundles from Django.
 ```python
 from django_webpack import WebpackBundle
 
@@ -16,6 +16,21 @@ You can also pass a `WebpackBundle` into a template and render
 a script element pointing to the generated bundle
 ```html
 {{ bundle.render }}
+```
+
+When defining your webpack config file, place `{{ BUNDLE_ROOT }}` within your config's `output.path` property to have it replaced with the `DJANGO_WEBPACK['BUNDLE_ROOT']` setting.
+
+```javascript
+var path = require('path');
+
+module.exports = {
+  context: path.join(__dirname, 'app'),
+	entry: './entry.js',
+  output: {
+    path: '{{ BUNDLE_ROOT }}',
+    filename: 'bundle-[hash].js'
+  }
+};
 ```
 
 Documentation
@@ -31,6 +46,15 @@ Documentation
 
 Installation
 ------------
+
+*Please note* that django-webpack is a work in progress. At this point, you will likely need to `pip install` both django-webpack and django-node from their respective `master` branches. The PyPI versions of both are out of date and are unlikely to be updated shortly due to their fluctating APIs.
+
+```bash
+-e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
+-e git+ssh://git@github.com/markfinger/django-webpack.git#egg=django-webpack
+```
+
+If you wish, you can install a more stable version of django-webpack, however be aware that the performance will be significantly slower and the configuration API is completely different.
 
 ```bash
 pip install django-webpack
