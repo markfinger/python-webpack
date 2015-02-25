@@ -3,9 +3,7 @@ django-webpack
 
 [![Build Status](https://travis-ci.org/markfinger/django-webpack.svg?branch=master)](https://travis-ci.org/markfinger/django-webpack)
 
-Generate JS bundles from Django.
-
-django-webpack calls webpack on your [webpack config files](webpack.github.io/docs/configuration.html) and returns paths to the bundled assets.
+Generates JS bundles from Django by calling webpack on your [webpack config files](webpack.github.io/docs/configuration.html) and provides helpers to integrate the bundles into your frontend.
 
 ```python
 from django_webpack import WebpackBundle
@@ -15,7 +13,7 @@ webpack_bundle = WebpackBundle('path/to/webpack.config.js')
 urls = webpack_bundle.get_urls()
 ```
 
-You can also pass a WebpackBundle into a template and render script elements pointing to your bundle.
+You can pass a WebpackBundle into a template and render script elements pointing to the bundle.
 ```html
 {{ webpack_bundle.render }}
 ```
