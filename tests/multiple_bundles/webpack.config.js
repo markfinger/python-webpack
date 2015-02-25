@@ -7,7 +7,7 @@ module.exports = {
 		bundle_2: './bundle_2/entry'
 	},
     output: {
-        path: path.join(__dirname, '..', 'static_root', 'bundles'),
+        path: '{{ BUNDLE_ROOT }}',
         filename: 'bundle-[name].js'
     }
 };

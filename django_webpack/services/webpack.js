@@ -17,6 +17,12 @@ var service = function(request, response) {
 		cachedConfigFiles[pathToConfig] = true;
 	}
 
+	var bundleRoot = request.query.bundle_root;
+
+	if (config && config.output && config.output.path) {
+		config.output.path = config.output.path.replace('{{ BUNDLE_ROOT }}', bundleRoot);
+	}
+
 	webpack(config, function(err, stats) {
 		if (err) {
 			throw new Error(err);

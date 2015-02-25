@@ -108,8 +108,13 @@ class TestDjangoWebpack(unittest.TestCase):
         assets = bundle(MULTIPLE_BUNDLES_CONFIG)
 
         self.assertTrue(len(assets), 2)
-        bundle_1 = assets[0]
-        bundle_2 = assets[1]
+
+        asset_names = [asset['name'] for asset in assets]
+        self.assertIn('bundle-bundle_1.js', asset_names)
+        self.assertIn('bundle-bundle_2.js', asset_names)
+
+        bundle_1 = [asset for asset in assets if asset['name'] == 'bundle-bundle_1.js'][0]
+        bundle_2 = [asset for asset in assets if asset['name'] == 'bundle-bundle_2.js'][0]
 
         self.assertEqual(bundle_1['name'], 'bundle-bundle_1.js')
         self.assertEqual(bundle_2['name'], 'bundle-bundle_2.js')
@@ -144,3 +149,16 @@ class TestDjangoWebpack(unittest.TestCase):
             rendered,
             '<script src="' + urls[0] + '"></script><script src="' + urls[1] + '"></script>'
         )
+
+    def test_bundle_can_resolve_files_via_the_django_static_file_finder(self):
+        assets = bundle('test_app/webpack.config.js')
+
+        self.assertTrue(len(assets), 1)
+
+        asset = assets[0]
+
+        with open(asset['path'], 'r') as asset_file:
+            contents = asset_file.read()
+
+        self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
+        self.assertIn('__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__', contents)

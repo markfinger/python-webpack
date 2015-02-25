@@ -4,7 +4,7 @@ import warnings
 from django_node.base_service import BaseService
 from django_node import npm
 from .exceptions import BundlingError
-from .settings import CACHE
+from .settings import CACHE, BUNDLE_ROOT
 
 npm.install(os.path.dirname(__file__))
 
@@ -16,6 +16,7 @@ class WebpackService(BaseService):
         response = self.send(
             path_to_config=path_to_config,
             cache=CACHE,
+            bundle_root=BUNDLE_ROOT,
         )
 
         stats = json.loads(response.text)
