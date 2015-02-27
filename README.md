@@ -18,7 +18,7 @@ You can pass a WebpackBundle into a template and render script elements pointing
 {{ webpack_bundle.render }}
 ```
 
-A helper is provided when [configuring webpack](webpack.github.io/docs/configuration.html), when defining your output path you can insert the token `{{ BUNDLE_ROOT }}` and it will be replaced with the [BUNDLE_ROOT](#django_webpackbundle_root) setting.
+A helper is provided for [configuring your bundle](webpack.github.io/docs/configuration.html), the substring `{{ BUNDLE_ROOT }}` will be replaced with the [BUNDLE_ROOT](#django_webpackbundle_root) path.
 
 ```javascript
 var path = require('path');
@@ -34,7 +34,7 @@ module.exports = {
 };
 ```
 
-If you provide a relative path to a config file to a WebpackBundle, django-webpack will attempt to use django's static file finders to resolve the file's location. For example, `WebpackBundle('my_app/webpack.config.js')` could match a file within an app's static directory - eg: `<app>/static/my_app/webpack.config.js`. 
+If you provide a relative path to a config file to a WebpackBundle, django-webpack will attempt to use django's static file finders to resolve the file's location. For example, `WebpackBundle('my_app/webpack.config.js')` could match a file within an app's static directory - eg: `<app>/static/my_app/webpack.config.js`.
 
 Documentation
 -------------
@@ -51,7 +51,7 @@ Documentation
 Installation
 ------------
 
-**Please note** that django-webpack is a work in progress. At this point, you will likely need to `pip install` both django-webpack and django-node from their respective `master` branches. The PyPI versions of both are out of date and are unlikely to be updated shortly due to their fluctating APIs.
+**Please note** that django-webpack is a work in progress. At this point, you will likely need to `pip install` both django-webpack and django-node from their respective `master` branches. The PyPI versions of both are out of date and are unlikely to be updated shortly due to their transitioning APIs.
 
 ```bash
 pip install -e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
@@ -62,6 +62,18 @@ If you wish, you can install a more stable version of django-webpack, however be
 
 ```bash
 pip install django-webpack
+```
+
+You will also need to configure [django-node](https://github.com/markfinger/django-node] to provide django-webpack's service.
+
+```python
+# in settings.py
+
+DJANGO_NODE = {
+    'SERVICES': (
+        'django_webpack.services',
+    ),
+}
 ```
 
 Recommended configuration
@@ -82,6 +94,13 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+
+# Inform django-node to provide django-webpack's services
+DJANGO_NODE = {
+    'SERVICES': (
+        'django_webpack.services',
+    ),
+}
 
 if DEBUG:
     # During development, you have to circumvent some of the devserver's 
