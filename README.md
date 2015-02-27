@@ -88,12 +88,13 @@ import os
 
 DEBUG = True
 
-# Configure your django project's static and media handling
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Configure your django project's static and media handling
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Inform django-node to provide django-webpack's services
 DJANGO_NODE = {
