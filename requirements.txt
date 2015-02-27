@@ -1,2 +1,2 @@
 django
-django-node>=3.0.0
+-e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
