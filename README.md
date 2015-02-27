@@ -64,7 +64,7 @@ If you wish, you can install a more stable version of django-webpack, however be
 pip install django-webpack
 ```
 
-You will also need to configure [django-node](https://github.com/markfinger/django-node] to provide django-webpack's service.
+You will also need to configure [django-node](https://github.com/markfinger/django-node) to provide django-webpack's service.
 
 ```python
 # in settings.py
