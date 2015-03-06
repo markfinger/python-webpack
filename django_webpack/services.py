@@ -2,15 +2,13 @@ import os
 import json
 import warnings
 from django_node.base_service import BaseService
-from django_node import npm
 from .exceptions import BundlingError
 from .settings import CACHE, BUNDLE_ROOT
-
-npm.install(os.path.dirname(__file__))
 
 
 class WebpackService(BaseService):
     path_to_source = os.path.join(os.path.dirname(__file__), 'services', 'webpack.js')
+    package_dependencies = os.path.dirname(__file__)
 
     def bundle(self, path_to_config):
         response = self.send(
@@ -19,7 +17,9 @@ class WebpackService(BaseService):
             bundle_root=BUNDLE_ROOT,
         )
 
-        stats = json.loads(response.text)
+        output = json.loads(response.text)
+
+        stats = output['stats']
 
         if stats['errors']:
             raise BundlingError('\n\n'.join([path_to_config] + stats['errors']))
@@ -27,4 +27,4 @@ class WebpackService(BaseService):
         if stats['warnings']:
             warnings.warn(stats['warnings'], Warning)
 
-        return stats
+        return output

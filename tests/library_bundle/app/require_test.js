@@ -1,0 +1,1 @@
+module.exports = '__DJANGO_WEBPACK_REQUIRE_TEST__';

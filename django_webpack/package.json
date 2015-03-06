@@ -1,6 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "webpack": "^1.6.0"
+    "webpack": "^1.6.0",
+    "webpack-watcher": "git://github.com/markfinger/webpack-watcher#76afd6a6bc7540c1225779eec2e7fd5397ab21fa"
   }
 }
