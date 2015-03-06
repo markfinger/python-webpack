@@ -6,7 +6,7 @@ django-webpack
 Generates JS bundles from Django by calling webpack on your [config files](webpack.github.io/docs/configuration.html) and providing helpers to integrate the bundles into your frontend.
 
 ```python
-from django_webpack import WebpackBundle
+from django_webpack.bundle import WebpackBundle
 
 webpack_bundle = WebpackBundle('path/to/webpack.config.js')
 
