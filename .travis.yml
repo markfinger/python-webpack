@@ -19,7 +19,4 @@ install:
   - "pip install Django==$DJANGO_VERSION"
   - "pip install -r requirements.txt"
 
-  # This needs to install with -e in order for test settings file to be visible.
-  - "pip install -e ."
-
 script: python runtests.py
