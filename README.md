@@ -64,7 +64,7 @@ If you wish, you can install a more stable version of django-webpack, however be
 pip install django-webpack
 ```
 
-You will also need to configure [django-node](https://github.com/markfinger/django-node] to provide django-webpack's service.
+You will also need to configure [django-node](https://github.com/markfinger/django-node) to provide django-webpack's service.
 
 ```python
 # in settings.py
@@ -88,12 +88,13 @@ import os
 
 DEBUG = True
 
-# Configure your django project's static and media handling
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+# Configure your django project's static and media handling
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Inform django-node to provide django-webpack's services
 DJANGO_NODE = {
