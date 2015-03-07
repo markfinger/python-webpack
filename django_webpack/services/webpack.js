@@ -142,8 +142,8 @@ var generateBundle = function(options, response) {
 
 		var statsToJsonOptions;
 		if (!options.outputFullStats) {
-			// Minimise the amount of data that needs to be serialized by the
-			// host by omitting some statistics
+			// Minimise the amount of data that needs to sent back by omitting
+			// some statistics from the build.
 			// Ref: http://webpack.github.io/docs/node.js-api.html#stats-tojson
 			statsToJsonOptions = {
 				modules: false,
