@@ -1,7 +1,13 @@
+var fs = require('fs');
+var path = require('path');
 var webpack = require('webpack');
+var Watchpack = require('watchpack');
 var WebpackWatcher = require('webpack-watcher');
+var tmp = require('tmp');
 
 var bundles = {};
+var watchedConfigFiles = [];
+var configWatcher = null;
 
 var getBundle = function(options) {
 	if (bundles[options.pathToConfig] === undefined) {
@@ -9,23 +15,25 @@ var getBundle = function(options) {
 			pathToConfig: options.pathToConfig,
 			config: null,
 			output: null,
-			generatingBundle: true,
-			pendingResponses: []
+			generated: false,
+			pendingResponses: [],
+			watchingConfig: false
 		};
 	}
 	return bundles[options.pathToConfig];
 };
 
-var sendBundleResponses = function(bundle) {
-	var pendingResponses = bundle.pendingResponses;
-	bundle.pendingResponses = [];
-
-	var output = bundle.output;
-	var jsonOutput = JSON.stringify(output);
-
-	pendingResponses.forEach(function(response) {
-		response.send(jsonOutput);
-	});
+var getConfigWatcher = function() {
+	if (!configWatcher) {
+		configWatcher = new Watchpack();
+		configWatcher.on('change', function(filePath) {
+			if (filePath in bundles) {
+				var bundle = bundles[filePath];
+				invalidateConfig(bundle);
+			}
+		});
+	}
+	return configWatcher;
 };
 
 var sendErrorResponse = function(response, error) {
@@ -37,43 +45,88 @@ var sendErrorResponse = function(response, error) {
 	response.status(500).send(error);
 };
 
-var getConfig = function(options, response) {
-	var bundle = getBundle(options);
+var sendPendingResponses = function(bundle) {
+	var output;
 
-	if (!bundle.config || !options.cacheConfigFiles) {
-		// Ensure that config files are not cached in development
-		if (options.pathToConfig in require.cache) {
-			delete require.cache[options.pathToConfig];
-		}
-		try {
-			var config = require(options.pathToConfig);
-		} catch(e) {
-			return sendErrorResponse(response, e);
-		}
-		// Ensure that the config exports something
-		if (!config) {
-			return sendErrorResponse(response, 'Config file "' + options.pathToConfig + '" does not exports an object.');
-		}
-		if (config.output && config.output.path) {
-			config.output.path = config.output.path.replace('{{ BUNDLE_ROOT }}', options.bundleRoot);
-		}
-		bundle.config = config;
+	var pendingResponses = bundle.pendingResponses;
+	bundle.pendingResponses = [];
+
+	if (bundle.error) {
+		pendingResponses.forEach(function(response) {
+			return sendErrorResponse(response, bundle.error);
+		});
+	} else {
+		output = JSON.stringify(bundle.output);
+		pendingResponses.forEach(function(response) {
+			response.send(output);
+		});
+	}
+};
+
+var invalidateBundle = function(bundle) {
+	bundle.generated = false;
+	// TODO: invalidate bundle watcher
+};
+
+var invalidateConfig = function(bundle) {
+	delete require.cache[bundle.pathToConfig];
+	bundle.config = null;
+	invalidateBundle(bundle);
+};
+
+var requireConfig = function(options, response) {
+	try {
+		var config = require(options.pathToConfig);
+	} catch(e) {
+		return sendErrorResponse(response, e);
+	}
+
+	if (!config) {
+		return sendErrorResponse(response, 'Config file "' + options.pathToConfig + '" does not export an object.');
+	}
+
+	if (config.output && config.output.path) {
+		config.output.path = config.output.path.replace('{{ BUNDLE_ROOT }}', options.bundleRoot);
 	}
 
 	return config;
+};
+
+var watchConfigFile = function(pathToConfigFile) {
+	if (watchedConfigFiles.indexOf(pathToConfigFile) === -1) {
+		watchedConfigFiles.push(pathToConfigFile);
+	}
+	var configWatcher = getConfigWatcher();
+	configWatcher.watch(watchedConfigFiles, []);
+};
+
+var getConfig = function(options, response) {
+	var bundle = getBundle(options);
+
+	if (!bundle.config) {
+		bundle.config = requireConfig(options, response);
+	}
+
+	if (options.watchConfigFiles && !bundle.watchingConfig) {
+		watchConfigFile(bundle.pathToConfig);
+		bundle.watchingConfig = true
+	}
+
+	return bundle.config;
 };
 
 var generateBundle = function(options, response) {
 	var bundle = getBundle(options);
 	bundle.pendingResponses.push(response);
 
-	if (!bundle.generatingBundle) {
-		return sendBundleResponses(bundle);
+	if (bundle.generated) {
+		return sendPendingResponses(bundle);
 	}
 
 	var config = getConfig(options, response);
+
 	if (!config) {
-		// An error was encountered and an error response will have been sent
+		console.error(new Error('Config "' + options.pathToConfig + '" can not be built'));
 		return;
 	}
 
@@ -82,7 +135,7 @@ var generateBundle = function(options, response) {
 			console.error(new Error(err));
 			response.status(500).send(err);
 			bundle.error = err;
-			return;
+			return sendPendingResponses(bundle);
 		} else {
 			bundle.error = null;
 		}
@@ -92,18 +145,18 @@ var generateBundle = function(options, response) {
 			config: config,
 			stats: stats.toJson()
 		};
-		bundle.generatingBundle = false;
-		sendBundleResponses(bundle);
+		bundle.generated = true;
+		sendPendingResponses(bundle);
 	});
 };
 
 var service = function service(request, response) {
 	var pathToConfig = request.query.path_to_config;
 
-	if (!request.query.cache_config_files === undefined) {
-		return sendErrorResponse(response, 'No cache_config_files option was provided');
+	if (!request.query.watch_config_files === undefined) {
+		return sendErrorResponse(response, 'No watch_config_files option was provided');
 	}
-	var cacheConfigFiles = request.query.cache_config_files === 'True';
+	var watchConfigFiles = request.query.watch_config_files === 'True';
 
 	var bundleRoot = request.query.bundle_root;
 	if (!bundleRoot) {
@@ -111,7 +164,7 @@ var service = function service(request, response) {
 	}
 
 	var options = {
-		cacheConfigFiles: cacheConfigFiles,
+		watchConfigFiles: watchConfigFiles,
 		bundleRoot: bundleRoot,
 		pathToConfig: pathToConfig
 	};

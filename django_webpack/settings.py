@@ -13,10 +13,10 @@ if BUNDLE_URL is None:
 
 CACHE = setting_overrides.get(
     'CACHE',
-    not settings.DEBUG
+    not settings.DEBUG,
 )
 
-CACHE_CONFIG_FILES = setting_overrides.get(
-    'CACHE_CONFIG_FILES',
-    not settings.DEBUG
+WATCH_CONFIG_FILES = setting_overrides.get(
+    'WATCH_CONFIG_FILES',
+    settings.DEBUG,
 )

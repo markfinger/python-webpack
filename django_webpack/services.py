@@ -3,7 +3,7 @@ import json
 import warnings
 from django_node.base_service import BaseService
 from .exceptions import BundlingError
-from .settings import CACHE_CONFIG_FILES, BUNDLE_ROOT
+from .settings import WATCH_CONFIG_FILES, BUNDLE_ROOT
 
 
 class WebpackService(BaseService):
@@ -13,8 +13,8 @@ class WebpackService(BaseService):
     def bundle(self, path_to_config):
         response = self.send(
             path_to_config=path_to_config,
-            cache_config_files=CACHE_CONFIG_FILES,
             bundle_root=BUNDLE_ROOT,
+            watch_config_files=WATCH_CONFIG_FILES,
         )
 
         output = json.loads(response.text)
