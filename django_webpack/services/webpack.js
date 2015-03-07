@@ -51,8 +51,8 @@ var getConfig = function(options, response) {
 			return sendErrorResponse(response, e);
 		}
 		// Ensure that the config exports something
-		if (config === undefined) {
-			return sendErrorResponse(response, 'Config file "' + options.pathToConfig + '" exports undefined.');
+		if (!config) {
+			return sendErrorResponse(response, 'Config file "' + options.pathToConfig + '" does not exports an object.');
 		}
 		if (config.output && config.output.path) {
 			config.output.path = config.output.path.replace('{{ BUNDLE_ROOT }}', options.bundleRoot);
@@ -72,6 +72,11 @@ var generateBundle = function(options, response) {
 	}
 
 	var config = getConfig(options, response);
+	if (!config) {
+		// An error was encountered and an error response will have been sent
+		return;
+	}
+
 	webpack(config, function(err, stats) {
 		if (err) {
 			console.error(new Error(err));
