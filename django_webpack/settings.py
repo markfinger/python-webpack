@@ -20,3 +20,8 @@ WATCH_CONFIG_FILES = setting_overrides.get(
     'WATCH_CONFIG_FILES',
     settings.DEBUG,
 )
+
+OUTPUT_FULL_STATS = setting_overrides.get(
+    'OUTPUT_FULL_STATS',
+    False,
+)

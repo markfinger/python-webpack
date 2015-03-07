@@ -139,13 +139,24 @@ var generateBundle = function(options, response) {
 		} else {
 			bundle.error = null;
 		}
-		// TODO: pass out the assets, errors, and warnings, the stats toJson object has too much data in it
-		// TODO: limit the json output: http://webpack.github.io/docs/node.js-api.html#stats-tojson
+
+		var statsToJsonOptions;
+		if (!options.outputFullStats) {
+			// Minimise the amount of data that needs to be serialized by the
+			// host by omitting some statistics
+			// Ref: http://webpack.github.io/docs/node.js-api.html#stats-tojson
+			statsToJsonOptions = {
+				modules: false,
+				source: false
+			};
+		}
 		bundle.output = {
 			config: config,
-			stats: stats.toJson()
+			stats: stats.toJson(statsToJsonOptions)
 		};
+
 		bundle.generated = true;
+
 		sendPendingResponses(bundle);
 	});
 };
@@ -153,20 +164,26 @@ var generateBundle = function(options, response) {
 var service = function service(request, response) {
 	var pathToConfig = request.query.path_to_config;
 
-	if (!request.query.watch_config_files === undefined) {
-		return sendErrorResponse(response, 'No watch_config_files option was provided');
-	}
-	var watchConfigFiles = request.query.watch_config_files === 'True';
-
 	var bundleRoot = request.query.bundle_root;
 	if (!bundleRoot) {
 		return sendErrorResponse(response, 'No bundle_root option was provided');
 	}
 
+	if (request.query.watch_config_files === undefined) {
+		return sendErrorResponse(response, 'No watch_config_files option was provided');
+	}
+	var watchConfigFiles = request.query.watch_config_files === 'True';
+
+	if (request.query.output_full_stats === undefined) {
+		return sendErrorResponse(response, 'No output_full_stats option was provided');
+	}
+	var outputFullStats = request.query.output_full_stats === 'True';
+
 	var options = {
-		watchConfigFiles: watchConfigFiles,
+		pathToConfig: pathToConfig,
 		bundleRoot: bundleRoot,
-		pathToConfig: pathToConfig
+		watchConfigFiles: watchConfigFiles,
+		outputFullStats: outputFullStats
 	};
 
 	generateBundle(options, response);
