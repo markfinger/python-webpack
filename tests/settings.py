@@ -16,13 +16,14 @@ INSTALLED_APPS = (
 DJANGO_NODE = {
     'SERVICES': (
         'django_webpack.services',
-    )
+    ),
+    'INSTALL_PACKAGE_DEPENDENCIES_DURING_RUNTIME': True,
 }
 
 DJANGO_WEBPACK = {
     'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
     'BUNDLE_URL': STATIC_URL + 'bundles/',
-    # TODO: work out some way to run the tests in both DEV and PROD modes
-    'WATCH_CONFIG_FILES': True,
-    'WATCH_SOURCE_FILES': True
+    # Uncomment these to test the dev helpers
+    # 'WATCH_CONFIG_FILES': True,
+    # 'WATCH_SOURCE_FILES': True
 }
