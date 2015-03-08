@@ -22,4 +22,7 @@ DJANGO_NODE = {
 DJANGO_WEBPACK = {
     'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
     'BUNDLE_URL': STATIC_URL + 'bundles/',
+    # TODO: work out some way to run the tests in both DEV and PROD modes
+    'WATCH_CONFIG_FILES': True,
+    'WATCH_SOURCE_FILES': True
 }

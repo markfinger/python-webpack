@@ -1,9 +1,11 @@
 var fs = require('fs');
 var path = require('path');
+var mkdirp = require('mkdirp');
 var webpack = require('webpack');
 var Watchpack = require('watchpack');
 var WebpackWatcher = require('webpack-watcher');
 var tmp = require('tmp');
+var _ = require('lodash');
 
 var bundles = {};
 var watchedConfigFiles = [];
@@ -17,7 +19,9 @@ var getBundle = function(options) {
 			output: null,
 			generated: false,
 			pendingResponses: [],
-			watchingConfig: false
+			watchingConfig: false,
+			sourceWatcher: null,
+			waitingForWatcher: false
 		};
 	}
 	return bundles[options.pathToConfig];
@@ -64,14 +68,24 @@ var sendPendingResponses = function(bundle) {
 };
 
 var invalidateBundle = function(bundle) {
-	bundle.generated = false;
-	// TODO: invalidate bundle watcher
+	if (bundle.generated) {
+		bundle.generated = false;
+		if (bundle.sourceWatcher) {
+			process.nextTick(function() {
+				bundle.sourceWatcher.invalidateWatcher();
+			});
+		}
+	}
 };
 
 var invalidateConfig = function(bundle) {
 	delete require.cache[bundle.pathToConfig];
 	bundle.config = null;
 	invalidateBundle(bundle);
+	if (bundle.sourceWatcher) {
+		bundle.sourceWatcher.closeWatcher();
+		bundle.sourceWatcher = null;
+	}
 };
 
 var requireConfig = function(options, response) {
@@ -115,6 +129,68 @@ var getConfig = function(options, response) {
 	return bundle.config;
 };
 
+var generateBundleOutput = function(options, config, stats) {
+	var statsToJsonOptions;
+	if (!options.outputFullStats) {
+		// Minimise the amount of data that needs to sent back by omitting
+		// some statistics from the build.
+		// Ref: http://webpack.github.io/docs/node.js-api.html#stats-tojson
+		statsToJsonOptions = {
+			modules: false,
+			source: false
+		};
+	}
+	return {
+		config: config,
+		stats: stats.toJson(statsToJsonOptions)
+	};
+};
+
+var getSourceWatcher = function(options) {
+	var bundle = getBundle(options);
+
+	if (!bundle.sourceWatcher) {
+		// TODO: catch errors which are killing the server, multi entries pointing to non-existent files does it
+		var config = getConfig(options);
+		var compiler = webpack(config, function(err) {
+			if (err) {
+				console.error(new Error(err));
+				bundle.error = err;
+				sendPendingResponses(bundle);
+			}
+		});
+		var onError = function(err) {
+			if (err) {
+				console.error(new Error(err));
+				bundle.error = err;
+				sendPendingResponses(bundle);
+			}
+		};
+		bundle.sourceWatcher = new WebpackWatcher(compiler, {
+			onInvalid: function() {
+				invalidateBundle(bundle);
+			},
+			onDone: function(stats) {
+				if (_.isArray(config.entry) || _.isObject(config.entry)) {
+					console.log('done multi', config.entry)
+				} else {
+					console.log('done single', config.entry)
+				}
+				if (stats.hasErrors()) {
+					var err = stats.errors;
+					onError(err);
+				} else {
+					bundle.error = null;
+				}
+				invalidateBundle(bundle);
+			},
+			onError: onError
+		});
+	}
+
+	return bundle.sourceWatcher;
+};
+
 var generateBundle = function(options, response) {
 	var bundle = getBundle(options);
 	bundle.pendingResponses.push(response);
@@ -130,35 +206,53 @@ var generateBundle = function(options, response) {
 		return;
 	}
 
-	webpack(config, function(err, stats) {
-		if (err) {
-			console.error(new Error(err));
-			response.status(500).send(err);
-			bundle.error = err;
-			return sendPendingResponses(bundle);
-		} else {
-			bundle.error = null;
+	if (options.watchSourceFiles) {
+		if (!bundle.waitingForWatcher) {
+			bundle.waitingForWatcher = true;
+			var watcher = getSourceWatcher(options);
+			watcher.onReady(function(stats) {
+				bundle.waitingForWatcher = false;
+				bundle.generated = true;
+				bundle.output = generateBundleOutput(bundle, config, stats);
+
+				if (_.isArray(config.entry) || _.isObject(config.entry)) {
+					console.log('onReady multi', config.entry)
+				} else {
+					console.log('onReady single', config.entry)
+				}
+
+				// Write the files from memory to disk
+				_.forIn(stats.compilation.assets, function(asset) {
+					var content = watcher.readFileSync(asset.existsAt);
+					try {
+						mkdirp.sync(path.dirname(asset.existsAt));
+						fs.writeFileSync(asset.existsAt, content);
+						//if (config.entry.length) debugger;
+					} catch(err) {
+						bundle.error = err;
+						// Escape the for loop
+						return false;
+					}
+				});
+
+				sendPendingResponses(bundle);
+			});
 		}
-
-		var statsToJsonOptions;
-		if (!options.outputFullStats) {
-			// Minimise the amount of data that needs to sent back by omitting
-			// some statistics from the build.
-			// Ref: http://webpack.github.io/docs/node.js-api.html#stats-tojson
-			statsToJsonOptions = {
-				modules: false,
-				source: false
-			};
-		}
-		bundle.output = {
-			config: config,
-			stats: stats.toJson(statsToJsonOptions)
-		};
-
-		bundle.generated = true;
-
-		sendPendingResponses(bundle);
-	});
+	} else {
+		webpack(config, function(err, stats) {
+			if (err) {
+				console.error(new Error(err));
+				bundle.error = err;
+				sendPendingResponses(bundle);
+				return;
+			} else {
+				bundle.error = null;
+			}
+			bundle.output = generateBundleOutput(bundle, config, stats);
+			bundle.generated = true;
+			sendPendingResponses(bundle);
+		});
+	}
 };
 
 var service = function service(request, response) {
@@ -174,6 +268,11 @@ var service = function service(request, response) {
 	}
 	var watchConfigFiles = request.query.watch_config_files === 'True';
 
+	if (request.query.watch_source_files === undefined) {
+		return sendErrorResponse(response, 'No watch_source_files option was provided');
+	}
+	var watchSourceFiles = request.query.watch_source_files === 'True';
+
 	if (request.query.output_full_stats === undefined) {
 		return sendErrorResponse(response, 'No output_full_stats option was provided');
 	}
@@ -183,6 +282,7 @@ var service = function service(request, response) {
 		pathToConfig: pathToConfig,
 		bundleRoot: bundleRoot,
 		watchConfigFiles: watchConfigFiles,
+		watchSourceFiles: watchSourceFiles,
 		outputFullStats: outputFullStats
 	};
 

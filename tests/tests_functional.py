@@ -1,7 +1,5 @@
 import os
 import unittest
-import shutil
-from django.conf import settings
 from django_webpack.bundle import bundle, WebpackBundle
 from django_webpack.settings import BUNDLE_ROOT
 from django_webpack.exceptions import ConfigNotFound
@@ -13,11 +11,6 @@ MULTIPLE_ENTRY_BUNDLE_CONFIG = os.path.join(os.path.dirname(__file__), 'multiple
 
 
 class TestDjangoWebpack(unittest.TestCase):
-    def tearDown(self):
-        # Reset the STATIC_ROOT between tests
-        if os.path.exists(settings.STATIC_ROOT):
-            shutil.rmtree(settings.STATIC_ROOT)
-
     def test_bundle_raises_entryfilenotfind_for_nonexistent_config_files(self):
         self.assertRaises(ConfigNotFound, bundle, '/file/that/does/not/exist.js')
 
@@ -85,6 +78,9 @@ class TestDjangoWebpack(unittest.TestCase):
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
         self.assertIn('__DJANGO_WEBPACK_ENTRY_ONE__', contents)
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TWO__', contents)
+        self.assertIn('__DJANGO_WEBPACK_ENTRY_THREE__', contents)
+        self.assertIn('__DJANGO_WEBPACK_ENTRY_FOUR__', contents)
+        self.assertIn('__DJANGO_WEBPACK_ENTRY_FIVE__', contents)
 
     def test_can_render_a_webpack_bundle_with_multiple_entries(self):
         webpack_bundle = WebpackBundle(MULTIPLE_ENTRY_BUNDLE_CONFIG)
