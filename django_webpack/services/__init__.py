@@ -10,7 +10,7 @@ class WebpackService(BaseService):
     path_to_source = os.path.join(os.path.dirname(__file__), 'webpack.js')
     package_dependencies = os.path.dirname(__file__)
 
-    def bundle(self, path_to_config, watch_config, watch_source):
+    def compile(self, path_to_config, watch_config, watch_source):
         response = self.send(
             path_to_config=path_to_config,
             bundle_root=BUNDLE_ROOT,
