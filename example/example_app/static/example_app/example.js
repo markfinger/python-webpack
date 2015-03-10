@@ -1,18 +1,7 @@
 var $ = require('jquery');
-var catAsciiFaces = require('cat-ascii-faces');
+var insertCat = require('./insert-cat');
 
-var cats = catAsciiFaces.cats;
-var catIndex = 0;
-var catText = $('<h2>');
-
-var insertCat = function() {
-	catText.text(cats[catIndex]);
-	catIndex++;
-	if (catIndex > cats.length - 1) {
-		catIndex = 0;
-	}
-	setTimeout(insertCat, 300);
-};
+console.log('Hello, I am the example bundle');
 
 $(function() {
 	$('<h1>Hello, World!</h1>')
@@ -24,7 +13,7 @@ $(function() {
 			'font-weight': 'bold'
 		});
 
-	catText
+	var catText = $('<h2>')
 		.appendTo('body')
 		.css({
 			position: 'absolute',
@@ -38,5 +27,5 @@ $(function() {
 			'font-weight': 'bold'
 		});
 
-	insertCat();
+	insertCat(catText);
 });

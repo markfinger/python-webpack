@@ -91,6 +91,9 @@ MEDIA_URL = '/media/'
 DJANGO_NODE = {
     'SERVICES': (
         'django_webpack.services',
+    ),
+    'PACKAGE_DEPENDENCIES': (
+        os.path.join(BASE_DIR, 'example_app'),
     )
 }
 

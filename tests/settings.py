@@ -23,7 +23,4 @@ DJANGO_NODE = {
 DJANGO_WEBPACK = {
     'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
     'BUNDLE_URL': STATIC_URL + 'bundles/',
-    # Uncomment these to test the dev helpers
-    # 'WATCH_CONFIG_FILES': True,
-    # 'WATCH_SOURCE_FILES': True
 }

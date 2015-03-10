@@ -2,20 +2,20 @@ import os
 import json
 import warnings
 from django_node.base_service import BaseService
-from .exceptions import BundlingError
-from .settings import BUNDLE_ROOT, WATCH_CONFIG_FILES, WATCH_SOURCE_FILES, OUTPUT_FULL_STATS
+from ..exceptions import BundlingError
+from ..settings import BUNDLE_ROOT, OUTPUT_FULL_STATS
 
 
 class WebpackService(BaseService):
-    path_to_source = os.path.join(os.path.dirname(__file__), 'services', 'webpack.js')
+    path_to_source = os.path.join(os.path.dirname(__file__), 'webpack.js')
     package_dependencies = os.path.dirname(__file__)
 
-    def bundle(self, path_to_config):
+    def bundle(self, path_to_config, watch_config, watch_source):
         response = self.send(
             path_to_config=path_to_config,
             bundle_root=BUNDLE_ROOT,
-            watch_config_files=WATCH_CONFIG_FILES,
-            watch_source_files=WATCH_SOURCE_FILES,
+            watch_config=watch_config,
+            watch_source=watch_source,
             output_full_stats=OUTPUT_FULL_STATS,
         )
 

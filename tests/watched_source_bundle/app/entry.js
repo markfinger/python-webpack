@@ -1,0 +1,1 @@
+module.exports = '__DJANGO_WEBPACK_WATCH_SOURCE_TWO__';
