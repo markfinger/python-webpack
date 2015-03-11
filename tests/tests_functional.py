@@ -86,7 +86,8 @@ if WebpackService().get_server().test():
     time.sleep(WATCH_WAIT)
 else:
     # Clean out any files generated from previous test runs
-    shutil.rmtree(STATIC_ROOT)
+    if os.path.exists(STATIC_ROOT):
+        shutil.rmtree(STATIC_ROOT)
 
 
 class TestDjangoWebpack(unittest.TestCase):
