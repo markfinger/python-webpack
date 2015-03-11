@@ -13,14 +13,16 @@ INSTALLED_APPS = (
     'tests.test_app',
 )
 
+STATICFILES_FINDERS = (
+    # Defaults
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # Webpack finder
+    'django_webpack.staticfiles.WebpackFinder',
+)
+
 DJANGO_NODE = {
     'SERVICES': (
         'django_webpack.services',
     ),
-    'INSTALL_PACKAGE_DEPENDENCIES_DURING_RUNTIME': True,
-}
-
-DJANGO_WEBPACK = {
-    'BUNDLE_ROOT': os.path.join(STATIC_ROOT, 'bundles'),
-    'BUNDLE_URL': STATIC_URL + 'bundles/',
 }

@@ -1,7 +1,8 @@
 import os
 import unittest
 import time
-from django_node.server import server
+from django.contrib.staticfiles import finders
+from django_webpack.services import WebpackService
 from django_webpack.compiler import webpack, WebpackBundle
 from django_webpack.settings import BUNDLE_ROOT
 from django_webpack.exceptions import ConfigNotFound
@@ -79,7 +80,8 @@ write_file(PATH_TO_WATCHED_SOURCE_AND_CONFIG_ENTRY, WATCHED_SOURCE_AND_CONFIG_EN
 
 # If we are testing against a persistent service, wait for it
 # to detect the changes to the files
-if server.test():
+service = WebpackService()
+if service.get_server().test():
     time.sleep(WATCH_WAIT)
 
 
@@ -110,7 +112,7 @@ class TestDjangoWebpack(unittest.TestCase):
         asset = bundle.get_assets()[0]
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
-        self.assertEqual(urls[0], '/static/bundles/' + asset['name'])
+        self.assertEqual(urls[0], '/static/webpack/' + asset['name'])
 
     def test_can_render_a_webpack_bundle(self):
         bundle = webpack(PATH_TO_BASIC_CONFIG)
@@ -184,6 +186,7 @@ class TestDjangoWebpack(unittest.TestCase):
         contents = read_file(assets[0]['path'])
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
         self.assertIn('__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__', contents)
+        self.assertEqual(finders.find(assets[0]['name']), assets[0]['path'])
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
         bundle = webpack(PATH_TO_LIBRARY_CONFIG)

@@ -1,14 +1,9 @@
 import os
 from django.utils.safestring import mark_safe
 from django.contrib.staticfiles import finders
-from django.utils import six
-if six.PY2:
-    from urlparse import urljoin
-elif six.PY3:
-    from urllib.parse import urljoin
 from .services import WebpackService
 from .exceptions import ConfigNotFound
-from .settings import BUNDLE_ROOT, BUNDLE_URL, WATCH_CONFIG_FILES, WATCH_SOURCE_FILES
+from .settings import BUNDLE_ROOT, BUNDLE_URL, BUNDLE_DIR, WATCH_CONFIG_FILES, WATCH_SOURCE_FILES
 
 service = WebpackService()
 
@@ -40,7 +35,7 @@ class WebpackBundle(object):
                 rel_path = asset['path'].split(BUNDLE_ROOT)[-1]
                 if rel_path.startswith('/'):
                     rel_path = rel_path[1:]
-                url = urljoin(BUNDLE_URL, rel_path)
+                url = BUNDLE_URL + BUNDLE_DIR + '/' + rel_path
                 urls.append(url)
             return urls
 
