@@ -1,5 +1,9 @@
 import os
-import urllib
+from django.utils import six
+if six.PY2:
+    from urllib import pathname2url
+else:
+    from urllib.request import pathname2url
 from django.utils.safestring import mark_safe
 from django.contrib.staticfiles import finders
 from .services import WebpackService
@@ -73,7 +77,7 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
         url = None
         if path_to_bundle_dir in path:
             rel_path = path[len(path_to_bundle_dir):]
-            rel_url = urllib.pathname2url(rel_path)
+            rel_url = pathname2url(rel_path)
             if rel_url[0] == '/':
                 rel_url = rel_url[1:]
             url = BUNDLE_URL + BUNDLE_DIR + '/' + rel_url
