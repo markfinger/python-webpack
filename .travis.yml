@@ -19,4 +19,4 @@ install:
   - "pip install Django==$DJANGO_VERSION"
   - "pip install -r requirements.txt"
 
-script: python runtests.py
+script: python runtests.py --no-watch-tests

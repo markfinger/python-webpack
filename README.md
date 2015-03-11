@@ -169,4 +169,9 @@ Running the tests
 mkvirtualenv django-webpack
 pip install -r requirements.txt
 python runtests.py
+
+# Note that the tests include functionality relating to file watching
+# and the behaviour of this is inconsistent across environments. If you
+# wish to suppress the file watching tests, the test runner takes an
+# optional argument --no-watch-tests
 ```
