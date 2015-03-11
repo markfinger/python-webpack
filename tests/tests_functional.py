@@ -1,11 +1,13 @@
 import os
 import unittest
 import time
+import shutil
 from django.contrib.staticfiles import finders
 from django_webpack.services import WebpackService
 from django_webpack.compiler import webpack, WebpackBundle
-from django_webpack.settings import BUNDLE_ROOT
+from django_webpack.settings import BUNDLE_ROOT, BUNDLE_URL, BUNDLE_DIR
 from django_webpack.exceptions import ConfigNotFound
+from .settings import STATIC_ROOT
 
 # The number of seconds that we delay while waiting for
 # file changes to be detected
@@ -32,16 +34,6 @@ PATH_TO_WATCHED_SOURCE_AND_CONFIG_ENTRY = os.path.join(
     'entry2.js'
 )
 
-
-def write_file(file_name, content):
-    with open(file_name, 'w') as _file:
-        _file.write(content)
-
-
-def read_file(file_name):
-    with open(file_name, 'r') as _file:
-        return _file.read()
-
 WATCHED_CONFIG_CONTENT = """
 var path = require('path');
 
@@ -49,7 +41,7 @@ module.exports = {
     context: path.join(__dirname, 'app'),
     entry: './entry1.js',
     output: {
-        path: '{{ BUNDLE_ROOT }}',
+        path: '[bundle_dir]',
         filename: 'bundle-[hash].js'
     }
 };
@@ -64,7 +56,7 @@ module.exports = {
     context: path.join(__dirname, 'app'),
     entry: './entry1.js',
     output: {
-        path: '{{ BUNDLE_ROOT }}',
+        path: '[bundle_dir]',
         filename: 'bundle-[hash].js'
     }
 };
@@ -72,17 +64,29 @@ module.exports = {
 
 WATCHED_SOURCE_AND_CONFIG_ENTRY_CONTENT = """module.exports = '__DJANGO_WEBPACK_WATCH_CONFIG_AND_SOURCE_TWO__';"""
 
+
+def write_file(file_name, content):
+    with open(file_name, 'w') as _file:
+        _file.write(content)
+
+
+def read_file(file_name):
+    with open(file_name, 'r') as _file:
+        return _file.read()
+
 # Ensure that the files are in the state that we expect
 write_file(PATH_TO_WATCHED_CONFIG, WATCHED_CONFIG_CONTENT)
 write_file(PATH_TO_WATCHED_SOURCE_ENTRY, WATCHED_SOURCE_CONTENT)
 write_file(PATH_TO_WATCHED_SOURCE_AND_CONFIG_CONFIG, WATCHED_SOURCE_AND_CONFIG_CONFIG_CONTENT)
 write_file(PATH_TO_WATCHED_SOURCE_AND_CONFIG_ENTRY, WATCHED_SOURCE_AND_CONFIG_ENTRY_CONTENT)
 
-# If we are testing against a persistent service, wait for it
-# to detect the changes to the files
-service = WebpackService()
-if service.get_server().test():
+# Are we testing against a persistent service?
+if WebpackService().get_server().test():
+    # Wait for the service to detect the changes to the files
     time.sleep(WATCH_WAIT)
+else:
+    # Clean out any files generated from previous test runs
+    shutil.rmtree(STATIC_ROOT)
 
 
 class TestDjangoWebpack(unittest.TestCase):
@@ -96,9 +100,10 @@ class TestDjangoWebpack(unittest.TestCase):
         asset = assets[0]
         self.assertTrue(asset['name'].startswith('bundle-'))
         self.assertTrue(asset['name'].endswith('.js'))
-        self.assertEqual(asset['path'], os.path.join(BUNDLE_ROOT, asset['name']))
+        self.assertEqual(asset['path'], os.path.join(BUNDLE_ROOT, BUNDLE_DIR, asset['name']))
         self.assertTrue(os.path.exists(asset['path']))
-        self.assertTrue(os.path.exists(os.path.join(BUNDLE_ROOT, asset['name'])))
+        self.assertTrue(os.path.exists(os.path.join(BUNDLE_ROOT, BUNDLE_DIR, asset['name'])))
+        self.assertEqual(BUNDLE_URL + BUNDLE_DIR + '/' + asset['name'], asset['url'])
         contents = read_file(asset['path'])
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
         self.assertIn('__DJANGO_WEBPACK_REQUIRE_TEST__', contents)
@@ -186,7 +191,13 @@ class TestDjangoWebpack(unittest.TestCase):
         contents = read_file(assets[0]['path'])
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
         self.assertIn('__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__', contents)
-        self.assertEqual(finders.find(assets[0]['name']), assets[0]['path'])
+
+    def test_bundle_urls_can_be_resolved_via_the_dev_servers_static_files(self):
+        bundle = webpack('test_app/webpack.config.js')
+        assets = bundle.get_assets()
+        self.assertTrue(len(assets), 1)
+        relative_url = assets[0]['url'].split('/static/')[-1]
+        self.assertEqual(finders.find(relative_url), assets[0]['path'])
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
         bundle = webpack(PATH_TO_LIBRARY_CONFIG)
@@ -195,18 +206,27 @@ class TestDjangoWebpack(unittest.TestCase):
         self.assertIsInstance(output['stats'], dict)
         self.assertIn('config', output)
         self.assertIsInstance(output['config'], dict)
+        self.assertEqual(output['pathToConfig'], PATH_TO_LIBRARY_CONFIG)
+        self.assertEqual(output['watchSource'], False)
+        self.assertEqual(output['watchConfig'], False)
 
     def test_bundle_can_expose_its_config(self):
         bundle = webpack(PATH_TO_BASIC_CONFIG)
         config = bundle.get_config()
-        self.assertDictContainsSubset({
-            'context': os.path.join(TEST_ROOT, 'basic_bundle', 'app'),
-            'entry': './entry.js',
-        }, config)
-        self.assertDictContainsSubset({
-            'path': BUNDLE_ROOT,
-            'filename': 'bundle-[hash].js'
-        }, config['output'])
+        self.assertDictContainsSubset(
+            {
+                'context': os.path.join(TEST_ROOT, 'basic_bundle', 'app'),
+                'entry': './entry.js',
+            },
+            config
+        )
+        self.assertDictContainsSubset(
+            {
+                'path': os.path.join(BUNDLE_ROOT, BUNDLE_DIR),
+                'filename': 'bundle-[hash].js'
+            },
+            config['output']
+        )
 
     def test_bundle_can_expose_its_library_config(self):
         bundle = webpack(PATH_TO_LIBRARY_CONFIG)

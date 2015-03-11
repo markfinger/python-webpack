@@ -117,7 +117,7 @@ var requireConfig = function(options, response) {
 	}
 
 	if (config.output && config.output.path) {
-		config.output.path = config.output.path.replace('{{ BUNDLE_ROOT }}', options.bundleRoot);
+		config.output.path = config.output.path.replace('[bundle_dir]', options.bundleDir);
 	}
 
 	return config;
@@ -162,8 +162,12 @@ var generateBundleOutput = function(options, config, stats) {
 	}
 
 	return {
+		pathToConfig: bundle.pathToConfig,
 		config: config,
-		stats: stats.toJson(statsToJsonOptions)
+		stats: stats.toJson(statsToJsonOptions),
+		watchSource: bundle.watchSource,
+		watchConfig: bundle.watchConfig,
+		outputGeneratedAt: new Date()
 	};
 };
 
@@ -276,13 +280,13 @@ var generateBundle = function(options, response) {
 };
 
 var service = function service(data, response) {
-	if (!data.bundle_root) {
-		return sendErrorResponse(response, 'No bundle_root option was provided');
+	if (!data.bundle_dir) {
+		return sendErrorResponse(response, 'No bundle_dir option was provided');
 	}
 
 	var options = {
 		pathToConfig: data.path_to_config,
-		bundleRoot: data.bundle_root,
+		bundleDir: data.bundle_dir,
 		watchConfig: data.watch_config,
 		watchSource: data.watch_source,
 		outputFullStats: data.output_full_stats

@@ -18,17 +18,13 @@ You can pass a WebpackBundle into a template and render script elements pointing
 {{ webpack_bundle.render }}
 ```
 
-A helper is provided for [configuring your bundle](webpack.github.io/docs/configuration.html), the substring `{{ BUNDLE_ROOT }}` will be replaced with the [BUNDLE_ROOT](#django_webpackbundle_root) path.
+A helper is provided for [configuring](webpack.github.io/docs/configuration.html) your bundle's output path, the substring `[bundle_dir]` will be replaced with a path to the static directory where django-webpack looks for generated files.
 
 ```javascript
-var path = require('path');
-
 module.exports = {
   // ...
   output: {
-    // The token `{{ BUNDLE_ROOT }}` will be replaced with the
-    // DJANGO_WEBPACK['BUNDLE_ROOT'] setting
-    path: '{{ BUNDLE_ROOT }}',
+    path: '[bundle_dir]',
     // ..
   }
 };

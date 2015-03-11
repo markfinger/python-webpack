@@ -4,7 +4,7 @@ module.exports = {
     context: path.join(__dirname, 'app'),
 	entry: './entry.js',
     output: {
-        path: '{{ BUNDLE_ROOT }}',
+        path: '[bundle_dir]',
         filename: 'bundle-[hash].js',
 		library: 'LIBRARY_TEST'
     }

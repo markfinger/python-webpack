@@ -1,4 +1,5 @@
 import os
+import urllib
 from django.utils.safestring import mark_safe
 from django.contrib.staticfiles import finders
 from .services import WebpackService
@@ -30,14 +31,7 @@ class WebpackBundle(object):
         """
         assets = self.get_assets()
         if assets:
-            urls = []
-            for asset in self.get_assets():
-                rel_path = asset['path'].split(BUNDLE_ROOT)[-1]
-                if rel_path.startswith('/'):
-                    rel_path = rel_path[1:]
-                url = BUNDLE_URL + BUNDLE_DIR + '/' + rel_path
-                urls.append(url)
-            return urls
+            return [asset['url'] for asset in assets]
 
     def get_assets(self):
         return self.output.get('assets', None)
@@ -71,12 +65,22 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
 
     output_path = output['config']['output']['path']
 
-    # Indicate the bundles generated
+    # Generate contextual information about the generated assets
     output['assets'] = []
+    path_to_bundle_dir = os.path.join(BUNDLE_ROOT, BUNDLE_DIR)
     for asset in output['stats']['assets']:
+        path = os.path.join(output_path, asset['name'])
+        url = None
+        if path_to_bundle_dir in path:
+            rel_path = path[len(path_to_bundle_dir):]
+            rel_url = urllib.pathname2url(rel_path)
+            if rel_url[0] == '/':
+                rel_url = rel_url[1:]
+            url = BUNDLE_URL + BUNDLE_DIR + '/' + rel_url
         output['assets'].append({
             'name': asset['name'],
-            'path': os.path.join(output_path, asset['name'])
+            'path': path,
+            'url': url,
         })
 
     return WebpackBundle(output)

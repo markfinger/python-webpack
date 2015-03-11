@@ -1,13 +1,7 @@
-import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 
 setting_overrides = getattr(settings, 'DJANGO_WEBPACK', {})
-
-BUNDLE_DIR = setting_overrides.get(
-    'BUNDLE_DIR',
-    'webpack',
-)
 
 BUNDLE_ROOT = setting_overrides.get(
     'BUNDLE_ROOT',
@@ -17,7 +11,6 @@ if BUNDLE_ROOT is None:
     raise ImproperlyConfigured(
         'DJANGO_WEBPACK[\'BUNDLE_ROOT\'] defaults to STATIC_ROOT, please define either'
     )
-BUNDLE_ROOT = os.path.join(BUNDLE_ROOT, BUNDLE_DIR)
 
 BUNDLE_URL = setting_overrides.get(
     'BUNDLE_URL',
@@ -32,6 +25,11 @@ if not BUNDLE_URL.endswith('/'):
         'URL settings (e.g. DJANGO_WEBPACK[\'BUNDLE_ROOT\']) must have a trailing slash'
     )
 BUNDLE_URL = settings.STATIC_URL
+
+BUNDLE_DIR = setting_overrides.get(
+    'BUNDLE_DIR',
+    'webpack',
+)
 
 WATCH_CONFIG_FILES = setting_overrides.get(
     'WATCH_CONFIG_FILES',
