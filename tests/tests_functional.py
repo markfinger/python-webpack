@@ -11,7 +11,7 @@ from .settings import STATIC_ROOT
 
 # The number of seconds that we delay while waiting for
 # file changes to be detected
-WATCH_WAIT = 2
+WATCH_WAIT = 10
 
 TEST_ROOT = os.path.dirname(__file__)
 
