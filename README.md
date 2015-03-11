@@ -125,51 +125,50 @@ WebpackBundle, django-webpack will attempt to use django's
 static file finders to resolve the file's location. 
 For example, `webpack('my_app/webpack.config.js')` could 
 match a file within an app's static directory - 
-eg: `<app>/static/my_app/webpack.config.js`.
+eg: `my_app/static/my_app/webpack.config.js`.
 
 
 Settings
 --------
 
-To change the settings, define a dictionary in your settings file.
+To change the settings, define a dictionary named `DJANGO_WEBPACK` in your settings file.
 
 ```python
 # For example, to turn off the watchers
 DJANGO_WEBPACK = {
-    'WATCH_CONFIG_FILES': False,
-    'WATCH_SOURCE_FILES': False,
+    'BUNDLE_ROOT': '/path/to/bundle/root',
 }
 ```
 
 ### DJANGO_WEBPACK['BUNDLE_ROOT']
 
-An absolute path to the directory which django-webpack will try to infer urls from.
+An absolute path to the directory which django-webpack will assume files are placed into.
 
 Defaults to `STATIC_ROOT`.
 
 ### DJANGO_WEBPACK['BUNDLE_URL']
 
-The url which is prepended to the paths of bundles relative to the BUNDLE_ROOT.
+The url which is prepended to the relative paths of bundles.
 
 Defaults to `STATIC_URL`.
 
 ### DJANGO_WEBPACK['BUNDLE_DIR']
 
-The directory which bundles are placed into within the `BUNDLE_ROOT`.
+The directory into which bundles are placed in the `BUNDLE_ROOT`.
 
 Defaults to `'webpack'`.
 
 ### DJANGO_WEBPACK['WATCH_CONFIG_FILES']
 
-Indicates that file watchers should be set on any config file passed in. Any changes in 
-the config file will cause the bundle to be rebuilt.
+A boolean flag which indicates that file watchers should be set to watch config
+files and rebuild the resulting bundle whenever it changes.
 
 Defaults to `DEBUG`.
 
 ### DJANGO_WEBPACK['WATCH_SOURCE_FILES']
 
-Indicates that webpack should watch your source code for any changes and rebuild the bundle 
-whenever any source file changes.
+A boolean flag which indicates that file watchers should be set to watch the bundle's
+source files and rebuild the bundle whenever it changes.
 
 Defaults to `DEBUG`.
 
@@ -185,5 +184,6 @@ python runtests.py
 # Note that the tests include functionality relating to file watching,
 # the behaviour of which is inconsistent across environments. If you
 # wish to suppress the file watching tests, the test runner takes an
-# optional argument --no-watch-tests
+# optional argument '--no-watch-tests', for example:
+# `python runtests.py --no-watch-tests`
 ```
