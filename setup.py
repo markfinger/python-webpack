@@ -5,11 +5,11 @@ VERSION = '3.0.0'
 setup(
     name='django-webpack',
     version=VERSION,
-    packages=['django_webpack'],
+    packages=['django_webpack', 'django_webpack.services'],
     package_data={
         'django_webpack': [
-            'bundle.js',
-            'package.json',
+            'services/package.json',
+            'services/webpack.js',
         ]
     },
     install_requires=[
