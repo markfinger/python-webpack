@@ -38,15 +38,8 @@ Documentation
 Installation
 ------------
 
-**Please note** that django-webpack is a work in progress. At 
-this point, you will likely need to `pip install` both django-webpack 
-and django-node from their respective `master` branches. The 
-PyPI versions of both are out of date and are unlikely to be 
-updated shortly due to their transitioning APIs.
-
 ```bash
-pip install -e git+ssh://git@github.com/markfinger/django-node.git#egg=django-node
-pip install -e git+ssh://git@github.com/markfinger/django-webpack.git#egg=django-webpack
+pip install django-webpack
 ```
 
 You will also need to add the following to your settings.
@@ -71,16 +64,6 @@ DJANGO_NODE = {
         'django_webpack.services',
     ),
 }
-```
-
-If you wish, you can install a more stable version of 
-django-webpack, however be aware that the performance 
-will be significantly slower and the configuration API 
-is completely different. Check this repository's tags 
-for the respective version's documentation.
-
-```bash
-pip install django-webpack
 ```
 
 
