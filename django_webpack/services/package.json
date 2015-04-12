@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "webpack-service": "^0.1.0"
+    "webpack-service": "^0.1.1"
   }
 }
