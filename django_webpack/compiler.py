@@ -14,10 +14,10 @@ service = WebpackService()
 
 
 class WebpackBundle(object):
-    output = None
+    stats = None
 
-    def __init__(self, output):
-        self.output = output
+    def __init__(self, stats):
+        self.stats = stats
 
     def render(self):
         """
@@ -29,19 +29,35 @@ class WebpackBundle(object):
             return mark_safe(''.join(scripts))
         return ''
 
+    def get_assets(self):
+        if self.stats:
+            assets = []
+            paths_to_assets = self.stats.get('pathsToAssets', {})
+            urls_to_assets = self.stats.get('urlsToAssets', {})
+            for asset in self.stats.get('assets', None):
+                name = asset['name']
+                assets.append({
+                    'name': name,
+                    'path': paths_to_assets.get(name, None),
+                    'url': urls_to_assets.get(name, None),
+                })
+            return assets
+
+    def get_paths(self):
+        """
+        Returns paths to the bundle's assets
+        """
+        return [asset['paths'] for asset in self.get_assets() if asset['paths']]
+
     def get_urls(self):
         """
         Returns urls to the bundle's assets
         """
-        assets = self.get_assets()
-        if assets:
-            return [asset['url'] for asset in assets]
-
-    def get_assets(self):
-        return self.output.get('assets', None)
+        return [asset['url'] for asset in self.get_assets() if asset['url']]
 
     def get_config(self):
-        return self.output.get('config', None)
+        if self.stats:
+            return self.stats.get('webpackConfig', None)
 
     def get_library(self):
         config = self.get_config()
@@ -65,26 +81,19 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
     if watch_source is None:
         watch_source = WATCH_SOURCE_FILES
 
-    output = service.compile(path_to_config, watch_config, watch_source)
+    stats = service.compile(path_to_config, watch_config, watch_source)
 
-    output_path = output['config']['output']['path']
+    stats['urlsToAssets'] = {}
 
     # Generate contextual information about the generated assets
-    output['assets'] = []
     path_to_bundle_dir = os.path.join(BUNDLE_ROOT, BUNDLE_DIR)
-    for asset in output['stats']['assets']:
-        path = os.path.join(output_path, asset['name'])
-        url = None
+    for asset, path in stats['pathsToAssets'].iteritems():
         if path_to_bundle_dir in path:
             rel_path = path[len(path_to_bundle_dir):]
             rel_url = pathname2url(rel_path)
             if rel_url[0] == '/':
                 rel_url = rel_url[1:]
             url = BUNDLE_URL + BUNDLE_DIR + '/' + rel_url
-        output['assets'].append({
-            'name': asset['name'],
-            'path': path,
-            'url': url,
-        })
+            stats['urlsToAssets'][asset] = url
 
-    return WebpackBundle(output)
+    return WebpackBundle(stats)

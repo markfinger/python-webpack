@@ -12,16 +12,16 @@ class WebpackService(BaseService):
 
     def compile(self, path_to_config, watch_config, watch_source):
         response = self.send(
-            path_to_config=path_to_config,
-            bundle_dir=os.path.join(BUNDLE_ROOT, BUNDLE_DIR),
-            watch_config=watch_config,
-            watch_source=watch_source,
-            output_full_stats=OUTPUT_FULL_STATS,
+            config=path_to_config,
+            watch=watch_source,
+            watchDelay=200,
+            watchConfig=watch_config,
+            cache=False,
+            fullStats=OUTPUT_FULL_STATS,
+            bundleDir=os.path.join(BUNDLE_ROOT, BUNDLE_DIR),
         )
 
-        output = json.loads(response.text)
-
-        stats = output['stats']
+        stats = json.loads(response.text)
 
         if stats['errors']:
             raise BundlingError('\n\n'.join([path_to_config] + stats['errors']))
@@ -29,4 +29,4 @@ class WebpackService(BaseService):
         if stats['warnings']:
             warnings.warn(stats['warnings'], Warning)
 
-        return output
+        return stats

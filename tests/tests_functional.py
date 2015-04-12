@@ -144,14 +144,14 @@ class TestDjangoWebpack(unittest.TestCase):
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
         bundle = webpack(PATH_TO_LIBRARY_CONFIG)
-        output = bundle.output
-        self.assertIn('stats', output)
-        self.assertIsInstance(output['stats'], dict)
-        self.assertIn('config', output)
-        self.assertIsInstance(output['config'], dict)
-        self.assertEqual(output['pathToConfig'], PATH_TO_LIBRARY_CONFIG)
-        self.assertEqual(output['watchSource'], False)
-        self.assertEqual(output['watchConfig'], False)
+        stats = bundle.stats
+        self.assertIsInstance(stats, dict)
+        self.assertIn('webpackConfig', stats)
+        self.assertIsInstance(stats['webpackConfig'], dict)
+        self.assertIn('pathsToAssets', stats)
+        self.assertIsInstance(stats['pathsToAssets'], dict)
+        self.assertIn('urlsToAssets', stats)
+        self.assertIsInstance(stats['urlsToAssets'], dict)
 
     def test_bundle_can_expose_its_config(self):
         bundle = webpack(PATH_TO_BASIC_CONFIG)
