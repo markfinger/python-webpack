@@ -6,6 +6,7 @@ else:
     from urllib.request import pathname2url
 from django.utils.safestring import mark_safe
 from django.contrib.staticfiles import finders
+from optional_django import six
 from .services import WebpackService
 from .exceptions import ConfigNotFound
 from .settings import BUNDLE_ROOT, BUNDLE_URL, BUNDLE_DIR, WATCH_CONFIG_FILES, WATCH_SOURCE_FILES
@@ -87,7 +88,7 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
 
     # Generate contextual information about the generated assets
     path_to_bundle_dir = os.path.join(BUNDLE_ROOT, BUNDLE_DIR)
-    for asset, path in stats['pathsToAssets'].iteritems():
+    for asset, path in six.iteritems(stats['pathsToAssets']):
         if path_to_bundle_dir in path:
             rel_path = path[len(path_to_bundle_dir):]
             rel_url = pathname2url(rel_path)
