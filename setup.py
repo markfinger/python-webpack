@@ -1,10 +1,9 @@
 from setuptools import setup
-
-VERSION = '3.0.1'
+import django_webpack
 
 setup(
     name='django-webpack',
-    version=VERSION,
+    version=django_webpack.VERSION,
     packages=['django_webpack', 'django_webpack.services'],
     package_data={
         'django_webpack': [
