@@ -1,4 +1,7 @@
--e git+ssh://git@github.com/markfinger/python-service-host.git@master#egg=service-host
+# Dependencies
+-e git+ssh://git@github.com/markfinger/python-service-host.git@45c969fce1f7d0b622a558d95f213f1894063a16#egg=service-host
 optional-django==0.2.1
 
+# Dev dependencies
+django
 nose==1.3.6

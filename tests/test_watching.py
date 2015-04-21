@@ -57,7 +57,7 @@ write_file(PATH_TO_WATCHED_SOURCE_AND_CONFIG_CONFIG, WATCHED_SOURCE_AND_CONFIG_C
 write_file(PATH_TO_WATCHED_SOURCE_AND_CONFIG_ENTRY, WATCHED_SOURCE_AND_CONFIG_ENTRY_CONTENT)
 
 
-class WatchTests(unittest.TestCase):
+class TestWatching(unittest.TestCase):
     _PRODUCTION = True
 
     @classmethod

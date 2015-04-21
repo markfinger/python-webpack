@@ -2,7 +2,7 @@ class ImproperlyConfigured(Exception):
     pass
 
 
-class ConfigNotFound(Exception):
+class ConfigFileNotFound(Exception):
     pass
 
 

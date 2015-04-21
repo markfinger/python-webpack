@@ -1,7 +1,7 @@
 import os
 import unittest
 from webpack.compiler import webpack, WebpackBundle
-from webpack.exceptions import ConfigNotFound
+from webpack.exceptions import ConfigFileNotFound
 from webpack.conf import settings
 from .utils import clean_bundle_root, read_file
 
@@ -14,7 +14,7 @@ PATH_TO_MULTIPLE_BUNDLES_CONFIG = os.path.join(BUNDLES, 'multiple_bundles', 'web
 PATH_TO_MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack.config.js')
 
 
-class BundleTests(unittest.TestCase):
+class TestBundles(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         clean_bundle_root()
@@ -24,7 +24,7 @@ class BundleTests(unittest.TestCase):
         clean_bundle_root()
 
     def test_bundle_raises_config_file_not_found_exception_for_nonexistent_config_files(self):
-        self.assertRaises(ConfigNotFound, webpack, '/file/that/does/not/exist.js')
+        self.assertRaises(ConfigFileNotFound, webpack, '/file/that/does/not/exist.js')
 
     def test_bundle_create_a_file_with_contents(self):
         bundle = webpack(PATH_TO_BASIC_CONFIG)
@@ -116,21 +116,6 @@ class BundleTests(unittest.TestCase):
         for url in urls:
             self.assertIn(url, bundle.render())
         self.assertEqual(rendered, '<script src="' + urls[0] + '"></script><script src="' + urls[1] + '"></script>')
-
-    # def test_bundle_can_resolve_files_via_the_django_static_file_finder(self):
-    #     bundle = webpack('test_app/webpack.config.js')
-    #     assets = bundle.get_assets()
-    #     self.assertTrue(len(assets), 1)
-    #     contents = read_file(assets[0]['path'])
-    #     self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
-    #     self.assertIn('__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__', contents)
-    #
-    # def test_bundle_urls_can_be_resolved_via_the_dev_servers_static_files(self):
-    #     bundle = webpack('test_app/webpack.config.js')
-    #     assets = bundle.get_assets()
-    #     self.assertTrue(len(assets), 1)
-    #     relative_url = assets[0]['url'].split('/static/')[-1]
-    #     self.assertEqual(finders.find(relative_url), assets[0]['path'])
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
         bundle = webpack(PATH_TO_LIBRARY_CONFIG)

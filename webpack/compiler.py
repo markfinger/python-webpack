@@ -9,7 +9,7 @@ else:
 from optional_django.safestring import mark_safe
 from optional_django import staticfiles
 from service_host.service import Service
-from .exceptions import ImproperlyConfigured, ConfigNotFound, BundlingError
+from .exceptions import ImproperlyConfigured, ConfigFileNotFound, BundlingError
 from .conf import settings
 
 service = Service(settings.SERVICE_NAME)
@@ -68,7 +68,7 @@ class WebpackBundle(object):
     get_var = get_library  # Convenience alias
 
 
-def webpack(path_to_config, watch_config=None, watch_source=None):
+def webpack(config_file, watch_config=None, watch_source=None):
     if not settings.BUNDLE_ROOT:
         raise ImproperlyConfigured(
             'webpack.conf.settings.BUNDLE_ROOT has not been defined. '
@@ -81,14 +81,14 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
             'Please specify the url that bundles will be served from'
         )
 
-    if not os.path.isabs(path_to_config):
-        absolute_path_to_config = staticfiles.find(path_to_config)
-        if not absolute_path_to_config:
-            raise ConfigNotFound(path_to_config)
-        path_to_config = absolute_path_to_config
+    if not os.path.isabs(config_file):
+        abs_path = staticfiles.find(config_file)
+        if not abs_path:
+            raise ConfigFileNotFound(config_file)
+        config_file = abs_path
 
-    if not os.path.exists(path_to_config):
-        raise ConfigNotFound(path_to_config)
+    if not os.path.exists(config_file):
+        raise ConfigFileNotFound(config_file)
 
     if watch_config is None:
         watch_config = settings.WATCH_CONFIG_FILES
@@ -97,7 +97,7 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
         watch_source = settings.WATCH_SOURCE_FILES
 
     res = service.call(
-        config=path_to_config,
+        config=config_file,
         watch=watch_source,
         watchDelay=200,
         watchConfig=watch_config,
@@ -109,7 +109,7 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
     stats = json.loads(res.text)
 
     if stats['errors']:
-        raise BundlingError('\n\n'.join([path_to_config] + stats['errors']))
+        raise BundlingError('\n\n'.join([config_file] + stats['errors']))
 
     if stats['warnings']:
         warnings.warn(stats['warnings'], Warning)
@@ -118,9 +118,9 @@ def webpack(path_to_config, watch_config=None, watch_source=None):
 
     # Generate contextual information about the generated assets
     path_to_bundle_dir = os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR)
-    for asset, path in six.iteritems(stats['pathsToAssets']):
-        if path_to_bundle_dir in path:
-            rel_path = path[len(path_to_bundle_dir):]
+    for asset, config_file in six.iteritems(stats['pathsToAssets']):
+        if path_to_bundle_dir in config_file:
+            rel_path = config_file[len(path_to_bundle_dir):]
             rel_url = pathname2url(rel_path)
             if rel_url[0] == '/':
                 rel_url = rel_url[1:]

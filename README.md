@@ -160,13 +160,10 @@ Running the tests
 -----------------
 
 ```bash
-mkvirtualenv django-webpack
+mkvirtualenv webpack
 pip install -r requirements.txt
+cd tests
+npm install
+cd ..
 python runtests.py
-
-# Note that the tests include functionality relating to file watching,
-# the behaviour of which is inconsistent across environments. If you
-# wish to suppress the file watching tests, the test runner takes an
-# optional argument '--no-watch-tests', for example:
-# `python runtests.py --no-watch-tests`
 ```

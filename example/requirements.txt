@@ -1,2 +1,3 @@
-django
-django-webpack==3.0.1
+flask==0.10.1
+-e git+ssh://git@github.com/markfinger/python-service-host.git@master#egg=service-host
+optional-django==0.2.1
