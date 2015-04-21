@@ -12,7 +12,6 @@ setup(
         ]
     },
     install_requires=[
-        'django',
         'django-node==4.0.0',
         'optional-django==0.1.0'
     ],
