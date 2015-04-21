@@ -1,6 +1,24 @@
 from django.core.files.storage import FileSystemStorage
 from django.contrib.staticfiles.finders import BaseStorageFinder
-from .settings import BUNDLE_ROOT, BUNDLE_URL
+from django.core.exceptions import ImproperlyConfigured
+from .conf import settings
+
+
+def validate_settings():
+    from django.conf import settings
+
+    finder_path = 'webpack.django_integration.WebpackFinder'
+
+    if (
+        ('staticfiles' in settings.INSTALLED_APPS or 'django.contrib.staticfiles' in settings.INSTALLED_APPS) and
+        finder_path not in settings.STATICFILES_FINDERS
+    ):
+        raise ImproperlyConfigured(
+            (
+                'When using webpack together with staticfiles, please add \'{}\' to the '
+                'STATICFILES_FINDERS setting.'
+            ).format(finder_path)
+        )
 
 
 class WebpackFileStorage(FileSystemStorage):
@@ -9,9 +27,9 @@ class WebpackFileStorage(FileSystemStorage):
     """
     def __init__(self, location=None, base_url=None, *args, **kwargs):
         if location is None:
-            location = BUNDLE_ROOT
+            location = settings.BUNDLE_ROOT
         if base_url is None:
-            base_url = BUNDLE_URL
+            base_url = settings.BUNDLE_URL
         super(WebpackFileStorage, self).__init__(location, base_url, *args, **kwargs)
 
 
@@ -24,5 +42,5 @@ class WebpackFinder(BaseStorageFinder):
     """
     storage = WebpackFileStorage
 
-    def list(self, ignore_patterns):
+    def list(self, *args, **kwargs):
         return []

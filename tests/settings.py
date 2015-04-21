@@ -1,28 +1,19 @@
 import os
+from service_host.conf import settings as service_host_settings
+from webpack.conf import settings as webpack_settings
 
-DEBUG = True
+TEST_ROOT = os.path.dirname(__file__)
 
-SECRET_KEY = '_'
-
-STATIC_URL = '/static/'
-
-STATIC_ROOT = os.path.join(os.path.dirname(__file__), 'static_root')
-
-INSTALLED_APPS = (
-    'django.contrib.staticfiles',
-    'tests.test_app',
+service_host_settings.configure(
+    PATH_TO_NODE_MODULES=os.path.join(TEST_ROOT, 'node_modules'),
+    CONFIG_FILE=os.path.join(TEST_ROOT, 'services.config.js'),
+    # Saves us from having to spin an instance up ourselves
+    USE_MANAGER=True,
+    # Ensure the host stops when the tests do
+    ON_EXIT_MANAGED_HOSTS_STOP_TIMEOUT=0,
 )
 
-STATICFILES_FINDERS = (
-    # Defaults
-    'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-    # Webpack finder
-    'django_webpack.staticfiles.WebpackFinder',
+webpack_settings.configure(
+    BUNDLE_ROOT=os.path.join(os.path.dirname(__file__), '__BUNDLE_ROOT__'),
+    BUNDLE_URL='/static/',
 )
-
-DJANGO_NODE = {
-    'SERVICES': (
-        'django_webpack.services',
-    ),
-}

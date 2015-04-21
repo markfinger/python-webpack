@@ -1,1 +1,0 @@
-module.exports = '__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__';

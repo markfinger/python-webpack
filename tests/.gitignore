@@ -1,3 +1,4 @@
+__BUNDLE_ROOT__
 watched_config_bundle/webpack.config.js
 watched_source_and_config_bundle/webpack.config.js
 watched_source_and_config_bundle/app/entry2.js

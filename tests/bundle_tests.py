@@ -1,39 +1,29 @@
 import os
 import unittest
-import shutil
-from django.contrib.staticfiles import finders
-from django_webpack.services import WebpackService
-from django_webpack.compiler import webpack, WebpackBundle
-from django_webpack.settings import BUNDLE_ROOT, BUNDLE_URL, BUNDLE_DIR
-from django_webpack.exceptions import ConfigNotFound
-from .settings import STATIC_ROOT
+from webpack.compiler import webpack, WebpackBundle
+from webpack.exceptions import ConfigNotFound
+from webpack.conf import settings
+from .utils import clean_bundle_root, read_file
 
 TEST_ROOT = os.path.dirname(__file__)
+BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
 
-PATH_TO_BASIC_CONFIG = os.path.join(TEST_ROOT, 'basic_bundle', 'webpack.config.js')
-PATH_TO_LIBRARY_CONFIG = os.path.join(TEST_ROOT, 'library_bundle', 'webpack.config.js')
-PATH_TO_MULTIPLE_BUNDLES_CONFIG = os.path.join(TEST_ROOT, 'multiple_bundles', 'webpack.config.js')
-PATH_TO_MULTIPLE_ENTRY_CONFIG = os.path.join(TEST_ROOT, 'multiple_entry_bundle', 'webpack.config.js')
-
-
-def write_file(file_name, content):
-    with open(file_name, 'w') as _file:
-        _file.write(content)
+PATH_TO_BASIC_CONFIG = os.path.join(BUNDLES, 'basic', 'webpack.config.js')
+PATH_TO_LIBRARY_CONFIG = os.path.join(BUNDLES, 'library', 'webpack.config.js')
+PATH_TO_MULTIPLE_BUNDLES_CONFIG = os.path.join(BUNDLES, 'multiple_bundles', 'webpack.config.js')
+PATH_TO_MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack.config.js')
 
 
-def read_file(file_name):
-    with open(file_name, 'r') as _file:
-        return _file.read()
+class BundleTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        clean_bundle_root()
 
-# Are we testing against a persistent service?
-if not WebpackService().get_server().test():
-    # Clean out any files generated from previous test runs
-    if os.path.exists(STATIC_ROOT):
-        shutil.rmtree(STATIC_ROOT)
+    @classmethod
+    def tearDownClass(cls):
+        clean_bundle_root()
 
-
-class TestDjangoWebpack(unittest.TestCase):
-    def test_bundle_raises_configfilenotfound_for_nonexistent_config_files(self):
+    def test_bundle_raises_config_file_not_found_exception_for_nonexistent_config_files(self):
         self.assertRaises(ConfigNotFound, webpack, '/file/that/does/not/exist.js')
 
     def test_bundle_create_a_file_with_contents(self):
@@ -43,10 +33,10 @@ class TestDjangoWebpack(unittest.TestCase):
         asset = assets[0]
         self.assertTrue(asset['name'].startswith('bundle-'))
         self.assertTrue(asset['name'].endswith('.js'))
-        self.assertEqual(asset['path'], os.path.join(BUNDLE_ROOT, BUNDLE_DIR, asset['name']))
+        self.assertEqual(asset['path'], os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR, asset['name']))
         self.assertTrue(os.path.exists(asset['path']))
-        self.assertTrue(os.path.exists(os.path.join(BUNDLE_ROOT, BUNDLE_DIR, asset['name'])))
-        self.assertEqual(BUNDLE_URL + BUNDLE_DIR + '/' + asset['name'], asset['url'])
+        self.assertTrue(os.path.exists(os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR, asset['name'])))
+        self.assertEqual(settings.BUNDLE_URL + settings.BUNDLE_DIR + '/' + asset['name'], asset['url'])
         contents = read_file(asset['path'])
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
         self.assertIn('__DJANGO_WEBPACK_REQUIRE_TEST__', contents)
@@ -127,20 +117,20 @@ class TestDjangoWebpack(unittest.TestCase):
             self.assertIn(url, bundle.render())
         self.assertEqual(rendered, '<script src="' + urls[0] + '"></script><script src="' + urls[1] + '"></script>')
 
-    def test_bundle_can_resolve_files_via_the_django_static_file_finder(self):
-        bundle = webpack('test_app/webpack.config.js')
-        assets = bundle.get_assets()
-        self.assertTrue(len(assets), 1)
-        contents = read_file(assets[0]['path'])
-        self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
-        self.assertIn('__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__', contents)
-
-    def test_bundle_urls_can_be_resolved_via_the_dev_servers_static_files(self):
-        bundle = webpack('test_app/webpack.config.js')
-        assets = bundle.get_assets()
-        self.assertTrue(len(assets), 1)
-        relative_url = assets[0]['url'].split('/static/')[-1]
-        self.assertEqual(finders.find(relative_url), assets[0]['path'])
+    # def test_bundle_can_resolve_files_via_the_django_static_file_finder(self):
+    #     bundle = webpack('test_app/webpack.config.js')
+    #     assets = bundle.get_assets()
+    #     self.assertTrue(len(assets), 1)
+    #     contents = read_file(assets[0]['path'])
+    #     self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
+    #     self.assertIn('__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__', contents)
+    #
+    # def test_bundle_urls_can_be_resolved_via_the_dev_servers_static_files(self):
+    #     bundle = webpack('test_app/webpack.config.js')
+    #     assets = bundle.get_assets()
+    #     self.assertTrue(len(assets), 1)
+    #     relative_url = assets[0]['url'].split('/static/')[-1]
+    #     self.assertEqual(finders.find(relative_url), assets[0]['path'])
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
         bundle = webpack(PATH_TO_LIBRARY_CONFIG)
@@ -158,14 +148,14 @@ class TestDjangoWebpack(unittest.TestCase):
         config = bundle.get_config()
         self.assertDictContainsSubset(
             {
-                'context': os.path.join(TEST_ROOT, 'basic_bundle', 'app'),
+                'context': os.path.join(BUNDLES, 'basic', 'app'),
                 'entry': './entry.js',
             },
             config
         )
         self.assertDictContainsSubset(
             {
-                'path': os.path.join(BUNDLE_ROOT, BUNDLE_DIR),
+                'path': os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR),
                 'filename': 'bundle-[hash].js'
             },
             config['output']
@@ -174,6 +164,6 @@ class TestDjangoWebpack(unittest.TestCase):
     def test_bundle_can_expose_its_library_config(self):
         bundle = webpack(PATH_TO_LIBRARY_CONFIG)
         self.assertEqual(bundle.get_library(), 'LIBRARY_TEST')
-
+        self.assertEqual(bundle.get_var(), 'LIBRARY_TEST')
         bundle = webpack(PATH_TO_MULTIPLE_BUNDLES_CONFIG)
         self.assertIsNone(bundle.get_library())

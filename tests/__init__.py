@@ -1,1 +1,4 @@
-__author__ = 'markfinger'
+__all__ = ()
+
+# Ensure the settings are defined before any tests run
+from .settings import *

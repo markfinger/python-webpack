@@ -4,19 +4,8 @@ python:
   - "2.7"
   - "3.4"
 
-env:
-  - DJANGO_VERSION=1.6.11
-  - DJANGO_VERSION=1.7.7
-  - DJANGO_VERSION=1.8
-
-matrix:
-  exclude:
-    - python: "3.4"
-      env: DJANGO_VERSION=1.6.10
-
 install:
   - "npm install -g npm"
-  - "pip install Django==$DJANGO_VERSION"
   - "pip install -r requirements.txt"
 
-script: python runtests.py --no-watch-tests
+script: python runtests.py
