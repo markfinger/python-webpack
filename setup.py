@@ -1,16 +1,10 @@
 from setuptools import setup
-import django_webpack
+import webpack
 
 setup(
-    name='django-webpack',
-    version=django_webpack.VERSION,
-    packages=['django_webpack', 'django_webpack.services'],
-    package_data={
-        'django_webpack': [
-            'services/package.json',
-            'services/webpack.js',
-        ]
-    },
+    name='webpack',
+    version=webpack.VERSION,
+    packages=['webpack'],
     install_requires=[
         'django-node==4.0.0',
         'optional-django==0.1.0'

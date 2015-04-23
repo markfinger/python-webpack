@@ -6,15 +6,14 @@ from settings import DEBUG, BASE_DIR
 app = Flask(__name__)
 app.debug = DEBUG
 
+# An absolute path to the bundle's config file
+webpack_config = os.path.join(BASE_DIR, 'static', 'js', 'webpack.config.js')
 
 @app.route('/')
-def hello():
-    # An absolute path to bundle's config file
-    webpack_config = os.path.join(BASE_DIR, 'static', 'js', 'webpack.config.js')
+def index():
 
-    # Call the compiler to either build the bundle or - if it has
-    # already been built - provide the details of the most recent
-    # build
+    # Call the compiler to either start building the bundle or provide the details
+    # of the most recent build
     bundle = webpack(webpack_config)
 
     return render_template('index.html', bundle=bundle)
