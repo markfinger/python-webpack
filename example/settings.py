@@ -22,9 +22,9 @@ webpack_settings.configure(
     # The root url that webpack will use to determine the urls to bundles
     BUNDLE_URL='/static/',
 
-    # In development, a watcher will rebuild a bundle whenever the config file changes
+    # In development, a watcher will rebuild a bundle whenever its config file changes
     WATCH_CONFIG_FILES=DEBUG,
 
-    # In development, a watcher will rebuild a bundle whenever the source files change
+    # In development, a watcher will rebuild a bundle whenever any of its source files change
     WATCH_SOURCE_FILES=DEBUG,
 )
