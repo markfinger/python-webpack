@@ -1,9 +1,13 @@
 Example
 =======
 
-A basic example illustrating how to integrate webpack into a python project.
+An example of how to integrate webpack into a python project.
 
-Uses flask, webpack, and service-host
+Uses:
+
+- flask
+- webpack
+- service-host
 
 
 Installation
