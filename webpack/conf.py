@@ -1,5 +1,4 @@
 from optional_django import conf
-from service_host.conf import settings as service_host_settings
 from .exceptions import ImproperlyConfigured
 
 
@@ -9,8 +8,8 @@ class Conf(conf.Conf):
     BUNDLE_ROOT = None
     BUNDLE_URL = None
     BUNDLE_DIR = 'webpack'
-    WATCH_CONFIG_FILES = not service_host_settings.PRODUCTION
-    WATCH_SOURCE_FILES = not service_host_settings.PRODUCTION
+    WATCH_CONFIG_FILES = False
+    WATCH_SOURCE_FILES = False
     OUTPUT_FULL_STATS = False
     SERVICE_NAME = 'webpack'
 

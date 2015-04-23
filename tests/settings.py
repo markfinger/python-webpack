@@ -5,11 +5,10 @@ from webpack.conf import settings as webpack_settings
 TEST_ROOT = os.path.dirname(__file__)
 
 service_host_settings.configure(
-    PATH_TO_NODE_MODULES=os.path.join(TEST_ROOT, 'node_modules'),
-    CONFIG_FILE=os.path.join(TEST_ROOT, 'services.config.js'),
-    # Saves us from having to spin up an instance ourselves
+    SOURCE_ROOT=TEST_ROOT,
+    # Let the manager spin up an instance
     USE_MANAGER=True,
-    # Ensure the host stops when the tests do
+    # Ensure the host stops when the python process does
     ON_EXIT_STOP_MANAGED_HOSTS_AFTER=0,
 )
 

@@ -1,5 +1,5 @@
 # Dependencies
--e git+ssh://git@github.com/markfinger/python-service-host.git@45c969fce1f7d0b622a558d95f213f1894063a16#egg=service-host
+-e git+ssh://git@github.com/markfinger/python-service-host.git@02d4775bd2361bbe6af39b8ae1c3094275fde296#egg=service-host
 optional-django==0.2.1
 
 # Dev dependencies
