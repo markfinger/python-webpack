@@ -125,17 +125,16 @@ def webpack(config_file, watch_config=None, watch_source=None):
     if stats['warnings']:
         warnings.warn(stats['warnings'], Warning)
 
-    stats['urlsToAssets'] = {}
-
     # Generate contextual information about the generated assets
+    stats['urlsToAssets'] = {}
     path_to_bundle_dir = os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR)
     for asset, config_file in six.iteritems(stats['pathsToAssets']):
         if path_to_bundle_dir in config_file:
             rel_path = config_file[len(path_to_bundle_dir):]
             rel_url = pathname2url(rel_path)
-            if rel_url[0] == '/':
+            if rel_url.startswith('/'):
                 rel_url = rel_url[1:]
-            url = settings.BUNDLE_URL + settings.BUNDLE_DIR + '/' + rel_url
+            url = '{}{}/{}'.format(settings.BUNDLE_URL, settings.BUNDLE_DIR, rel_url)
             stats['urlsToAssets'][asset] = url
 
     return WebpackBundle(stats)
