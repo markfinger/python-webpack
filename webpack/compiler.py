@@ -124,7 +124,9 @@ def webpack(config_file, watch_config=None, watch_source=None):
     stats = json.loads(res.text)
 
     if stats['errors']:
-        raise BundlingError('\n\n'.join([config_file] + stats['errors']))
+        raise BundlingError(
+            '{}\n\n{}'.format(config_file, '\n\n'.join(stats['errors']))
+        )
 
     if stats['warnings']:
         warnings.warn(stats['warnings'], WebpackWarning)
