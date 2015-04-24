@@ -76,6 +76,10 @@ class WebpackBundle(object):
     get_var = get_library  # Convenience alias
 
 
+class WebpackWarning(Warning):
+    pass
+
+
 def webpack(config_file, watch_config=None, watch_source=None):
     if not settings.BUNDLE_ROOT:
         raise ImproperlyConfigured(
@@ -123,7 +127,7 @@ def webpack(config_file, watch_config=None, watch_source=None):
         raise BundlingError('\n\n'.join([config_file] + stats['errors']))
 
     if stats['warnings']:
-        warnings.warn(stats['warnings'], Warning)
+        warnings.warn(stats['warnings'], WebpackWarning)
 
     # Generate contextual information about the generated assets
     stats['urlsToAssets'] = {}
