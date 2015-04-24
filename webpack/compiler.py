@@ -11,7 +11,7 @@ else:
     from urllib.request import pathname2url
 from optional_django.safestring import mark_safe
 from optional_django import staticfiles
-from .exceptions import ImproperlyConfigured, ConfigFileNotFound, BundlingError
+from .exceptions import ImproperlyConfigured, ConfigFileNotFound, BundlingError, WebpackWarning
 from .conf import settings
 
 service = Service(settings.SERVICE_NAME)
@@ -74,10 +74,6 @@ class WebpackBundle(object):
         if config and 'output' in config:
             return config['output'].get('library', None)
     get_var = get_library  # Convenience alias
-
-
-class WebpackWarning(Warning):
-    pass
 
 
 def webpack(config_file, watch_config=None, watch_source=None):

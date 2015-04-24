@@ -8,3 +8,7 @@ class ConfigFileNotFound(Exception):
 
 class BundlingError(Exception):
     pass
+
+
+class WebpackWarning(Warning):
+    pass
