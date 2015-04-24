@@ -1,3 +1,5 @@
+# Django hook to validate the settings on startup
+
 from optional_django.env import DJANGO_CONFIGURED
 
 if DJANGO_CONFIGURED:

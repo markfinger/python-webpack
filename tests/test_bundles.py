@@ -1,5 +1,6 @@
 import os
 import unittest
+from optional_django import six
 from webpack.compiler import webpack, WebpackBundle
 from webpack.exceptions import ConfigFileNotFound
 from webpack.conf import settings
@@ -59,6 +60,12 @@ class TestBundles(unittest.TestCase):
         rendered = bundle.render()
         self.assertIn(urls[0], rendered)
         self.assertEqual(rendered, '<script src="' + urls[0] + '"></script>')
+
+    def test_bundle_renders_itself_when_coerced_to_strings(self):
+        bundle = webpack(PATH_TO_BASIC_CONFIG)
+        self.assertEqual(str(bundle), bundle.render())
+        if six.PY2:
+            self.assertEqual(unicode(bundle), unicode(bundle.render()))
 
     def test_bundle_can_handle_a_bundle_with_multiple_entries(self):
         bundle = webpack(PATH_TO_MULTIPLE_ENTRY_CONFIG)

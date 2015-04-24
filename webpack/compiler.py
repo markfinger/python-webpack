@@ -21,6 +21,12 @@ class WebpackBundle(object):
     def __init__(self, stats):
         self.stats = stats
 
+    def __str__(self):
+        return mark_safe(self.render())
+
+    def __unicode__(self):
+        return mark_safe(unicode(self.render()))
+
     def render(self):
         """
         Returns HTML script elements pointing to the bundle's assets
