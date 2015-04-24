@@ -57,7 +57,7 @@ class WebpackBundle(object):
         """
         Returns paths to the bundle's assets
         """
-        return [asset['paths'] for asset in self.get_assets() if asset['paths']]
+        return [asset['path'] for asset in self.get_assets() if asset['path']]
 
     def get_urls(self):
         """

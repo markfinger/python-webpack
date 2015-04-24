@@ -32,6 +32,8 @@ class TestBundles(unittest.TestCase):
         assets = bundle.get_assets()
         self.assertEqual(len(assets), 1)
         asset = assets[0]
+        paths = bundle.get_paths()
+        self.assertEqual(paths[0], asset['path'])
         self.assertTrue(asset['name'].startswith('bundle-'))
         self.assertTrue(asset['name'].endswith('.js'))
         self.assertEqual(asset['path'], os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR, asset['name']))
