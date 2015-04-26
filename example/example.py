@@ -9,6 +9,7 @@ app.debug = DEBUG
 # An absolute path to the bundle's config file
 webpack_config = os.path.join(BASE_DIR, 'static', 'js', 'webpack.config.js')
 
+
 @app.route('/')
 def index():
 

@@ -1,7 +1,7 @@
 var webpackService = require('webpack-service');
 
 module.exports = {
-	services: {
+	functions: {
 		webpack: webpackService
 	}
 };

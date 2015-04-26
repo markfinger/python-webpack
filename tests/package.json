@@ -1,8 +1,8 @@
 {
   "private": true,
   "dependencies": {
+    "js-host": "^0.4.0",
     "webpack": "^1.8.8",
-    "webpack-service": "^0.1.1",
-    "service-host": "git+https://git@github.com/markfinger/service-host#c26dd63074536dfdb3fbf0bfc7904b2cbe223613"
+    "webpack-service": "^0.1.1"
   }
 }

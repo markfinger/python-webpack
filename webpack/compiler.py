@@ -2,8 +2,8 @@ import json
 import os
 import sys
 import warnings
-from service_host.service import Service
-from service_host.exceptions import ServiceError
+from js_host.function import Function
+from js_host.exceptions import JSFunctionError
 from optional_django import six
 if six.PY2:
     from urllib import pathname2url
@@ -14,7 +14,7 @@ from optional_django import staticfiles
 from .exceptions import ImproperlyConfigured, ConfigFileNotFound, BundlingError, WebpackWarning
 from .conf import settings
 
-service = Service(settings.SERVICE_NAME)
+function = Function(settings.SERVICE_NAME)
 
 
 class WebpackBundle(object):
@@ -105,7 +105,7 @@ def webpack(config_file, watch_config=None, watch_source=None):
         watch_source = settings.WATCH_SOURCE_FILES
 
     try:
-        res = service.call(
+        output = function.call(
             config=config_file,
             watch=watch_source,
             watchDelay=200,
@@ -114,10 +114,10 @@ def webpack(config_file, watch_config=None, watch_source=None):
             fullStats=settings.OUTPUT_FULL_STATS,
             bundleDir=os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR),
         )
-    except ServiceError as e:
+    except JSFunctionError as e:
         raise six.reraise(BundlingError, BundlingError(*e.args), sys.exc_info()[2])
 
-    stats = json.loads(res.text)
+    stats = json.loads(output)
 
     if stats['errors']:
         raise BundlingError(

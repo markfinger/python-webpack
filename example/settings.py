@@ -1,12 +1,12 @@
 import os
-from service_host.conf import settings as service_host_settings
+from js_host.conf import settings as js_host_settings
 from webpack.conf import settings as webpack_settings
 
 DEBUG = True
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-service_host_settings.configure(
+js_host_settings.configure(
     CACHE=not DEBUG,
     USE_MANAGER=DEBUG,
     SOURCE_ROOT=BASE_DIR,

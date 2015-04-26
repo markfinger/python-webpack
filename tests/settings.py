@@ -1,11 +1,11 @@
 import os
-from service_host.conf import settings as service_host_settings
+from js_host.conf import settings as js_host_settings
 from webpack.conf import settings as webpack_settings
 
-TEST_ROOT = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(__file__)
 
-service_host_settings.configure(
-    SOURCE_ROOT=TEST_ROOT,
+js_host_settings.configure(
+    SOURCE_ROOT=BASE_DIR,
     # Let the manager spin up an instance
     USE_MANAGER=True,
     # Ensure the host stops when the python process does
@@ -13,6 +13,6 @@ service_host_settings.configure(
 )
 
 webpack_settings.configure(
-    BUNDLE_ROOT=os.path.join(os.path.dirname(__file__), '__BUNDLE_ROOT__'),
+    BUNDLE_ROOT=os.path.join(BASE_DIR, '__BUNDLE_ROOT__'),
     BUNDLE_URL='/static/',
 )

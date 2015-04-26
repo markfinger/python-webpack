@@ -3,11 +3,7 @@ Example
 
 An example of how to integrate webpack into a python project.
 
-Uses:
-
-- flask
-- webpack
-- service-host
+Uses flask, webpack, and js-host.
 
 
 Installation
@@ -24,7 +20,7 @@ Run the example
 ---------------
 
 ```bash
-python main.py
+python example.py
 ```
 
 Visit http://127.0.0.1:5000

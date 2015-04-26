@@ -1,9 +1,8 @@
 import os
 import unittest
 import time
-from service_host.conf import settings as service_host_settings
-from webpack.compiler import webpack, service
-from webpack.conf import settings
+from js_host.conf import settings as js_host_settings
+from webpack.compiler import webpack, function
 from .utils import write_file, read_file, clean_bundle_root
 
 # The number of seconds that we delay while waiting for
@@ -67,23 +66,22 @@ class TestWatching(unittest.TestCase):
         # These tests ensure the function of dev tools, so we turn off
         # parts of the production config, namely the cache, so that the
         # tests will pass
-        service_host_settings._unlock()
-        service_host_settings.CACHE = False
-        service_host_settings._lock()
+        js_host_settings._unlock()
+        js_host_settings.CACHE = False
+        js_host_settings._lock()
 
-        assert not service.is_cacheable()
+        assert not function.is_cacheable()
 
     @classmethod
     def tearDownClass(cls):
         clean_bundle_root()
 
-        # The tests have completed, reset service-host back to a PRODUCTION
-        # configuration
-        service_host_settings._unlock()
-        service_host_settings.CACHE = True
-        service_host_settings._lock()
+        # The tests have completed, undo the changes to js-host's conf
+        js_host_settings._unlock()
+        js_host_settings.CACHE = True
+        js_host_settings._lock()
 
-        assert service.is_cacheable()
+        assert function.is_cacheable()
 
     def test_config_file_can_be_watched_to_rebuild_the_bundle(self):
         self.assertIn('./entry1.js', WATCHED_CONFIG_CONTENT)
