@@ -45,3 +45,11 @@ OUTPUT_FULL_STATS = setting_overrides.get(
     'OUTPUT_FULL_STATS',
     False,
 )
+
+TAG_TEMPLATES = setting_overrides.get(
+    'TAG_TEMPLATES',
+    {
+        'css': '<link rel="stylesheet" href="{url}">',
+        'js': '<script src="{url}"></script>',
+    }
+)
