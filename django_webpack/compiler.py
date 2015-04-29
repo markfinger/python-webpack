@@ -9,7 +9,8 @@ from django.contrib.staticfiles import finders
 from optional_django import six
 from .services import WebpackService
 from .exceptions import ConfigNotFound
-from .settings import BUNDLE_ROOT, BUNDLE_URL, BUNDLE_DIR, WATCH_CONFIG_FILES, WATCH_SOURCE_FILES
+from .settings import (BUNDLE_ROOT, BUNDLE_URL, BUNDLE_DIR, WATCH_CONFIG_FILES,
+                       WATCH_SOURCE_FILES, TAG_TEMPLATES)
 
 service = WebpackService()
 
@@ -26,9 +27,16 @@ class WebpackBundle(object):
         """
         urls = self.get_urls()
         if urls:
-            scripts = ['<script src="{url}"></script>'.format(url=url) for url in urls]
-            return mark_safe(''.join(scripts))
+            for url in urls:
+                assets = [self.render_tag(url) for url in urls]
+            return mark_safe(''.join(assets))
         return ''
+
+    def render_tag(self, url):
+        ext = url.split('.')[-1]
+        if ext not in TAG_TEMPLATES:
+            return '<!-- django-webpack: unknown type of file {url} -->'.format(url=url)
+        return TAG_TEMPLATES[ext].format(url=url)
 
     def get_assets(self):
         if self.stats:
