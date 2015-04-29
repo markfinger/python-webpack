@@ -4,7 +4,7 @@ django-webpack
 [![Build Status](https://travis-ci.org/markfinger/django-webpack.svg?branch=master)](https://travis-ci.org/markfinger/django-webpack)
 
 Generate webpack bundles from your
-[webpack config files](webpack.github.io/docs/configuration.html).
+[webpack config files](https://webpack.github.io/docs/configuration.html).
 
 ```python
 from django_webpack.compiler import webpack

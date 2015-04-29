@@ -35,9 +35,15 @@ class WebpackBundle(object):
         """
         urls = self.get_urls()
         if urls:
-            scripts = ['<script src="{url}"></script>'.format(url=url) for url in urls]
-            return mark_safe(''.join(scripts))
+            return mark_safe(''.join([self.render_tag(url) for url in urls]))
         return ''
+
+    @staticmethod
+    def render_tag(url):
+        ext = url.split('.')[-1]
+        if ext not in settings.TAG_TEMPLATES:
+            ext = 'js'
+        return settings.TAG_TEMPLATES[ext].format(url=url)
 
     def get_assets(self):
         if self.stats:
