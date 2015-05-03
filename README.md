@@ -1,13 +1,16 @@
-django-webpack
+python-webpack
 ==============
 
-[![Build Status](https://travis-ci.org/markfinger/django-webpack.svg?branch=master)](https://travis-ci.org/markfinger/django-webpack)
+[![Build Status](https://travis-ci.org/markfinger/python-webpack.svg?branch=master)](https://travis-ci.org/markfinger/python-webpack)
 
-Generate webpack bundles from your
-[webpack config files](https://webpack.github.io/docs/configuration.html).
+Python bindings to [webpack](https://webpack.github.io). Bundles your assets so they can be reused on the
+client-side. Watches your source files and config files for changes, and rebuilds them in the background.
+
+Just point webpack at your [config files](https://webpack.github.io/docs/configuration.html) and plug
+the rendered &gt;script&lt; elements into the client-side.
 
 ```python
-from django_webpack.compiler import webpack
+from webpack.compiler import webpack
 
 bundle = webpack('path/to/webpack.config.js')
 
@@ -15,23 +18,14 @@ bundle = webpack('path/to/webpack.config.js')
 bundle.render()
 ```
 
-Behind the scenes, your config and source files are watched and 
-every time a change is detected the bundle will be rebuilt ready 
-for the next request. If a request comes in while the bundle is
-being rebuilt, webpack will block until the process has completed.
-
 
 Documentation
 -------------
 
 - [Installation](#installation)
-- [Usage](#usage)
 - [Settings](#settings)
-  - [BUNDLE_ROOT](#django_webpackbundle_root)
-  - [BUNDLE_URL](#django_webpackbundle_url)
-  - [BUNDLE_DIR](#django_webpackbundle_dir)
-  - [WATCH_CONFIG_FILES](#django_webpackwatch_config_files)
-  - [WATCH_SOURCE_FILES](#django_webpackwatch_source_files)
+- [Settings for Django projects](#settings-for-django-projects)
+- [Usage](#usage)
 - [Running the tests](#running-the-tests)
 
 
@@ -39,59 +33,179 @@ Installation
 ------------
 
 ```bash
-pip install django-webpack
+pip install webpack
 ```
 
-You will also need to add the following to your settings.
+[Install python-js-host](https://github.com/markfinger/python-js-host/#installation) and complete 
+the [quick start](https://github.com/markfinger/python-js-host/#quick-start) to configure a JavaScript
+environment that your python code can talk to.
+
+Install the JavaScript packages [webpack](https://webpack.github.io) and 
+[webpack-service](https://github.com/markfinger/webpack-service).
+
+```bash
+npm install --save webpack webpack-service
+```
+
+In your `host.config.js` file, add `webpackService` to your `functions` definition as `webpack`. For example
+
+```javascript
+var webpackService = require('webpack-service');
+
+module.exports = {
+	functions: {
+	  // ...
+		webpack: webpackService
+	}
+};
+```
+
+
+Settings
+--------
+
+If you are using this library in a Django project, please refer to the 
+[settings for Django projects](#settings-for-django-projects) section of the documentation.
+
+For non-Django systems, settings can be defined by importing `webpack.conf.settings` and calling 
+its `configure` method with keyword arguments matching the name of the setting that you want to 
+define. For example
+
+```
+from webpack.conf import settings
+
+DEBUG = True
+
+settings.configure(
+    BUNDLE_ROOT='/path/to/your/projects/static_root',
+    BUNDLE_URL='/static/',
+    WATCH_CONFIG_FILES=DEBUG,
+    WATCH_SOURCE_FILES=DEBUG,
+)
+```
+
+
+### BUNDLE_ROOT
+
+An absolute path to your location that you want your bundles placed into.
+
+For example, `'/path/to/your/projects/static_root'`.
+
+This setting **must** be defined.
+
+Default: `None`
+
+
+### BUNDLE_URL
+
+The root url that your static assets are served from.
+
+For example, `'/static/`.
+
+This setting **must** be defined.
+
+Default: `None`
+
+
+### BUNDLE_DIR
+
+The directory into which bundles are placed in the `BUNDLE_ROOT`.
+
+Default: `'webpack'`
+
+
+### WATCH_CONFIG_FILES
+
+A boolean flag which indicates that file watchers should be set to watch config files and 
+rebuild the resulting bundle whenever it changes.
+
+Default: `False`
+
+
+### WATCH_SOURCE_FILES
+
+A boolean flag which indicates that file watchers should be set to watch the bundle's
+source files and rebuild the bundle whenever it changes.
+
+Default: `False`
+
+
+### WATCH_DELAY
+
+The number of milliseconds before any changes to your source files will trigger the bundle
+to be rebuilt.
+
+Default: `200`
+
+
+Settings for Django projects
+----------------------------
+
+The following configuration should be placed in your settings files to enable webpack to function 
+seamlessly in a Django project.
+
+Add `'webpack'` to your `INSTALLED_APPS`
 
 ```python
-# in settings.py
-
 INSTALLED_APPS = (
     # ...
-    'django_node',
-    'django_webpack',
+    'webpack',
 )
+```
 
+Add `'webpack.django_integration.WebpackFinder'` to your `STATICFILES_FINDERS`
+
+```python
 STATICFILES_FINDERS = (
     # ...
-    'django_webpack.staticfiles.WebpackFinder',
+    'webpack.django_integration.WebpackFinder',
 )
+```
 
-# Instruct django-node to host the webpack service
-DJANGO_NODE = {
-    'SERVICES': (
-        'django_webpack.services',
-    ),
+Add the following to inform webpack to respect your Django project's configuration
+
+```python
+WEBPACK = {
+    BUNDLE_ROOT: STATIC_ROOT,
+    BUNDLE_URL: STATIC_URL,
+    WATCH_CONFIG_FILES: DEBUG,
+    WATCH_SOURCE_FILES: DEBUG,
 }
 ```
+
+Note: when you specify a path to a config file, you can provide a relative path to a config file 
+and webpack will use django's static file finders to resolve the file's location. For example, 
+`webpack('my_app/webpack.config.js')` could match a file within an app's static directory, 
+eg: `my_app/static/my_app/webpack.config.js`.
 
 
 Usage
 -----
 
 ```python
-from django_webpack.compiler import webpack
+from webpack.compiler import webpack
 
-bundle = webpack('path/to/webpack.config.js')
+bundle = webpack('/path/to/webpack.config.js')
+
+# Returns a string containing <script> elements pointing to each asset
+bundle.render()
 
 # An object providing information about the compilation process
 bundle.output
 
 # Returns a list of objects containing names and paths
-assets = bundle.get_assets()
+bundle.get_assets()
 
 # Returns a list of urls pointing to each asset
-urls = bundle.get_urls()
+bundle.get_urls()
 
-# Returns a string containing <script> elements pointing to each asset
-html = bundle.render()
+# Returns a string matching the `library` property of your config file
+bundle.get_library()
 ```
 
-A helper is provided for [configuring](webpack.github.io/docs/configuration.html) 
-your bundle's output path, the substring `[bundle_dir]` 
-will be replaced with a path to the static directory where 
-django-webpack looks for generated files.
+A helper is provided for configuring your bundle's output path: the substring `[bundle_dir]` 
+will be replaced with an absolute path generated by joining your `BUNDLE_ROOT` and `BUNDLE_DIR`
+settings.
 
 ```javascript
 module.exports = {
@@ -103,64 +217,11 @@ module.exports = {
 };
 ```
 
-If you provide a relative path to a config file to a 
-WebpackBundle, django-webpack will attempt to use django's 
-static file finders to resolve the file's location. 
-For example, `webpack('my_app/webpack.config.js')` could 
-match a file within an app's static directory - 
-eg: `my_app/static/my_app/webpack.config.js`.
-
-
-Settings
---------
-
-To change the settings, define a dictionary named `DJANGO_WEBPACK` in your settings file.
-
-```python
-# For example, to turn off the watchers
-DJANGO_WEBPACK = {
-    'BUNDLE_ROOT': '/path/to/bundle/root',
-}
-```
-
-### DJANGO_WEBPACK['BUNDLE_ROOT']
-
-An absolute path to the directory which django-webpack will assume files are placed into.
-
-Defaults to `STATIC_ROOT`.
-
-### DJANGO_WEBPACK['BUNDLE_URL']
-
-The url which is prepended to the relative paths of bundles.
-
-Defaults to `STATIC_URL`.
-
-### DJANGO_WEBPACK['BUNDLE_DIR']
-
-The directory into which bundles are placed in the `BUNDLE_ROOT`.
-
-Defaults to `'webpack'`.
-
-### DJANGO_WEBPACK['WATCH_CONFIG_FILES']
-
-A boolean flag which indicates that file watchers should be set to watch config
-files and rebuild the resulting bundle whenever it changes.
-
-Defaults to `DEBUG`.
-
-### DJANGO_WEBPACK['WATCH_SOURCE_FILES']
-
-A boolean flag which indicates that file watchers should be set to watch the bundle's
-source files and rebuild the bundle whenever it changes.
-
-Defaults to `DEBUG`.
-
 
 Running the tests
 -----------------
 
 ```bash
-mkvirtualenv webpack
 pip install -r requirements.txt
 cd tests
 npm install
