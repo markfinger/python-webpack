@@ -71,8 +71,8 @@ Settings
 If you are using this library in a Django project, please refer to the 
 [settings for Django projects](#settings-for-django-projects) section of the documentation.
 
-For non-Django systems, settings can be defined by importing `webpack.conf.settings` and calling 
-its `configure` method with keyword arguments matching the name of the setting that you want to 
+In normal python systems, settings can be defined by importing `webpack.conf.settings` and calling 
+the `configure` method with keyword arguments matching the name of the setting that you want to 
 define. For example
 
 ```
@@ -91,7 +91,7 @@ settings.configure(
 
 ### BUNDLE_ROOT
 
-An absolute path to your location that you want your bundles placed into.
+An absolute path to a directory where you static assets are served from.
 
 For example, `'/path/to/your/projects/static_root'`.
 
@@ -121,7 +121,7 @@ Default: `'webpack'`
 ### WATCH_CONFIG_FILES
 
 A boolean flag which indicates that file watchers should be set to watch config files and 
-rebuild the resulting bundle whenever it changes.
+rebuild the resulting bundle whenever it changes. Set this to `True` in development.
 
 Bundles are rebuilt in the background. If webpack is still rebuilding when a request comes in, it will 
 block until the build has completed.
@@ -132,7 +132,7 @@ Default: `False`
 ### WATCH_SOURCE_FILES
 
 A boolean flag which indicates that file watchers should be set to watch the bundle's
-source files and rebuild the bundle whenever it changes.
+source files and rebuild the bundle whenever it changes. Set this to `True` in development.
 
 Bundles are rebuilt in the background. If webpack is still rebuilding when a request comes in, it will 
 block until the build has completed.
@@ -197,16 +197,17 @@ from webpack.compiler import webpack
 
 bundle = webpack('/path/to/webpack.config.js')
 
-# Returns a string containing <script> elements pointing to each asset
+# Returns a string containing <script> and <link> elements pointing 
+# to the generated assets
 bundle.render()
 
 # An object providing information about the compilation process
 bundle.output
 
-# Returns a list of objects containing names and paths
+# Returns the paths and urls to the generated assets
 bundle.get_assets()
 
-# Returns a list of urls pointing to each asset
+# Returns urls pointing to the generated assets
 bundle.get_urls()
 
 # Returns a string matching the `library` property of your config file
