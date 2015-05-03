@@ -1,4 +1,5 @@
 import os
+from js_host import verbosity
 from js_host.conf import settings as js_host_settings
 from webpack.conf import settings as webpack_settings
 
@@ -8,6 +9,7 @@ js_host_settings.configure(
     SOURCE_ROOT=BASE_DIR,
     # Let the manager spin up an instance
     USE_MANAGER=True,
+    VERBOSITY=verbosity.SILENT,
 )
 
 webpack_settings.configure(

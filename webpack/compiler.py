@@ -80,7 +80,7 @@ class WebpackBundle(object):
     get_var = get_library  # Convenience alias
 
 
-js_host_function = Function(settings.FUNCTION_NAME)
+js_host_function = Function(settings.JS_HOST_FUNCTION)
 
 
 def webpack(config_file, watch_config=None, watch_source=None):
