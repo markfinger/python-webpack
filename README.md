@@ -16,7 +16,8 @@ from webpack.compiler import webpack
 
 bundle = webpack('/path/to/webpack.config.js')
 
-# Returns a string containing <script> and <link> elements pointing to the bundle's assets
+# Returns a string containing <script> and <link> elements 
+# pointing to the bundle's assets
 bundle.render()
 ```
 
@@ -38,9 +39,10 @@ Installation
 pip install webpack
 ```
 
-[Install python-js-host](https://github.com/markfinger/python-js-host/#installation) and complete 
-the [quick start](https://github.com/markfinger/python-js-host/#quick-start) to configure a JavaScript
-environment that your python code can talk to.
+python-webpack depends on [js-host](https://github.com/markfinger/python-js-host/) to provide a 
+JavaScript environment that python can interact with. 
+[Install](https://github.com/markfinger/python-js-host/#installation) the library and complete the 
+[quick start](https://github.com/markfinger/python-js-host/#quick-start).
 
 Install the JavaScript packages [webpack](https://webpack.github.io) and 
 [webpack-service](https://github.com/markfinger/webpack-service).
@@ -55,10 +57,10 @@ In your `host.config.js` file, add `webpackService` to your `functions` definiti
 var webpackService = require('webpack-service');
 
 module.exports = {
-	functions: {
-	  // ...
-		webpack: webpackService
-	}
+  functions: {
+    // ...
+    webpack: webpackService
+  }
 };
 ```
 
