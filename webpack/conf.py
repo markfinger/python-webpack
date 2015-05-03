@@ -11,11 +11,11 @@ class Conf(conf.Conf):
     WATCH_CONFIG_FILES = False
     WATCH_SOURCE_FILES = False
     OUTPUT_FULL_STATS = False
-    SERVICE_NAME = 'webpack'
     TAG_TEMPLATES = {
         'css': '<link rel="stylesheet" href="{url}">',
         'js': '<script src="{url}"></script>',
     }
+    FUNCTION_NAME = 'webpack'
 
     def configure(self, **kwargs):
         super(Conf, self).configure(**kwargs)

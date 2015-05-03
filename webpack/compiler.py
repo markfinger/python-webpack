@@ -3,7 +3,7 @@ import os
 import sys
 import warnings
 from js_host.function import Function
-from js_host.exceptions import JSFunctionError
+from js_host.exceptions import FunctionError
 from optional_django import six
 if six.PY2:
     from urllib import pathname2url
@@ -13,8 +13,6 @@ from optional_django.safestring import mark_safe
 from optional_django import staticfiles
 from .exceptions import ImproperlyConfigured, ConfigFileNotFound, BundlingError, WebpackWarning
 from .conf import settings
-
-function = Function(settings.SERVICE_NAME)
 
 
 class WebpackBundle(object):
@@ -82,6 +80,9 @@ class WebpackBundle(object):
     get_var = get_library  # Convenience alias
 
 
+js_host_function = Function(settings.FUNCTION_NAME)
+
+
 def webpack(config_file, watch_config=None, watch_source=None):
     if not settings.BUNDLE_ROOT:
         raise ImproperlyConfigured(
@@ -111,7 +112,7 @@ def webpack(config_file, watch_config=None, watch_source=None):
         watch_source = settings.WATCH_SOURCE_FILES
 
     try:
-        output = function.call(
+        output = js_host_function.call(
             config=config_file,
             watch=watch_source,
             watchDelay=200,
@@ -120,7 +121,7 @@ def webpack(config_file, watch_config=None, watch_source=None):
             fullStats=settings.OUTPUT_FULL_STATS,
             bundleDir=os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR),
         )
-    except JSFunctionError as e:
+    except FunctionError as e:
         raise six.reraise(BundlingError, BundlingError(*e.args), sys.exc_info()[2])
 
     stats = json.loads(output)
