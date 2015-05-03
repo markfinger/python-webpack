@@ -5,18 +5,18 @@ python-webpack
 
 Python bindings to [webpack](https://webpack.github.io). 
 
-Bundles your assets so they can be reused on the client-side. Watches your files for changes and rebuilds the
-bundle whenever they change.
+Bundles your assets so that they can be reused on the client-side. Watches your files for changes and 
+rebuilds the bundle whenever they change.
 
 Just point webpack at your [config files](https://webpack.github.io/docs/configuration.html) and plug
-the rendered &gt;script&lt; elements into the client-side.
+the rendered elements into the client-side.
 
 ```python
 from webpack.compiler import webpack
 
-bundle = webpack('path/to/webpack.config.js')
+bundle = webpack('/path/to/webpack.config.js')
 
-# Returns a string containing <script> elements pointing to the bundle
+# Returns a string containing <script> and <link> elements pointing to the bundle's assets
 bundle.render()
 ```
 
