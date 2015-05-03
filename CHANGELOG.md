@@ -1,5 +1,35 @@
-Changelog
-=========
+Change log
+==========
+
+### 4.0.0 (3/5/2015)
+
+- Renamed the project from django-webpack to python-webpack.
+- The django dependency is no longer required, comparable functionality is still preserved if you choose
+  to use django.
+- The project is now imported as `webpack`, formerly it was `django_webpack`.
+- Ported the JS dependency from django-node to js-host.
+- The django staticfiles helpers are now located in `webpack.django_integration`.
+
+### 3.1.0 (21/4/2015)
+
+- Bug fixes and improvements to the JS service
+
+### 3.0.1 (1/4/2015)
+
+- The API is now oriented around config files, rather than programmatically generating config. 
+- Updated django-node dependency to latest
+
+### 2.1.2 (1/2/2015)
+
+- Updated django-node dependency to latest
+
+### 2.1.1 (1/2/2015)
+
+- Updated django-node dependency to latest
+
+### 2.1.0 (1/2/2015)
+
+- Python 3 fixes
 
 ### 2.0.0 (26/12/2014)
 
