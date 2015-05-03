@@ -15,6 +15,8 @@ class Conf(conf.Conf):
 
     WATCH_SOURCE_FILES = False
 
+    WATCH_DELAY = 200
+    
     OUTPUT_FULL_STATS = False
 
     TAG_TEMPLATES = {

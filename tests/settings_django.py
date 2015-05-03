@@ -9,6 +9,7 @@ STATIC_URL = '/static/'
 INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'tests.django_test_app',
+    'js_host',
     'webpack',
 )
 

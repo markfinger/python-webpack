@@ -85,16 +85,10 @@ js_host_function = Function(settings.JS_HOST_FUNCTION)
 
 def webpack(config_file, watch_config=None, watch_source=None):
     if not settings.BUNDLE_ROOT:
-        raise ImproperlyConfigured(
-            'webpack.conf.settings.BUNDLE_ROOT has not been defined. '
-            'Please specify a directory to place bundles into'
-        )
+        raise ImproperlyConfigured('webpack.conf.settings.BUNDLE_ROOT has not been defined.')
 
     if not settings.BUNDLE_URL:
-        raise ImproperlyConfigured(
-            'webpack.conf.settings.BUNDLE_ROOT has not been defined. '
-            'Please specify the url that bundles will be served from'
-        )
+        raise ImproperlyConfigured('webpack.conf.settings.BUNDLE_URL has not been defined.')
 
     if not os.path.isabs(config_file):
         abs_path = staticfiles.find(config_file)
@@ -115,7 +109,7 @@ def webpack(config_file, watch_config=None, watch_source=None):
         output = js_host_function.call(
             config=config_file,
             watch=watch_source,
-            watchDelay=200,
+            watchDelay=settings.WATCH_DELAY,
             watchConfig=watch_config,
             cache=False,
             fullStats=settings.OUTPUT_FULL_STATS,
