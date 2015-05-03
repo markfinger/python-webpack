@@ -75,7 +75,7 @@ In normal python systems, settings can be defined by importing `webpack.conf.set
 the `configure` method with keyword arguments matching the name of the setting that you want to 
 define. For example
 
-```
+```python
 from webpack.conf import settings
 
 DEBUG = True
@@ -176,10 +176,10 @@ Add the following to inform webpack to respect your Django project's configurati
 
 ```python
 WEBPACK = {
-    BUNDLE_ROOT: STATIC_ROOT,
-    BUNDLE_URL: STATIC_URL,
-    WATCH_CONFIG_FILES: DEBUG,
-    WATCH_SOURCE_FILES: DEBUG,
+    'BUNDLE_ROOT': STATIC_ROOT,
+    'BUNDLE_URL': STATIC_URL,
+    'WATCH_CONFIG_FILES': DEBUG,
+    'WATCH_SOURCE_FILES': DEBUG,
 }
 ```
 
