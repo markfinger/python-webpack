@@ -7,9 +7,7 @@ DEBUG = True
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 js_host_settings.configure(
-    CACHE=not DEBUG,
     USE_MANAGER=DEBUG,
-    SOURCE_ROOT=BASE_DIR,
 )
 
 webpack_settings.configure(

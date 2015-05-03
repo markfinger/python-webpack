@@ -1,25 +1,15 @@
-Example
-=======
+Webpack example
+===============
 
 An example of how to integrate webpack into a python project.
-
-Uses flask, webpack, and js-host.
-
-
-Installation
-------------
-
-```bash
-mkvirtualenv webpack-example
-pip install -r requirements.txt
-npm install
-```
 
 
 Run the example
 ---------------
 
 ```bash
+pip install -r requirements.txt
+npm install
 python example.py
 ```
 

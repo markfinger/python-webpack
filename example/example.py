@@ -12,11 +12,9 @@ webpack_config = os.path.join(BASE_DIR, 'static', 'js', 'webpack.config.js')
 
 @app.route('/')
 def index():
-
     # Call the compiler to either start building the bundle or provide the details
     # of the most recent build
     bundle = webpack(webpack_config)
-
     return render_template('index.html', bundle=bundle)
 
 
