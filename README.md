@@ -51,7 +51,7 @@ Install the JavaScript packages [webpack](https://webpack.github.io) and
 npm install --save webpack webpack-service
 ```
 
-In your `host.config.js` file, add `webpackService` to your `functions` definition as `webpack`. For example
+In your `host.config.js` file, add `webpackService` as a function named `webpack`. For example
 
 ```javascript
 var webpackService = require('webpack-service');
