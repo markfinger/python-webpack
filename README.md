@@ -3,8 +3,10 @@ python-webpack
 
 [![Build Status](https://travis-ci.org/markfinger/python-webpack.svg?branch=master)](https://travis-ci.org/markfinger/python-webpack)
 
-Python bindings to [webpack](https://webpack.github.io). Bundles your assets so they can be reused on the
-client-side. Watches your source files and config files for changes, and rebuilds them in the background.
+Python bindings to [webpack](https://webpack.github.io). 
+
+Bundles your assets so they can be reused on the client-side. Watches your files for changes and rebuilds the
+bundle whenever they change.
 
 Just point webpack at your [config files](https://webpack.github.io/docs/configuration.html) and plug
 the rendered &gt;script&lt; elements into the client-side.
@@ -119,6 +121,9 @@ Default: `'webpack'`
 A boolean flag which indicates that file watchers should be set to watch config files and 
 rebuild the resulting bundle whenever it changes.
 
+Bundles are rebuilt in the background. If webpack is still rebuilding when a request comes in, it will 
+block until the build has completed.
+
 Default: `False`
 
 
@@ -126,6 +131,9 @@ Default: `False`
 
 A boolean flag which indicates that file watchers should be set to watch the bundle's
 source files and rebuild the bundle whenever it changes.
+
+Bundles are rebuilt in the background. If webpack is still rebuilding when a request comes in, it will 
+block until the build has completed.
 
 Default: `False`
 
