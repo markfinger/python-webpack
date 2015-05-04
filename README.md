@@ -5,11 +5,11 @@ python-webpack
 
 Python bindings to [webpack](https://webpack.github.io). 
 
-Bundles your assets so that they can be reused on the client-side. Watches your files for changes and 
+Bundles your assets so that they can be reused on the clientside. Watches your files for changes and 
 rebuilds the bundle whenever they change.
 
 Just point webpack at your [config files](https://webpack.github.io/docs/configuration.html) and plug
-the rendered elements into the client-side.
+the rendered elements into your front end.
 
 ```python
 from webpack.compiler import webpack
@@ -35,23 +35,17 @@ Documentation
 Installation
 ------------
 
-```bash
-pip install webpack
-```
+Webpack depends on [js-host](https://github.com/markfinger/python-js-host/) to provide
+interoperability with JavaScript. Complete the 
+[quick start](https://github.com/markfinger/python-js-host/#quick-start) before continuing.
 
-python-webpack depends on [js-host](https://github.com/markfinger/python-js-host/) to provide a 
-JavaScript environment that python can interact with. 
-[Install](https://github.com/markfinger/python-js-host/#installation) the library and complete the 
-[quick start](https://github.com/markfinger/python-js-host/#quick-start).
-
-Install the JavaScript packages [webpack](https://webpack.github.io) and 
-[webpack-service](https://github.com/markfinger/webpack-service).
+Install the webpack and webpack-service packages with
 
 ```bash
 npm install --save webpack webpack-service
 ```
 
-In your `host.config.js` file, add the `webpack-service` package as a function named `webpack`. For example
+Add webpack-service to the functions definition of your `host.config.js` file
 
 ```javascript
 var webpackService = require('webpack-service');
@@ -64,6 +58,12 @@ module.exports = {
 };
 ```
 
+Install python-webpack
+
+```bash
+pip install webpack
+```
+
 
 Settings
 --------
@@ -71,9 +71,8 @@ Settings
 If you are using this library in a Django project, please refer to the 
 [settings for Django projects](#settings-for-django-projects) section of the documentation.
 
-In normal python systems, settings can be defined by importing `webpack.conf.settings` and calling 
-the `configure` method with keyword arguments matching the name of the setting that you want to 
-define. For example
+Settings can be defined by calling `webpack.conf.settings.configure` with keyword arguments matching 
+the setting that you want to define. For example
 
 ```python
 from webpack.conf import settings
@@ -121,7 +120,7 @@ Default: `'webpack'`
 ### WATCH_CONFIG_FILES
 
 A boolean flag which indicates that file watchers should be set to watch config files and 
-rebuild the resulting bundle whenever it changes. Set this to `True` in development.
+rebuild the resulting bundle whenever it changes. Set this to `True` in development environments.
 
 Bundles are rebuilt in the background. If webpack is still rebuilding when a request comes in, it will 
 block until the build has completed.
@@ -132,7 +131,7 @@ Default: `False`
 ### WATCH_SOURCE_FILES
 
 A boolean flag which indicates that file watchers should be set to watch the bundle's
-source files and rebuild the bundle whenever it changes. Set this to `True` in development.
+source files and rebuild the bundle whenever it changes. Set this to `True` in development environments.
 
 Bundles are rebuilt in the background. If webpack is still rebuilding when a request comes in, it will 
 block until the build has completed.
@@ -172,7 +171,7 @@ STATICFILES_FINDERS = (
 )
 ```
 
-Add the following to inform webpack to respect your Django project's configuration
+Configure webpack to respect your project's configuration
 
 ```python
 WEBPACK = {
@@ -183,10 +182,11 @@ WEBPACK = {
 }
 ```
 
-Note: when you specify a path to a config file, you can provide a relative path to a config file 
-and webpack will use django's static file finders to resolve the file's location. For example, 
-`webpack('my_app/webpack.config.js')` could match a file within an app's static directory, 
-eg: `my_app/static/my_app/webpack.config.js`.
+When used in a Django project, Webpack allows you to specify paths to config files which will be 
+resolved with Django's file finders.
+
+For example, `webpack('my_app/webpack.config.js')` could match a file within an app's static directory, 
+such as `my_app/static/my_app/webpack.config.js`.
 
 
 Usage
