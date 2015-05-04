@@ -36,10 +36,10 @@ Installation
 ------------
 
 Webpack depends on [js-host](https://github.com/markfinger/python-js-host/) to provide
-interoperability with JavaScript. Complete the 
+interoperability with JavaScript. Complete its 
 [quick start](https://github.com/markfinger/python-js-host/#quick-start) before continuing.
 
-Install the webpack and webpack-service packages with
+Install webpack's JS dependencies
 
 ```bash
 npm install --save webpack webpack-service
@@ -58,7 +58,7 @@ module.exports = {
 };
 ```
 
-Install python-webpack
+And install python-webpack
 
 ```bash
 pip install webpack
