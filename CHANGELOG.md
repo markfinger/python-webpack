@@ -1,6 +1,10 @@
 Change log
 ==========
 
+### 4.0.1 (4/5/2015)
+
+- Fixed an import error when configuring webpack from django.
+
 ### 4.0.0 (3/5/2015)
 
 - Renamed the project from django-webpack to python-webpack.
