@@ -1,24 +1,6 @@
 from django.core.files.storage import FileSystemStorage
 from django.contrib.staticfiles.finders import BaseStorageFinder
-from django.core.exceptions import ImproperlyConfigured
 from .conf import settings
-
-
-def validate_settings():
-    from django.conf import settings
-
-    finder_path = 'webpack.django_integration.WebpackFinder'
-
-    if (
-        ('staticfiles' in settings.INSTALLED_APPS or 'django.contrib.staticfiles' in settings.INSTALLED_APPS) and
-        finder_path not in settings.STATICFILES_FINDERS
-    ):
-        raise ImproperlyConfigured(
-            (
-                'When using webpack together with staticfiles, please add \'{}\' to the '
-                'STATICFILES_FINDERS setting.'
-            ).format(finder_path)
-        )
 
 
 class WebpackFileStorage(FileSystemStorage):

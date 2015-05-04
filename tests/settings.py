@@ -1,18 +1,35 @@
 import os
 from js_host import verbosity
-from js_host.conf import settings as js_host_settings
-from webpack.conf import settings as webpack_settings
 
-BASE_DIR = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-js_host_settings.configure(
-    SOURCE_ROOT=BASE_DIR,
+SECRET_KEY = '_'
+
+STATIC_URL = '/static/'
+
+INSTALLED_APPS = (
+    'django.contrib.staticfiles',
+    'tests.django_test_app',
+    'js_host',
+    'webpack',
+)
+
+STATICFILES_FINDERS = (
+    # Defaults
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # Webpack finder
+    'webpack.django_integration.WebpackFinder',
+)
+
+WEBPACK = {
+    'BUNDLE_ROOT': os.path.join(BASE_DIR, '__BUNDLE_ROOT__'),
+    'BUNDLE_URL': '/static/',
+}
+
+JS_HOST = {
+    'SOURCE_ROOT': BASE_DIR,
     # Let the manager spin up an instance
-    USE_MANAGER=True,
-    VERBOSITY=verbosity.SILENT,
-)
-
-webpack_settings.configure(
-    BUNDLE_ROOT=os.path.join(BASE_DIR, '__BUNDLE_ROOT__'),
-    BUNDLE_URL='/static/',
-)
+    'USE_MANAGER': True,
+    'VERBOSITY': verbosity.SILENT,
+}

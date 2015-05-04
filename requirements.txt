@@ -1,5 +1,5 @@
 # Dependencies
-optional-django==0.2.1
+optional-django==0.3.0
 
 # Dev dependencies
 js-host

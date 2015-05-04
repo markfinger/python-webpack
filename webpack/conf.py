@@ -3,8 +3,6 @@ from .exceptions import ImproperlyConfigured
 
 
 class Conf(conf.Conf):
-    django_namespace = 'WEBPACK'
-
     BUNDLE_ROOT = None
 
     BUNDLE_URL = None

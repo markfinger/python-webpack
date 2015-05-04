@@ -6,7 +6,7 @@ setup(
     version=webpack.__version__,
     packages=['webpack'],
     install_requires=[
-        'optional-django==0.2.1'
+        'optional-django==0.3.0'
     ],
     description='Python bindings to Webpack',
     long_description='Documentation at https://github.com/markfinger/python-webpack',
