@@ -90,7 +90,7 @@ settings.configure(
 
 ### BUNDLE_ROOT
 
-An absolute path to a directory where you static assets are served from.
+An absolute path to the root directory that you use for static assets.
 
 For example, `'/path/to/your/projects/static_root'`.
 
