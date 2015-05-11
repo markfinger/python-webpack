@@ -1,6 +1,10 @@
 Change log
 ==========
 
+### 4.1.1 (11/5/2015)
+
+- Python 3 fixes.
+
 ### 4.1.0 (11/5/2015)
 
 - Added a config file writer.
