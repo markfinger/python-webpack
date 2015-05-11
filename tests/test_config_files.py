@@ -104,7 +104,6 @@ module.exports = {
         self.assertEqual(output, path)
         with open(path, 'r') as output_file:
             content = output_file.read()
-        content = content.encode('utf-8')
         self.assertEqual(content, config_file.rendered)
 
     def test_can_only_write_a_file_if_it_does_not_exist(self):
@@ -124,21 +123,14 @@ module.exports = {
 
         with open(path, 'r') as output_file:
             content = output_file.read()
-        content = content.encode('utf-8')
         self.assertEqual(content, config_file.rendered)
 
         with open(path, 'w') as output_file:
             output_file.write('foo')
-
-        with open(path, 'r') as output_file:
-            content = output_file.read()
-        content = content.encode('utf-8')
-        self.assertEqual(content, 'foo')
 
         output = config_file.write(path, force=False)
         self.assertEqual(output, path)
 
         with open(path, 'r') as output_file:
             content = output_file.read()
-        content = content.encode('utf-8')
         self.assertEqual(content, 'foo')

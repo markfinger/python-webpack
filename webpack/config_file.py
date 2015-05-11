@@ -11,7 +11,7 @@ class JS(object):
         self.content = content
         self.token = '__js_literal__{}__{}__'.format(
             id(self),
-            hashlib.md5(self.content).hexdigest(),
+            hashlib.md5(self.content.encode('utf-8')).hexdigest(),
         )
 
 
@@ -49,8 +49,13 @@ class ConfigFile(object):
         return content
 
     def generate_path_to_file(self, prefix=None):
+        rendered = self.rendered
+
+        if not six.PY2:
+            rendered = rendered.encode('utf-8')
+
         filename = 'webpack.config.{}.js'.format(
-            hashlib.md5(self.rendered).hexdigest()
+            hashlib.md5(rendered).hexdigest()
         )
 
         if prefix:
