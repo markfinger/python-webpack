@@ -221,6 +221,9 @@ bundle.output
 # Returns the paths and urls to the generated assets
 bundle.get_assets()
 
+# Returns absolute paths to the generated assets on your filesystem
+bundle.get_paths()
+
 # Returns urls pointing to the generated assets
 bundle.get_urls()
 
