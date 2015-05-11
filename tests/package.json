@@ -1,7 +1,7 @@
 {
   "private": true,
   "dependencies": {
-    "js-host": "^0.11.1",
+    "js-host": "^0.11.3",
     "webpack": "^1.8.8",
     "webpack-service": "^0.1.1"
   }

@@ -1,3 +1,4 @@
+import os
 from optional_django import conf
 from .exceptions import ImproperlyConfigured
 
@@ -7,7 +8,11 @@ class Conf(conf.Conf):
 
     BUNDLE_URL = None
 
-    BUNDLE_DIR = 'webpack'
+    OUTPUT_DIR = 'webpack'
+
+    BUNDLE_DIR = 'bundles'
+
+    CONFIG_DIR = 'config_files'
 
     WATCH_CONFIG_FILES = False
 
@@ -29,5 +34,14 @@ class Conf(conf.Conf):
             raise ImproperlyConfigured('`BUNDLE_URL` must have a trailing slash')
 
         super(Conf, self).configure(**kwargs)
+
+    def get_path_to_output_dir(self):
+        return os.path.join(self.BUNDLE_ROOT, self.OUTPUT_DIR)
+
+    def get_path_to_bundle_dir(self):
+        return os.path.join(self.get_path_to_output_dir(), self.BUNDLE_DIR)
+
+    def get_path_to_config_dir(self):
+        return os.path.join(self.get_path_to_output_dir(), self.CONFIG_DIR)
 
 settings = Conf()

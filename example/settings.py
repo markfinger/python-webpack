@@ -14,9 +14,6 @@ webpack_settings.configure(
     # The root directory that webpack will place files into and infer urls from
     BUNDLE_ROOT=os.path.join(BASE_DIR, 'static'),
 
-    # The directory within BUNDLE_ROOT that webpack will place files into
-    BUNDLE_DIR='webpack',
-
     # The root url that webpack will use to determine the urls to bundles
     BUNDLE_URL='/static/',
 

@@ -36,10 +36,16 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(paths[0], asset['path'])
         self.assertTrue(asset['name'].startswith('bundle-'))
         self.assertTrue(asset['name'].endswith('.js'))
-        self.assertEqual(asset['path'], os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR, asset['name']))
+        self.assertEqual(
+            asset['path'],
+            os.path.join(settings.get_path_to_bundle_dir(), asset['name'])
+        )
         self.assertTrue(os.path.exists(asset['path']))
-        self.assertTrue(os.path.exists(os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR, asset['name'])))
-        self.assertEqual(settings.BUNDLE_URL + settings.BUNDLE_DIR + '/' + asset['name'], asset['url'])
+        self.assertTrue(os.path.exists(os.path.join(settings.get_path_to_bundle_dir(), asset['name'])))
+        self.assertEqual(
+            asset['url'],
+            (settings.BUNDLE_URL + settings.OUTPUT_DIR + '/' + settings.BUNDLE_DIR + '/' + asset['name']).replace('\\', '/'),
+        )
         contents = read_file(asset['path'])
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
         self.assertIn('__DJANGO_WEBPACK_REQUIRE_TEST__', contents)
@@ -53,7 +59,7 @@ class TestBundles(unittest.TestCase):
         asset = bundle.get_assets()[0]
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
-        self.assertEqual(urls[0], '/static/webpack/' + asset['name'])
+        self.assertEqual(urls[0], '/static/webpack/bundles/' + asset['name'])
 
     def test_can_render_a_webpack_bundle(self):
         bundle = webpack(PATH_TO_BASIC_CONFIG)
@@ -149,7 +155,7 @@ class TestBundles(unittest.TestCase):
         )
         self.assertDictContainsSubset(
             {
-                'path': os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR),
+                'path': os.path.join(settings.BUNDLE_ROOT, settings.OUTPUT_DIR, settings.BUNDLE_DIR),
                 'filename': 'bundle-[hash].js'
             },
             config['output']

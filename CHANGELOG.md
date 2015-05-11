@@ -1,6 +1,12 @@
 Change log
 ==========
 
+### 4.1.0 (11/5/2015)
+
+- Added a config file writer.
+- The directory specified by the BUNDLE_DIR setting is now nested in another directory specified by OUTPUT_DIR.
+- Added a setting CONFIG_DIR, which is nested in OUTPUT_DIR.
+
 ### 4.0.1 (4/5/2015)
 
 - Fixed an import error when configuring webpack from django.

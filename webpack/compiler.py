@@ -113,7 +113,7 @@ def webpack(config_file, watch_config=None, watch_source=None):
             watchConfig=watch_config,
             cache=False,
             fullStats=settings.OUTPUT_FULL_STATS,
-            bundleDir=os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR),
+            bundleDir=settings.get_path_to_bundle_dir(),
         )
     except FunctionError as e:
         raise six.reraise(BundlingError, BundlingError(*e.args), sys.exc_info()[2])
@@ -130,14 +130,14 @@ def webpack(config_file, watch_config=None, watch_source=None):
 
     # Generate contextual information about the generated assets
     stats['urlsToAssets'] = {}
-    path_to_bundle_dir = os.path.join(settings.BUNDLE_ROOT, settings.BUNDLE_DIR)
+    path_to_bundle_dir = settings.get_path_to_bundle_dir()
     for asset, config_file in six.iteritems(stats['pathsToAssets']):
         if path_to_bundle_dir in config_file:
             rel_path = config_file[len(path_to_bundle_dir):]
             rel_url = pathname2url(rel_path)
             if rel_url.startswith('/'):
                 rel_url = rel_url[1:]
-            url = '{}{}/{}'.format(settings.BUNDLE_URL, settings.BUNDLE_DIR, rel_url)
+            url = '{}{}/{}/{}'.format(settings.BUNDLE_URL, settings.OUTPUT_DIR, settings.BUNDLE_DIR, rel_url)
             stats['urlsToAssets'][asset] = url
 
     return WebpackBundle(stats)
