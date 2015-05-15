@@ -103,7 +103,7 @@ Default: `None`
 
 The root url that your static assets are served from.
 
-For example, `'/static/`.
+For example, `'/static/'`.
 
 This setting **must** be defined.
 
