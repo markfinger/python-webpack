@@ -1,7 +1,7 @@
-var webpackService = require('webpack-service');
+var webpackWrapper = require('webpack-wrapper');
 
 module.exports = {
 	functions: {
-		webpack: webpackService
+		webpack: webpackWrapper
 	}
 };

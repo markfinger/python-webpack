@@ -42,18 +42,18 @@ interoperability with JavaScript. Complete its
 Install webpack's JS dependencies
 
 ```bash
-npm install --save webpack webpack-service
+npm install --save webpack webpack-wrapper
 ```
 
-Add webpack-service to the functions definition of your `host.config.js` file
+Add webpack-wrapper to the functions definition of your `host.config.js` file
 
 ```javascript
-var webpackService = require('webpack-service');
+var webpackWrapper = require('webpack-wrapper');
 
 module.exports = {
   functions: {
     // ...
-    webpack: webpackService
+    webpack: webpackWrapper
   }
 };
 ```
