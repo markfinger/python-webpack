@@ -5,6 +5,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 SECRET_KEY = '_'
 
+STATIC_ROOT = os.path.join(BASE_DIR, '__STATIC_ROOT__')
 STATIC_URL = '/static/'
 
 INSTALLED_APPS = (
@@ -20,6 +21,13 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     # Webpack finder
     'webpack.django_integration.WebpackFinder',
+)
+
+STATICFILES_STORAGE = 'webpack.django_integration.WebpackOfflineStaticFilesStorage'
+
+STATICFILES_DIRS = (
+    # Give Django access the the bundles directory.
+    os.path.join(BASE_DIR, 'bundles'),
 )
 
 WEBPACK = {

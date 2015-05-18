@@ -28,6 +28,7 @@ Documentation
 - [Installation](#installation)
 - [Settings](#settings)
 - [Settings for Django projects](#settings-for-django-projects)
+- [Extras for Django](#extras-for-django)
 - [Usage](#usage)
 - [Running the tests](#running-the-tests)
 
@@ -201,6 +202,45 @@ resolved with Django's file finders.
 
 For example, `webpack('my_app/webpack.config.js')` could match a file within an app's static directory, 
 such as `my_app/static/my_app/webpack.config.js`.
+
+
+Extras for Django
+-----------------
+
+python-webpack also provides a template tag and storage backend for compiling
+during collectstatic.
+
+You can use the template tag like this:
+
+```html+django
+{% load webpack %}
+
+{% webpack 'path/to/webpack.config.js' %}
+```
+
+If you wish to pre-compile your webpack bundles during `collecstatic`, you can
+use the special storage backend.
+
+```python
+# settings.py
+
+WEBPACK = {
+    # ...
+
+    # defines whether or not we should compile during collectstatic
+    'COMPILE_OFFLINE': True
+
+    # a list of all webpack configs to compile during collectstatic
+    'OFFLINE_BUNDLES': [
+        'path/to/webpack.config.js',
+    ]
+}
+
+STATICFILES_STORAGE = 'webpack.django_integration.WebpackOfflineStaticFilesStorage'
+```
+
+If `COMPILE_OFFLINE` is set to `True`, the template tag will check the
+pre-compiled bundles. Otherwise, it will compile the files during the request.
 
 
 Usage

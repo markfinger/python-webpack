@@ -29,6 +29,10 @@ class Conf(conf.Conf):
 
     JS_HOST_FUNCTION = 'webpack'
 
+    COMPILE_OFFLINE = False
+
+    OFFLINE_BUNDLES = []
+
     def configure(self, **kwargs):
         if kwargs.get('BUNDLE_URL', None) and not kwargs['BUNDLE_URL'].endswith('/'):
             raise ImproperlyConfigured('`BUNDLE_URL` must have a trailing slash')
