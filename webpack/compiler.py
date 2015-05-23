@@ -5,10 +5,6 @@ import warnings
 from js_host.function import Function
 from js_host.exceptions import FunctionError
 from optional_django import six
-if six.PY2:
-    from urllib import pathname2url
-else:
-    from urllib.request import pathname2url
 from optional_django.safestring import mark_safe
 from optional_django import staticfiles
 from .exceptions import ImproperlyConfigured, ConfigFileNotFound, BundlingError, WebpackWarning
@@ -83,7 +79,7 @@ class WebpackBundle(object):
 js_host_function = Function(settings.JS_HOST_FUNCTION)
 
 
-def webpack(config_file, watch_config=None, watch_source=None):
+def webpack(config_file, watch_config=None, watch_source=None, cache_file=None):
     if not settings.STATIC_ROOT:
         raise ImproperlyConfigured('webpack.conf.settings.STATIC_ROOT has not been defined.')
 
@@ -105,13 +101,15 @@ def webpack(config_file, watch_config=None, watch_source=None):
     if watch_source is None:
         watch_source = settings.WATCH_SOURCE_FILES
 
+    if cache_file is None:
+        cache_file = settings.get_path_to_cache_file()
+
     try:
         output = js_host_function.call(
             config=config_file,
             watch=watch_source,
             watchConfig=watch_config,
-            # TODO accept as arg so it can be tested
-            cacheFile=settings.get_path_to_cache_file(),
+            cacheFile=cache_file,
             outputPath=settings.get_path_to_bundle_dir(),
             staticRoot=settings.STATIC_ROOT,
             staticUrl=settings.STATIC_URL,

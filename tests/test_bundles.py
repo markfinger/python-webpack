@@ -1,5 +1,6 @@
 import os
 import unittest
+import json
 from optional_django import six
 from webpack.compiler import webpack, WebpackBundle
 from webpack.exceptions import ConfigFileNotFound
@@ -13,6 +14,8 @@ PATH_TO_BASIC_CONFIG = os.path.join(BUNDLES, 'basic', 'webpack.config.js')
 PATH_TO_LIBRARY_CONFIG = os.path.join(BUNDLES, 'library', 'webpack.config.js')
 PATH_TO_MULTIPLE_BUNDLES_CONFIG = os.path.join(BUNDLES, 'multiple_bundles', 'webpack.config.js')
 PATH_TO_MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack.config.js')
+
+PATH_TO_CACHE_FILE = os.path.join(settings.STATIC_ROOT, 'webpack_cache.json')
 
 
 class TestBundles(unittest.TestCase):
@@ -167,3 +170,40 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(bundle.get_var(), 'LIBRARY_TEST')
         bundle = webpack(PATH_TO_MULTIPLE_BUNDLES_CONFIG)
         self.assertIsNone(bundle.get_library())
+
+    def test_compilation_output_can_be_cached(self):
+        bundle1 = webpack(PATH_TO_LIBRARY_CONFIG, cache_file=PATH_TO_CACHE_FILE)
+        bundle2 = webpack(PATH_TO_LIBRARY_CONFIG, cache_file=PATH_TO_CACHE_FILE)
+
+        self.assertEqual(bundle1.stats, bundle2.stats)
+
+        with open(PATH_TO_CACHE_FILE, 'r') as cache_file:
+            contents = cache_file.read().decode('utf-8')
+
+        cache1 = json.loads(contents)
+
+        self.assertIsInstance(cache1, dict)
+
+        self.assertIn(PATH_TO_LIBRARY_CONFIG, cache1)
+
+        self.assertEqual(cache1[PATH_TO_LIBRARY_CONFIG]['stats'], bundle1.stats)
+
+        bundle3 = webpack(PATH_TO_BASIC_CONFIG, cache_file=PATH_TO_CACHE_FILE)
+
+        with open(PATH_TO_CACHE_FILE, 'r') as cache_file:
+            contents = cache_file.read().decode('utf-8')
+
+        cache2 = json.loads(contents)
+
+        self.assertNotEqual(cache2, cache1)
+
+        self.assertIsInstance(cache2, dict)
+
+        self.assertIn(PATH_TO_LIBRARY_CONFIG, cache2)
+        self.assertIn(PATH_TO_BASIC_CONFIG, cache2)
+
+        self.assertEqual(cache2[PATH_TO_LIBRARY_CONFIG]['stats'], bundle1.stats)
+        self.assertEqual(cache2[PATH_TO_BASIC_CONFIG]['stats'], bundle3.stats)
+
+
+

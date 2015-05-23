@@ -33,7 +33,8 @@ STATICFILES_DIRS = (
 WEBPACK = {
     'STATIC_ROOT': STATIC_ROOT,
     'STATIC_URL': STATIC_URL,
-    'CACHE_FILE': None,
+    # Prevent caching across processes
+    'CACHE_FILE': None
 }
 
 JS_HOST = {

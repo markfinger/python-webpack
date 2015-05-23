@@ -33,8 +33,7 @@ class Conf(conf.Conf):
 
     OFFLINE_BUNDLES = []
 
-    CACHE_FILE = None
-    # CACHE_FILE = '.webpack_cache.json'
+    CACHE_FILE = '.webpack_cache.json'
 
     def get_path_to_output_dir(self):
         return os.path.join(self.STATIC_ROOT, self.OUTPUT_DIR)
