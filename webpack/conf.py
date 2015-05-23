@@ -33,7 +33,11 @@ class Conf(conf.Conf):
 
     OFFLINE_BUNDLES = []
 
+    CACHE = ()
+
     CACHE_FILE = '.webpack_cache.json'
+
+    USE_CACHE_FILE = False
 
     def get_path_to_output_dir(self):
         return os.path.join(self.STATIC_ROOT, self.OUTPUT_DIR)
@@ -48,6 +52,6 @@ class Conf(conf.Conf):
         if self.CACHE_FILE:
             if os.path.isabs(self.CACHE_FILE):
                 return self.CACHE_FILE
-            return os.path.join(js_host.conf.settings.SOURCE_ROOT, self.CACHE_FILE)
+            return os.path.join(js_host.conf.settings.get_source_root(), self.CACHE_FILE)
 
 settings = Conf()

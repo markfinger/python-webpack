@@ -12,3 +12,7 @@ class BundlingError(Exception):
 
 class WebpackWarning(Warning):
     pass
+
+
+class ConfigFileMissingFromCache(Exception):
+    pass
