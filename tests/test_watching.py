@@ -2,7 +2,7 @@ import os
 import unittest
 import time
 from webpack.compiler import webpack
-from .utils import write_file, read_file, clean_bundle_root
+from .utils import write_file, read_file, clean_static_root
 
 # The number of seconds that we delay while waiting for
 # file changes to be detected
@@ -24,7 +24,6 @@ module.exports = {
     context: path.join(__dirname, 'app'),
     entry: './entry1.js',
     output: {
-        path: '[bundle_dir]',
         filename: 'bundle-[hash].js'
     }
 };
@@ -39,7 +38,6 @@ module.exports = {
     context: path.join(__dirname, 'app'),
     entry: './entry1.js',
     output: {
-        path: '[bundle_dir]',
         filename: 'bundle-[hash].js'
     }
 };
@@ -60,11 +58,11 @@ class TestWatching(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     def test_config_file_can_be_watched_to_rebuild_the_bundle(self):
         self.assertIn('./entry1.js', WATCHED_CONFIG_CONTENT)

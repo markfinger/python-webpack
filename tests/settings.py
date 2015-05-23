@@ -1,5 +1,5 @@
 import os
-from js_host import verbosity
+from js_host.utils import verbosity
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -31,8 +31,9 @@ STATICFILES_DIRS = (
 )
 
 WEBPACK = {
-    'BUNDLE_ROOT': os.path.join(BASE_DIR, '__BUNDLE_ROOT__'),
-    'BUNDLE_URL': '/static/',
+    'STATIC_ROOT': STATIC_ROOT,
+    'STATIC_URL': STATIC_URL,
+    'CACHE_FILE': None,
 }
 
 JS_HOST = {

@@ -84,11 +84,11 @@ js_host_function = Function(settings.JS_HOST_FUNCTION)
 
 
 def webpack(config_file, watch_config=None, watch_source=None):
-    if not settings.BUNDLE_ROOT:
-        raise ImproperlyConfigured('webpack.conf.settings.BUNDLE_ROOT has not been defined.')
+    if not settings.STATIC_ROOT:
+        raise ImproperlyConfigured('webpack.conf.settings.STATIC_ROOT has not been defined.')
 
-    if not settings.BUNDLE_URL:
-        raise ImproperlyConfigured('webpack.conf.settings.BUNDLE_URL has not been defined.')
+    if not settings.STATIC_URL:
+        raise ImproperlyConfigured('webpack.conf.settings.STATIC_URL has not been defined.')
 
     if not os.path.isabs(config_file):
         abs_path = staticfiles.find(config_file)
@@ -109,11 +109,14 @@ def webpack(config_file, watch_config=None, watch_source=None):
         output = js_host_function.call(
             config=config_file,
             watch=watch_source,
-            watchDelay=settings.WATCH_DELAY,
             watchConfig=watch_config,
-            cache=False,
-            fullStats=settings.OUTPUT_FULL_STATS,
-            bundleDir=settings.get_path_to_bundle_dir(),
+            # TODO accept as arg so it can be tested
+            cacheFile=settings.get_path_to_cache_file(),
+            outputPath=settings.get_path_to_bundle_dir(),
+            staticRoot=settings.STATIC_ROOT,
+            staticUrl=settings.STATIC_URL,
+            aggregateTimeout=settings.AGGREGATE_TIMEOUT,
+            poll=settings.POLL
         )
     except FunctionError as e:
         raise six.reraise(BundlingError, BundlingError(*e.args), sys.exc_info()[2])
@@ -127,17 +130,5 @@ def webpack(config_file, watch_config=None, watch_source=None):
 
     if stats['warnings']:
         warnings.warn(stats['warnings'], WebpackWarning)
-
-    # Generate contextual information about the generated assets
-    stats['urlsToAssets'] = {}
-    path_to_bundle_dir = settings.get_path_to_bundle_dir()
-    for asset, config_file in six.iteritems(stats['pathsToAssets']):
-        if path_to_bundle_dir in config_file:
-            rel_path = config_file[len(path_to_bundle_dir):]
-            rel_url = pathname2url(rel_path)
-            if rel_url.startswith('/'):
-                rel_url = rel_url[1:]
-            url = '{}{}/{}/{}'.format(settings.BUNDLE_URL, settings.OUTPUT_DIR, settings.BUNDLE_DIR, rel_url)
-            stats['urlsToAssets'][asset] = url
 
     return WebpackBundle(stats)

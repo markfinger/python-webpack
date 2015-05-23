@@ -2,17 +2,17 @@ import unittest
 import os
 from webpack.config_file import ConfigFile, JS
 from webpack.conf import settings
-from .utils import clean_bundle_root
+from .utils import clean_static_root
 
 
 class TestConfigFiles(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     def test_renders_strings(self):
         config_file = ConfigFile(

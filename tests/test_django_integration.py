@@ -6,7 +6,7 @@ from optional_django.env import DJANGO_CONFIGURED
 from webpack.compiler import webpack
 from webpack.exceptions import BundlingError
 from optional_django import staticfiles
-from .utils import clean_bundle_root, read_file
+from .utils import clean_static_root, read_file
 
 TEST_ROOT = os.path.dirname(__file__)
 BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
@@ -33,11 +33,11 @@ class TestDjangoIntegration(WebpackTemplateTagMixin, unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     def test_bundle_can_resolve_files_via_the_django_static_file_finder(self):
         bundle = webpack('django_test_app/webpack.config.js')

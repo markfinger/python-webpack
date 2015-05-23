@@ -1,12 +1,12 @@
 import os
 from optional_django import conf
-from .exceptions import ImproperlyConfigured
+import js_host.conf
 
 
 class Conf(conf.Conf):
-    BUNDLE_ROOT = None
+    STATIC_ROOT = None
 
-    BUNDLE_URL = None
+    STATIC_URL = None
 
     OUTPUT_DIR = 'webpack'
 
@@ -18,10 +18,10 @@ class Conf(conf.Conf):
 
     WATCH_SOURCE_FILES = False
 
-    WATCH_DELAY = 200
-    
-    OUTPUT_FULL_STATS = False
+    AGGREGATE_TIMEOUT = 200
 
+    POLL = False
+    
     TAG_TEMPLATES = {
         'css': '<link rel="stylesheet" href="{url}">',
         'js': '<script src="{url}"></script>',
@@ -33,19 +33,22 @@ class Conf(conf.Conf):
 
     OFFLINE_BUNDLES = []
 
-    def configure(self, **kwargs):
-        if kwargs.get('BUNDLE_URL', None) and not kwargs['BUNDLE_URL'].endswith('/'):
-            raise ImproperlyConfigured('`BUNDLE_URL` must have a trailing slash')
-
-        super(Conf, self).configure(**kwargs)
+    CACHE_FILE = None
+    # CACHE_FILE = '.webpack_cache.json'
 
     def get_path_to_output_dir(self):
-        return os.path.join(self.BUNDLE_ROOT, self.OUTPUT_DIR)
+        return os.path.join(self.STATIC_ROOT, self.OUTPUT_DIR)
 
     def get_path_to_bundle_dir(self):
         return os.path.join(self.get_path_to_output_dir(), self.BUNDLE_DIR)
 
     def get_path_to_config_dir(self):
         return os.path.join(self.get_path_to_output_dir(), self.CONFIG_DIR)
+
+    def get_path_to_cache_file(self):
+        if self.CACHE_FILE:
+            if os.path.isabs(self.CACHE_FILE):
+                return self.CACHE_FILE
+            return os.path.join(js_host.conf.settings.SOURCE_ROOT, self.CACHE_FILE)
 
 settings = Conf()

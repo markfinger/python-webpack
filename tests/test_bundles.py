@@ -4,7 +4,7 @@ from optional_django import six
 from webpack.compiler import webpack, WebpackBundle
 from webpack.exceptions import ConfigFileNotFound
 from webpack.conf import settings
-from .utils import clean_bundle_root, read_file
+from .utils import clean_static_root, read_file
 
 TEST_ROOT = os.path.dirname(__file__)
 BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
@@ -18,11 +18,11 @@ PATH_TO_MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack
 class TestBundles(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_bundle_root()
+        clean_static_root()
 
     def test_bundle_raises_config_file_not_found_exception_for_nonexistent_config_files(self):
         self.assertRaises(ConfigFileNotFound, webpack, '/file/that/does/not/exist.js')
@@ -44,7 +44,7 @@ class TestBundles(unittest.TestCase):
         self.assertTrue(os.path.exists(os.path.join(settings.get_path_to_bundle_dir(), asset['name'])))
         self.assertEqual(
             asset['url'],
-            (settings.BUNDLE_URL + settings.OUTPUT_DIR + '/' + settings.BUNDLE_DIR + '/' + asset['name']).replace('\\', '/'),
+            (settings.STATIC_URL + settings.OUTPUT_DIR + '/' + settings.BUNDLE_DIR + '/' + asset['name']).replace('\\', '/'),
         )
         contents = read_file(asset['path'])
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
@@ -155,7 +155,7 @@ class TestBundles(unittest.TestCase):
         )
         self.assertDictContainsSubset(
             {
-                'path': os.path.join(settings.BUNDLE_ROOT, settings.OUTPUT_DIR, settings.BUNDLE_DIR),
+                'path': os.path.join(settings.STATIC_ROOT, settings.OUTPUT_DIR, settings.BUNDLE_DIR),
                 'filename': 'bundle-[hash].js'
             },
             config['output']

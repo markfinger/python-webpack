@@ -12,10 +12,10 @@ js_host_settings.configure(
 
 webpack_settings.configure(
     # The root directory that webpack will place files into and infer urls from
-    BUNDLE_ROOT=os.path.join(BASE_DIR, 'static'),
+    STATIC_ROOT=os.path.join(BASE_DIR, 'static'),
 
     # The root url that webpack will use to determine the urls to bundles
-    BUNDLE_URL='/static/',
+    STATIC_URL='/static/',
 
     # In development, a watcher will rebuild a bundle whenever its config file changes
     WATCH_CONFIG_FILES=DEBUG,
