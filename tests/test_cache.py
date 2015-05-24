@@ -6,15 +6,8 @@ from webpack.conf import settings
 from webpack.cache import populate_cache, cache
 from webpack.exceptions import ConfigFileMissingFromCache
 from .utils import clean_static_root, read_file
+from .settings import ConfigFiles, BUNDLES
 
-TEST_ROOT = os.path.dirname(__file__)
-BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
-
-PATH_TO_BASIC_CONFIG = os.path.join(BUNDLES, 'basic', 'webpack.config.js')
-PATH_TO_LIBRARY_CONFIG = os.path.join(BUNDLES, 'library', 'webpack.config.js')
-PATH_TO_MULTIPLE_BUNDLES_CONFIG = os.path.join(BUNDLES, 'multiple_bundles', 'webpack.config.js')
-PATH_TO_MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack.config.js')
-PATH_TO_CACHED_CONFIG = os.path.join(BUNDLES, 'cached', 'webpack.config.js')
 
 PATH_TO_CACHED_ENTRY = os.path.join(BUNDLES, 'cached', 'app', 'entry.js')
 PATH_TO_CACHED_REQUIRE_TEST = os.path.join(BUNDLES, 'cached', 'app', 'require_test.js')
@@ -32,8 +25,8 @@ class TestCache(unittest.TestCase):
     def test_compilation_output_can_be_written_to_a_cache_file(self):
         path_to_cache_file = os.path.join(settings.STATIC_ROOT, 'test_compilation_output_can_be_cached.json')
 
-        bundle1 = webpack(PATH_TO_LIBRARY_CONFIG, cache_file=path_to_cache_file)
-        bundle2 = webpack(PATH_TO_LIBRARY_CONFIG, cache_file=path_to_cache_file)
+        bundle1 = webpack(ConfigFiles.LIBRARY_CONFIG, cache_file=path_to_cache_file)
+        bundle2 = webpack(ConfigFiles.LIBRARY_CONFIG, cache_file=path_to_cache_file)
 
         self.assertEqual(bundle1.stats, bundle2.stats)
 
@@ -44,11 +37,11 @@ class TestCache(unittest.TestCase):
 
         self.assertIsInstance(cache1, dict)
 
-        self.assertIn(PATH_TO_LIBRARY_CONFIG, cache1)
+        self.assertIn(ConfigFiles.LIBRARY_CONFIG, cache1)
 
-        self.assertEqual(cache1[PATH_TO_LIBRARY_CONFIG]['stats'], bundle1.stats)
+        self.assertEqual(cache1[ConfigFiles.LIBRARY_CONFIG]['stats'], bundle1.stats)
 
-        bundle3 = webpack(PATH_TO_BASIC_CONFIG, cache_file=path_to_cache_file)
+        bundle3 = webpack(ConfigFiles.BASIC_CONFIG, cache_file=path_to_cache_file)
 
         with open(path_to_cache_file, 'r') as cache_file:
             contents = cache_file.read().decode('utf-8')
@@ -59,25 +52,25 @@ class TestCache(unittest.TestCase):
 
         self.assertIsInstance(cache2, dict)
 
-        self.assertIn(PATH_TO_LIBRARY_CONFIG, cache2)
-        self.assertIn(PATH_TO_BASIC_CONFIG, cache2)
+        self.assertIn(ConfigFiles.LIBRARY_CONFIG, cache2)
+        self.assertIn(ConfigFiles.BASIC_CONFIG, cache2)
 
-        self.assertEqual(cache2[PATH_TO_LIBRARY_CONFIG]['stats'], bundle1.stats)
-        self.assertEqual(cache2[PATH_TO_BASIC_CONFIG]['stats'], bundle3.stats)
+        self.assertEqual(cache2[ConfigFiles.LIBRARY_CONFIG]['stats'], bundle1.stats)
+        self.assertEqual(cache2[ConfigFiles.BASIC_CONFIG]['stats'], bundle3.stats)
 
     def test_the_cache_can_be_populated_from_a_list_of_config_files(self):
         path_to_cache_file = os.path.join(settings.STATIC_ROOT, 'test_populate_cache.json')
 
         entries = populate_cache(
-            cache_list=(PATH_TO_BASIC_CONFIG, PATH_TO_LIBRARY_CONFIG),
+            cache_list=(ConfigFiles.BASIC_CONFIG, ConfigFiles.LIBRARY_CONFIG),
             path_to_cache_file=path_to_cache_file,
         )
 
-        self.assertIn(PATH_TO_BASIC_CONFIG, entries)
-        self.assertIn(PATH_TO_LIBRARY_CONFIG, entries)
+        self.assertIn(ConfigFiles.BASIC_CONFIG, entries)
+        self.assertIn(ConfigFiles.LIBRARY_CONFIG, entries)
 
-        self.assertIsInstance(entries[PATH_TO_BASIC_CONFIG], dict)
-        self.assertIsInstance(entries[PATH_TO_LIBRARY_CONFIG], dict)
+        self.assertIsInstance(entries[ConfigFiles.BASIC_CONFIG], dict)
+        self.assertIsInstance(entries[ConfigFiles.LIBRARY_CONFIG], dict)
 
         with open(path_to_cache_file, 'r') as cache_file:
             contents = cache_file.read().encode('utf-8')
@@ -89,22 +82,22 @@ class TestCache(unittest.TestCase):
 
         entries = populate_cache(
             cache_list=(
-                lambda: PATH_TO_BASIC_CONFIG,
-                lambda: [PATH_TO_LIBRARY_CONFIG, PATH_TO_MULTIPLE_BUNDLES_CONFIG],
-                PATH_TO_MULTIPLE_ENTRY_CONFIG
+                lambda: ConfigFiles.BASIC_CONFIG,
+                lambda: [ConfigFiles.LIBRARY_CONFIG, ConfigFiles.MULTIPLE_BUNDLES_CONFIG],
+                ConfigFiles.MULTIPLE_ENTRY_CONFIG
             ),
             path_to_cache_file=path_to_cache_file,
         )
 
-        self.assertIn(PATH_TO_BASIC_CONFIG, entries)
-        self.assertIn(PATH_TO_LIBRARY_CONFIG, entries)
-        self.assertIn(PATH_TO_MULTIPLE_BUNDLES_CONFIG, entries)
-        self.assertIn(PATH_TO_MULTIPLE_ENTRY_CONFIG, entries)
+        self.assertIn(ConfigFiles.BASIC_CONFIG, entries)
+        self.assertIn(ConfigFiles.LIBRARY_CONFIG, entries)
+        self.assertIn(ConfigFiles.MULTIPLE_BUNDLES_CONFIG, entries)
+        self.assertIn(ConfigFiles.MULTIPLE_ENTRY_CONFIG, entries)
 
-        self.assertIsInstance(entries[PATH_TO_BASIC_CONFIG], dict)
-        self.assertIsInstance(entries[PATH_TO_LIBRARY_CONFIG], dict)
-        self.assertIsInstance(entries[PATH_TO_MULTIPLE_BUNDLES_CONFIG], dict)
-        self.assertIsInstance(entries[PATH_TO_MULTIPLE_ENTRY_CONFIG], dict)
+        self.assertIsInstance(entries[ConfigFiles.BASIC_CONFIG], dict)
+        self.assertIsInstance(entries[ConfigFiles.LIBRARY_CONFIG], dict)
+        self.assertIsInstance(entries[ConfigFiles.MULTIPLE_BUNDLES_CONFIG], dict)
+        self.assertIsInstance(entries[ConfigFiles.MULTIPLE_ENTRY_CONFIG], dict)
 
         with open(path_to_cache_file, 'r') as cache_file:
             contents = cache_file.read().encode('utf-8')
@@ -115,16 +108,16 @@ class TestCache(unittest.TestCase):
         path_to_cache_file = os.path.join(settings.STATIC_ROOT, 'test_cache_singleton.json')
 
         entries = populate_cache(
-            cache_list=(PATH_TO_CACHED_CONFIG,),
+            cache_list=(ConfigFiles.CACHED_CONFIG,),
             path_to_cache_file=path_to_cache_file,
         )
 
-        self.assertIn(PATH_TO_CACHED_CONFIG, entries)
-        self.assertIsInstance(entries[PATH_TO_CACHED_CONFIG], dict)
+        self.assertIn(ConfigFiles.CACHED_CONFIG, entries)
+        self.assertIsInstance(entries[ConfigFiles.CACHED_CONFIG], dict)
 
-        entry = cache.get(path_to_cache_file, PATH_TO_CACHED_CONFIG)
+        entry = cache.get(path_to_cache_file, ConfigFiles.CACHED_CONFIG)
 
-        self.assertEqual(entry, entries[PATH_TO_CACHED_CONFIG])
+        self.assertEqual(entry, entries[ConfigFiles.CACHED_CONFIG])
 
         self.assertIsInstance(entry['fileDependencies'], list)
 
@@ -135,11 +128,11 @@ class TestCache(unittest.TestCase):
         path_to_cache_file = os.path.join(settings.STATIC_ROOT, 'test_file_dependencies.json')
 
         populate_cache(
-            cache_list=(PATH_TO_CACHED_CONFIG,),
+            cache_list=(ConfigFiles.CACHED_CONFIG,),
             path_to_cache_file=path_to_cache_file,
         )
 
-        entry = cache.get(path_to_cache_file, PATH_TO_CACHED_CONFIG)
+        entry = cache.get(path_to_cache_file, ConfigFiles.CACHED_CONFIG)
 
         self.assertIsInstance(entry['fileDependencies'], list)
 
@@ -150,13 +143,13 @@ class TestCache(unittest.TestCase):
         path_to_cache_file = os.path.join(settings.STATIC_ROOT, 'test_compiler_uses_the_cache.json')
 
         populate_cache(
-            cache_list=(PATH_TO_CACHED_CONFIG,),
+            cache_list=(ConfigFiles.CACHED_CONFIG,),
             path_to_cache_file=path_to_cache_file,
         )
 
-        entry = cache.get(path_to_cache_file, PATH_TO_CACHED_CONFIG)
+        entry = cache.get(path_to_cache_file, ConfigFiles.CACHED_CONFIG)
 
-        bundle = webpack(PATH_TO_CACHED_CONFIG, cache_file=path_to_cache_file, use_cache_file=True)
+        bundle = webpack(ConfigFiles.CACHED_CONFIG, cache_file=path_to_cache_file, use_cache_file=True)
 
         self.assertEqual(bundle.stats, entry['stats'])
 
@@ -185,20 +178,20 @@ class TestCache(unittest.TestCase):
         path_to_cache_file = os.path.join(settings.STATIC_ROOT, 'test_missing_config_file_raises.json')
 
         populate_cache(
-            cache_list=(PATH_TO_CACHED_CONFIG,),
+            cache_list=(ConfigFiles.CACHED_CONFIG,),
             path_to_cache_file=path_to_cache_file,
         )
 
-        entry = cache.get(path_to_cache_file, PATH_TO_CACHED_CONFIG)
+        entry = cache.get(path_to_cache_file, ConfigFiles.CACHED_CONFIG)
 
-        bundle = webpack(PATH_TO_CACHED_CONFIG, cache_file=path_to_cache_file, use_cache_file=True)
+        bundle = webpack(ConfigFiles.CACHED_CONFIG, cache_file=path_to_cache_file, use_cache_file=True)
 
         self.assertEqual(bundle.stats, entry['stats'])
 
         self.assertRaises(
             ConfigFileMissingFromCache,
             webpack,
-            '/foo/bar',
+            PATH_TO_CACHED_REQUIRE_TEST,
             cache_file=path_to_cache_file,
             use_cache_file=True
         )

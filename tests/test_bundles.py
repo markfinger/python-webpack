@@ -5,15 +5,8 @@ from webpack.bundle import WebpackBundle
 from webpack.compiler import webpack
 from webpack.exceptions import ConfigFileNotFound
 from webpack.conf import settings
+from .settings import BUNDLES, ConfigFiles
 from .utils import clean_static_root, read_file
-
-TEST_ROOT = os.path.dirname(__file__)
-BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
-
-PATH_TO_BASIC_CONFIG = os.path.join(BUNDLES, 'basic', 'webpack.config.js')
-PATH_TO_LIBRARY_CONFIG = os.path.join(BUNDLES, 'library', 'webpack.config.js')
-PATH_TO_MULTIPLE_BUNDLES_CONFIG = os.path.join(BUNDLES, 'multiple_bundles', 'webpack.config.js')
-PATH_TO_MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack.config.js')
 
 
 class TestBundles(unittest.TestCase):
@@ -29,7 +22,7 @@ class TestBundles(unittest.TestCase):
         self.assertRaises(ConfigFileNotFound, webpack, '/file/that/does/not/exist.js')
 
     def test_bundle_create_a_file_with_contents(self):
-        bundle = webpack(PATH_TO_BASIC_CONFIG)
+        bundle = webpack(ConfigFiles.BASIC_CONFIG)
         assets = bundle.get_assets()
         self.assertEqual(len(assets), 1)
         asset = assets[0]
@@ -52,18 +45,18 @@ class TestBundles(unittest.TestCase):
         self.assertIn('__DJANGO_WEBPACK_REQUIRE_TEST__', contents)
 
     def test_webpack_returns_webpack_bundle_instances(self):
-        bundle = webpack(PATH_TO_BASIC_CONFIG)
+        bundle = webpack(ConfigFiles.BASIC_CONFIG)
         self.assertIsInstance(bundle, WebpackBundle)
 
     def test_webpack_bundles_can_return_urls_to_assets(self):
-        bundle = webpack(PATH_TO_BASIC_CONFIG)
+        bundle = webpack(ConfigFiles.BASIC_CONFIG)
         asset = bundle.get_assets()[0]
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
         self.assertEqual(urls[0], '/static/webpack/bundles/' + asset['name'])
 
     def test_can_render_a_webpack_bundle(self):
-        bundle = webpack(PATH_TO_BASIC_CONFIG)
+        bundle = webpack(ConfigFiles.BASIC_CONFIG)
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
         rendered = bundle.render()
@@ -71,13 +64,13 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(rendered, '<script src="' + urls[0] + '"></script>')
 
     def test_bundle_renders_itself_when_coerced_to_strings(self):
-        bundle = webpack(PATH_TO_BASIC_CONFIG)
+        bundle = webpack(ConfigFiles.BASIC_CONFIG)
         self.assertEqual(str(bundle), bundle.render())
         if six.PY2:
             self.assertEqual(unicode(bundle), unicode(bundle.render()))
 
     def test_bundle_can_handle_a_bundle_with_multiple_entries(self):
-        bundle = webpack(PATH_TO_MULTIPLE_ENTRY_CONFIG)
+        bundle = webpack(ConfigFiles.MULTIPLE_ENTRY_CONFIG)
         assets = bundle.get_assets()
         self.assertTrue(len(assets), 1)
         contents = read_file(assets[0]['path'])
@@ -89,7 +82,7 @@ class TestBundles(unittest.TestCase):
         self.assertIn('__DJANGO_WEBPACK_ENTRY_FIVE__', contents)
 
     def test_can_render_a_bundle_with_multiple_entries(self):
-        bundle = webpack(PATH_TO_MULTIPLE_ENTRY_CONFIG)
+        bundle = webpack(ConfigFiles.MULTIPLE_ENTRY_CONFIG)
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
         rendered = bundle.render()
@@ -97,7 +90,7 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(rendered, '<script src="' + urls[0] + '"></script>')
 
     def test_can_render_a_bundle_with_multiple_entry_points(self):
-        bundle = webpack(PATH_TO_MULTIPLE_ENTRY_CONFIG)
+        bundle = webpack(ConfigFiles.MULTIPLE_ENTRY_CONFIG)
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
         rendered = bundle.render()
@@ -105,7 +98,7 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(rendered, '<script src="' + urls[0] + '"></script>')
 
     def test_bundle_can_handle_multiple_bundles(self):
-        bundle = webpack(PATH_TO_MULTIPLE_BUNDLES_CONFIG)
+        bundle = webpack(ConfigFiles.MULTIPLE_BUNDLES_CONFIG)
         assets = bundle.get_assets()
         self.assertTrue(len(assets), 2)
         asset_names = [asset['name'] for asset in assets]
@@ -125,7 +118,7 @@ class TestBundles(unittest.TestCase):
         self.assertIn('__DJANGO_WEBPACK_BUNDLE_TWO__', bundle_2_contents)
 
     def test_bundle_can_render_multiple_bundles(self):
-        bundle = webpack(PATH_TO_MULTIPLE_BUNDLES_CONFIG)
+        bundle = webpack(ConfigFiles.MULTIPLE_BUNDLES_CONFIG)
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 2)
         rendered = bundle.render()
@@ -134,7 +127,7 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(rendered, '<script src="' + urls[0] + '"></script><script src="' + urls[1] + '"></script>')
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
-        bundle = webpack(PATH_TO_LIBRARY_CONFIG)
+        bundle = webpack(ConfigFiles.LIBRARY_CONFIG)
         stats = bundle.stats
         self.assertIsInstance(stats, dict)
         self.assertIn('webpackConfig', stats)
@@ -145,7 +138,7 @@ class TestBundles(unittest.TestCase):
         self.assertIsInstance(stats['urlsToAssets'], dict)
 
     def test_bundle_can_expose_its_config(self):
-        bundle = webpack(PATH_TO_BASIC_CONFIG)
+        bundle = webpack(ConfigFiles.BASIC_CONFIG)
         config = bundle.get_config()
         self.assertDictContainsSubset(
             {
@@ -163,8 +156,8 @@ class TestBundles(unittest.TestCase):
         )
 
     def test_bundle_can_expose_its_library_config(self):
-        bundle = webpack(PATH_TO_LIBRARY_CONFIG)
+        bundle = webpack(ConfigFiles.LIBRARY_CONFIG)
         self.assertEqual(bundle.get_library(), 'LIBRARY_TEST')
         self.assertEqual(bundle.get_var(), 'LIBRARY_TEST')
-        bundle = webpack(PATH_TO_MULTIPLE_BUNDLES_CONFIG)
+        bundle = webpack(ConfigFiles.MULTIPLE_BUNDLES_CONFIG)
         self.assertIsNone(bundle.get_library())

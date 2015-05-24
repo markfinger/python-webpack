@@ -2,7 +2,7 @@ import json
 from types import FunctionType
 from optional_django import six
 from .exceptions import ConfigFileMissingFromCache
-from .conf import settings
+import conf
 
 
 class Cache(object):
@@ -32,10 +32,10 @@ cache = Cache()
 
 def populate_cache(cache_list=None, path_to_cache_file=None):
     if cache_list is None:
-        cache_list = settings.CACHE
+        cache_list = conf.settings.CACHE
 
     if path_to_cache_file is None:
-        path_to_cache_file = settings.get_path_to_cache_file()
+        path_to_cache_file = conf.settings.get_path_to_cache_file()
 
     config_files = []
 

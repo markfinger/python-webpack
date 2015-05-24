@@ -43,3 +43,15 @@ JS_HOST = {
     'USE_MANAGER': True,
     'VERBOSITY': verbosity.SILENT,
 }
+
+
+TEST_ROOT = os.path.dirname(__file__)
+BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
+
+
+class ConfigFiles(object):
+    BASIC_CONFIG = os.path.join(BUNDLES, 'basic', 'webpack.config.js')
+    LIBRARY_CONFIG = os.path.join(BUNDLES, 'library', 'webpack.config.js')
+    MULTIPLE_BUNDLES_CONFIG = os.path.join(BUNDLES, 'multiple_bundles', 'webpack.config.js')
+    MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack.config.js')
+    CACHED_CONFIG = os.path.join(BUNDLES, 'cached', 'webpack.config.js')
