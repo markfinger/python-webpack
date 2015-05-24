@@ -18,9 +18,9 @@ class Conf(conf.Conf):
 
     CACHE = ()
 
-    CACHE_FILE = '.webpack_cache.json'
-
     USE_CACHE_FILE = False
+
+    CACHE_FILE = '.webpack_cache.json'
 
     OUTPUT_DIR = 'webpack'
 
