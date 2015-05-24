@@ -49,12 +49,12 @@ npm install --save webpack webpack-wrapper
 Add webpack-wrapper to the functions definition of your `host.config.js` file
 
 ```javascript
-var webpackWrapper = require('webpack-wrapper');
+var webpack = require('webpack-wrapper');
 
 module.exports = {
   functions: {
     // ...
-    webpack: webpackWrapper
+    webpack: webpack
   }
 };
 ```
