@@ -308,17 +308,19 @@ Default: `False`
 An iterable of config file paths which are used to populate a cache file. Using this setting enables
 a production instance to precompile and cache webpack's output.
 
-To assist with programatically generating config files, any functions provided in the iterable will
-be called. The functions can return a path or a list of paths, which will be added to the list.
+To assist with precompiling any programatically generated config files, functions placed in the 
+iterable will be called and their return values will be added to the list of config files precompiled.
 
 Default: `()`
 
 
 ### USE_CACHE_FILE
 
-A flag denoting that the python process should use the config file, rather than communicating with
-the js-host. If you request a build of a config file which was not precompiled, exceptions will be 
-raised.
+A flag denoting that the python process should use the cache file, rather than communicating with
+the js-host.
+
+If set to `True` and you request a build for a config file which was not precompiled, exceptions will 
+be raised.
 
 Default: `False`
 
