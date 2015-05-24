@@ -27,9 +27,8 @@ Documentation
 
 - [Installation](#installation)
 - [Settings](#settings)
-- [Settings for Django projects](#settings-for-django-projects)
-- [Extras for Django](#extras-for-django)
 - [Usage](#usage)
+- [Django integration](#django-integration)
 - [Running the tests](#running-the-tests)
 
 
@@ -70,7 +69,7 @@ Settings
 --------
 
 If you are using this library in a Django project, please refer to the 
-[settings for Django projects](#settings-for-django-projects) section of the documentation.
+[Django integration](#django-integration) section of the documentation.
 
 Settings can be defined by calling `webpack.conf.settings.configure` with keyword arguments matching 
 the setting that you want to define. For example
@@ -111,26 +110,6 @@ This setting **must** be defined.
 Default: `None`
 
 
-### OUTPUT_DIR
-
-The directory in `STATIC_ROOT` which webpack will output any generated bundles or config files.
-
-Default: `'webpack'`
-
-
-### BUNDLE_DIR
-
-The directory into which bundles are placed in the `OUTPUT_DIR`.
-
-Default: `'bundles'`
-
-
-### CONFIG_DIR
-
-The directory into which bundles are placed in the `OUTPUT_DIR`.
-
-Default: `'config_files'`
-
 
 ### WATCH_CONFIG_FILES
 
@@ -168,6 +147,54 @@ Indicates if the watcher should poll for changes, rather than relying on the OS 
 Default: `False`
 
 
+### CACHE
+
+An iterable of config file paths which are used to populate a cache file. Using this setting enables
+a production instance to precompile and cache webpack's output.
+
+To assist with programatically generating config files, any functions provided in the iterable will
+be called. The functions can return a path or a list of paths, which will be added to the list.
+
+Default: `()`
+
+
+### USE_CACHE_FILE
+
+A flag denoting that the python process should use the config file, rather than communicating with
+the js-host. If you request a build of a config file which was not precompiled, exceptions will be 
+raised.
+
+Default: `False`
+
+
+### CACHE_FILE
+
+A path to a file which will be used to store webpack's cache. If the path is relative, it is joined
+to js-host's `SOURCE_ROOT` setting (which defaults to your current working directory).
+
+Default: '.webpack_cache.json'
+
+### OUTPUT_DIR
+
+The directory in `STATIC_ROOT` which webpack will output any generated bundles or config files.
+
+Default: `'webpack'`
+
+
+### BUNDLE_DIR
+
+The directory into which bundles are placed in the `OUTPUT_DIR`.
+
+Default: `'bundles'`
+
+
+### CONFIG_DIR
+
+The directory into which bundles are placed in the `OUTPUT_DIR`.
+
+Default: `'config_files'`
+
+
 ### TAG_TEMPLATES
 
 String templates which are used when rendering compiled assets. `'js'` is used if there is no matching
@@ -180,87 +207,6 @@ Default:
     'js': '<script src="{url}"></script>',
 }
 ```
-
-
-Settings for Django projects
-----------------------------
-
-The following configuration should be placed in your settings files to enable webpack to function 
-seamlessly in a Django project.
-
-Add `'webpack'` to your `INSTALLED_APPS`
-
-```python
-INSTALLED_APPS = (
-    # ...
-    'webpack',
-)
-```
-
-Add `'webpack.django_integration.WebpackFinder'` to your `STATICFILES_FINDERS`
-
-```python
-STATICFILES_FINDERS = (
-    # ...
-    'webpack.django_integration.WebpackFinder',
-)
-```
-
-Configure webpack to respect your project's configuration
-
-```python
-WEBPACK = {
-    'STATIC_ROOT': STATIC_ROOT,
-    'STATIC_URL': STATIC_URL,
-    'WATCH_CONFIG_FILES': DEBUG,
-    'WATCH_SOURCE_FILES': DEBUG,
-}
-```
-
-When used in a Django project, Webpack allows you to specify paths to config files which will be 
-resolved with Django's file finders.
-
-For example, `webpack('my_app/webpack.config.js')` could match a file within an app's static directory, 
-such as `my_app/static/my_app/webpack.config.js`.
-
-
-Extras for Django
------------------
-
-python-webpack also provides a template tag and storage backend for compiling
-during collectstatic.
-
-You can use the template tag like this:
-
-```html+django
-{% load webpack %}
-
-{% webpack 'path/to/webpack.config.js' %}
-```
-
-If you wish to pre-compile your webpack bundles during `collecstatic`, you can
-use the special storage backend.
-
-```python
-# settings.py
-
-WEBPACK = {
-    # ...
-
-    # defines whether or not we should compile during collectstatic
-    'COMPILE_OFFLINE': True
-
-    # a list of all webpack configs to compile during collectstatic
-    'OFFLINE_BUNDLES': [
-        'path/to/webpack.config.js',
-    ]
-}
-
-STATICFILES_STORAGE = 'webpack.django_integration.WebpackOfflineStaticFilesStorage'
-```
-
-If `COMPILE_OFFLINE` is set to `True`, the template tag will check the
-pre-compiled bundles. Otherwise, it will compile the files during the request.
 
 
 Usage
@@ -294,6 +240,94 @@ bundle.get_library()
 A helper is provided for configuring your bundle's output path, simply leave the setting
 undefined and it will be preprocessed before compilation begins. The value applied is
 generated by joining your `STATIC_ROOT`, `OUTPUT_DIR` and `BUNDLE_DIR` settings.
+
+
+Precompiling assets for production
+----------------------------------
+
+You will generally want to precompile your assets for a production environment. To do so,
+add you config files to the `CACHE` setting and then run the following
+
+```
+from webpack.cache import populate_cache
+
+populate_cache()
+```
+
+When your `USE_CACHE_FILE` setting is `True`, the python process will now read data from the cache 
+file, rather than relying on the JS compiler.
+
+Note: in a django project, you can simply call the `populate_webpack_cache` management command, rather
+than calling `populate_cache` directly.
+
+
+Django integration
+------------------
+
+
+### Installation and configuration
+
+The following configuration should be placed in to your settings files to enable webpack to function 
+seamlessly in a Django project.
+
+Add `'webpack'` to your `INSTALLED_APPS`
+
+```python
+INSTALLED_APPS = (
+    # ...
+    'webpack',
+)
+```
+
+Add `'webpack.django_integration.WebpackFinder'` to your `STATICFILES_FINDERS`
+
+```python
+STATICFILES_FINDERS = (
+    # ...
+    'webpack.django_integration.WebpackFinder',
+)
+```
+
+Configure webpack to respect your project's configuration
+
+```python
+WEBPACK = {
+    'STATIC_ROOT': STATIC_ROOT,
+    'STATIC_URL': STATIC_URL,
+    'WATCH_CONFIG_FILES': DEBUG,
+    'WATCH_SOURCE_FILES': DEBUG,
+}
+```
+
+
+### Path resolution
+
+When used in a Django project, Webpack allows you to specify relative paths to config files which will be 
+resolved with Django's file finders.
+
+For example, `webpack('app/webpack.config.js')` could match a file within an app's static directory, 
+such as `/project/app/static/app/webpack.config.js`.
+
+
+### Template tags
+
+A template tag is provided as a shorthand for rendering a bundle.
+
+```html
+{% load webpack %}
+
+{% webpack 'path/to/webpack.config.js' %}
+```
+
+
+### Management commands
+
+A management command is provided for populating the cache. If `USE_CACHE_FILE` is `True`, ensure that you
+run this command before restarting a server.
+
+```bash
+./manage.py populate_webpack_cache
+```
 
 
 Running the tests
