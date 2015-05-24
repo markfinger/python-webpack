@@ -29,10 +29,6 @@ class Conf(conf.Conf):
 
     JS_HOST_FUNCTION = 'webpack'
 
-    COMPILE_OFFLINE = False
-
-    OFFLINE_BUNDLES = []
-
     CACHE = ()
 
     CACHE_FILE = '.webpack_cache.json'
