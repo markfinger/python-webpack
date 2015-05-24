@@ -8,12 +8,6 @@ class Conf(conf.Conf):
 
     STATIC_URL = None
 
-    OUTPUT_DIR = 'webpack'
-
-    BUNDLE_DIR = 'bundles'
-
-    CONFIG_DIR = 'config_files'
-
     WATCH_CONFIG_FILES = False
 
     WATCH_SOURCE_FILES = False
@@ -21,19 +15,25 @@ class Conf(conf.Conf):
     AGGREGATE_TIMEOUT = 200
 
     POLL = False
-    
-    TAG_TEMPLATES = {
-        'css': '<link rel="stylesheet" href="{url}">',
-        'js': '<script src="{url}"></script>',
-    }
-
-    JS_HOST_FUNCTION = 'webpack'
 
     CACHE = ()
 
     CACHE_FILE = '.webpack_cache.json'
 
     USE_CACHE_FILE = False
+
+    OUTPUT_DIR = 'webpack'
+
+    BUNDLE_DIR = 'bundles'
+
+    CONFIG_DIR = 'config_files'
+
+    TAG_TEMPLATES = {
+        'css': '<link rel="stylesheet" href="{url}">',
+        'js': '<script src="{url}"></script>',
+    }
+
+    JS_HOST_FUNCTION = 'webpack'
 
     def get_path_to_output_dir(self):
         return os.path.join(self.STATIC_ROOT, self.OUTPUT_DIR)
