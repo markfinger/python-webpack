@@ -351,12 +351,13 @@ A template tag is provided as a shorthand for rendering a bundle.
 
 ### Management commands
 
-A management command is provided for populating the cache. If `USE_CACHE_FILE` is `True`, ensure that you
-run this command before restarting a server.
+A management command is provided for populating the cache.
 
 ```bash
 ./manage.py populate_webpack_cache
 ```
+
+If `USE_CACHE_FILE` is `True`, ensure that you run this command before restarting a server.
 
 
 Running the tests
