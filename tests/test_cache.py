@@ -31,7 +31,7 @@ class TestCache(unittest.TestCase):
         self.assertEqual(bundle1.stats, bundle2.stats)
 
         with open(path_to_cache_file, 'r') as cache_file:
-            contents = cache_file.read().decode('utf-8')
+            contents = cache_file.read()
 
         cache1 = json.loads(contents)
 
@@ -44,7 +44,7 @@ class TestCache(unittest.TestCase):
         bundle3 = webpack(ConfigFiles.BASIC_CONFIG, cache_file=path_to_cache_file)
 
         with open(path_to_cache_file, 'r') as cache_file:
-            contents = cache_file.read().decode('utf-8')
+            contents = cache_file.read()
 
         cache2 = json.loads(contents)
 
@@ -73,7 +73,7 @@ class TestCache(unittest.TestCase):
         self.assertIsInstance(entries[ConfigFiles.LIBRARY_CONFIG], dict)
 
         with open(path_to_cache_file, 'r') as cache_file:
-            contents = cache_file.read().encode('utf-8')
+            contents = cache_file.read()
 
         self.assertEqual(entries, json.loads(contents))
 
@@ -100,7 +100,7 @@ class TestCache(unittest.TestCase):
         self.assertIsInstance(entries[ConfigFiles.MULTIPLE_ENTRY_CONFIG], dict)
 
         with open(path_to_cache_file, 'r') as cache_file:
-            contents = cache_file.read().encode('utf-8')
+            contents = cache_file.read()
 
         self.assertEqual(entries, json.loads(contents))
 

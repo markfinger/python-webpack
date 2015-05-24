@@ -93,7 +93,7 @@ class TestDjangoIntegration(unittest.TestCase):
             call_command('populate_webpack_cache', verbosity=0)
 
             with open(path_to_cache_file, 'r') as cache_file:
-                contents = cache_file.read().encode('utf-8')
+                contents = cache_file.read()
 
             entries = json.loads(contents)
 

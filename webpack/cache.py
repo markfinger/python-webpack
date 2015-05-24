@@ -2,7 +2,7 @@ import json
 from types import FunctionType
 from optional_django import six
 from .exceptions import ConfigFileMissingFromCache
-import conf
+from . import conf
 
 
 class Cache(object):
@@ -11,7 +11,7 @@ class Cache(object):
     def get(self, path_to_cache_file, key):
         if path_to_cache_file not in self.data:
             with open(path_to_cache_file, 'r') as cache_file:
-                contents = cache_file.read().encode('utf-8')
+                contents = cache_file.read()
             self.data[path_to_cache_file] = json.loads(contents)
 
         if key not in self.data[path_to_cache_file]:
@@ -56,6 +56,6 @@ def populate_cache(cache_list=None, path_to_cache_file=None):
         webpack(config_file, cache_file=path_to_cache_file, use_cache_file=False)
 
     with open(path_to_cache_file, 'r') as cache_file:
-        contents = cache_file.read().encode('utf-8')
+        contents = cache_file.read()
 
     return json.loads(contents)
