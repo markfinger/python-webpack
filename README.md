@@ -13,8 +13,10 @@ from webpack.compiler import webpack
 
 assets = webpack('/path/to/webpack.config.js')
 
-# Returns a string containing <script> and <link> elements 
-# pointing to the bundle's assets
+# Absolute paths to the compiled assets
+assets.get_paths()
+
+# Render <script> and <link> elements pointing to the assets
 assets.render()
 ```
 
@@ -70,8 +72,8 @@ Usage
 -----
 
 python-webpack takes paths to [config files](https://webpack.github.io/docs/configuration.html) and passes
-them to a compiler. Once the compiler has built the assets, they can be easily injected into your frontend
-as rendered &lt;script&gt; and &lt;link&gt; elements.
+them to a compiler. Once the compiler has built the assets, it returns an object which enables you to interact
+with the results of the build process.
 
 ```python
 from webpack.compiler import webpack
