@@ -3,7 +3,7 @@ import sys
 from js_host.conf import settings as js_host_settings
 from webpack.conf import settings as webpack_settings
 
-DEBUG = False
+DEBUG = True
 PRECOMPILING = 'precompile.py' in sys.argv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))

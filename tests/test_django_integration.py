@@ -7,7 +7,7 @@ from optional_django import six
 from optional_django.env import DJANGO_CONFIGURED
 from optional_django import staticfiles
 from optional_django.env import DJANGO_SETTINGS
-from webpack.compiler import webpack
+from webpack.compiler import webpack, generate_compiler_options
 from webpack.exceptions import ConfigFileNotFound, ConfigFileMissingFromCache
 from webpack.conf import Conf
 from .utils import clean_static_root, read_file
@@ -97,17 +97,23 @@ class TestDjangoIntegration(unittest.TestCase):
 
             entries = json.loads(contents)
 
-            self.assertIn(staticfiles.find(PATH_TO_BASIC_CONFIG), entries)
-            self.assertIn(staticfiles.find(PATH_TO_MULTIPLE_BUNDLES_CONFIG), entries)
+            options1 = generate_compiler_options(staticfiles.find(PATH_TO_BASIC_CONFIG))
+            options2 = generate_compiler_options(staticfiles.find(PATH_TO_MULTIPLE_BUNDLES_CONFIG))
+
+            cache_key1 = options1['cacheKey']
+            cache_key2 = options2['cacheKey']
+
+            self.assertIn(cache_key1, entries)
+            self.assertIn(cache_key2, entries)
 
             self.assertEqual(
                 webpack(PATH_TO_BASIC_CONFIG).stats,
-                entries[staticfiles.find(PATH_TO_BASIC_CONFIG)]['stats'],
+                entries[cache_key1]['stats'],
             )
 
             self.assertEqual(
                 webpack(PATH_TO_MULTIPLE_BUNDLES_CONFIG).stats,
-                entries[staticfiles.find(PATH_TO_MULTIPLE_BUNDLES_CONFIG)]['stats'],
+                entries[cache_key2]['stats'],
             )
 
             self.assertRaises(

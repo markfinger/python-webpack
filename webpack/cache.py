@@ -16,7 +16,10 @@ class Cache(object):
 
         if key not in self.data[path_to_cache_file]:
             raise ConfigFileMissingFromCache(
-                '{} has no entry for {}. Add the file to webpack\'s CACHE setting, then repopulate the cache'.format(
+                (
+                    'Cache file {} has no entry for {}. Ensure the file has been added to webpack\'s CACHE setting, '
+                    'then repopulate the cache'
+                ).format(
                     path_to_cache_file,
                     key
                 )
@@ -30,12 +33,12 @@ class Cache(object):
 cache = Cache()
 
 
-def populate_cache(cache_list=None, path_to_cache_file=None):
+def populate_cache(cache_list=None, cache_file=None):
     if cache_list is None:
         cache_list = conf.settings.CACHE
 
-    if path_to_cache_file is None:
-        path_to_cache_file = conf.settings.get_path_to_cache_file()
+    if cache_file is None:
+        cache_file = conf.settings.get_path_to_cache_file()
 
     config_files = []
 
@@ -53,9 +56,9 @@ def populate_cache(cache_list=None, path_to_cache_file=None):
     from .compiler import webpack
 
     for config_file in config_files:
-        webpack(config_file, cache_file=path_to_cache_file, use_cache_file=False)
+        webpack(config_file, cache_file=cache_file, use_cache_file=False)
 
-    with open(path_to_cache_file, 'r') as cache_file:
-        contents = cache_file.read()
+    with open(cache_file, 'r') as _cache_file:
+        contents = _cache_file.read()
 
     return json.loads(contents)
