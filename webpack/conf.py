@@ -16,6 +16,8 @@ class Conf(conf.Conf):
 
     POLL = False
 
+    HMR = False
+
     CACHE = ()
 
     USE_CACHE_FILE = False
@@ -27,11 +29,6 @@ class Conf(conf.Conf):
     BUNDLE_DIR = 'bundles'
 
     CONFIG_DIR = 'config_files'
-
-    TAG_TEMPLATES = {
-        'css': '<link rel="stylesheet" href="{url}">',
-        'js': '<script src="{url}"></script>',
-    }
 
     JS_HOST_FUNCTION = 'webpack'
 

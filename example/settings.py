@@ -7,13 +7,17 @@ DEBUG = True
 PRECOMPILING = 'precompile.py' in sys.argv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_FILE = os.path.join(BASE_DIR, 'static', 'js', 'webpack.config.js')
+CONFIG_FILE = os.path.join(BASE_DIR, 'webpack.config.js')
 
-# In development, we need access to the js-host
 if DEBUG or PRECOMPILING:
     js_host_settings.configure(
         USE_MANAGER=DEBUG or PRECOMPILING,
     )
+
+if DEBUG:
+    WEBPACK_BUILD = 'dev'
+else:
+    WEBPACK_BUILD = 'prod'
 
 webpack_settings.configure(
     # The root directory that webpack will place files into and infer urls from
@@ -27,6 +31,8 @@ webpack_settings.configure(
 
     # In development, a watcher will rebuild a bundle whenever any of its source files change
     WATCH_SOURCE_FILES=DEBUG,
+
+    HMR=DEBUG,
 
     # A list of files which are precompiled for a production environment
     CACHE=(

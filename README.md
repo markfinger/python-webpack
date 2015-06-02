@@ -6,7 +6,7 @@ python-webpack
 Python bindings to [webpack](https://webpack.github.io). 
 
 Parses modules with dependencies and generates static assets representing those modules, enabling you 
-to package your assets so that they can be reused on the clientside.
+to package your assets so that they can be reused on the client-side.
 
 ```python
 from webpack.compiler import webpack
@@ -21,7 +21,7 @@ assets.render()
 ```
 
 python-webpack uses [webpack-wrapper](https://github.com/markfinger/webpack-wrapper) to provide support
-for multiple concurrent compilers, file caching, and change detection of files.
+for multiple concurrent compilers, file caching, hot module replacement, and file watching.
 
 
 Documentation
@@ -47,16 +47,21 @@ interoperability with JavaScript. Complete its
 Install webpack's JS dependencies
 
 ```bash
-npm install --save webpack webpack-wrapper@0.5
+npm install --save webpack webpack-wrapper@0.6
 ```
 
-Add webpack-wrapper to the functions definition of your `host.config.js` file
+Add webpack-wrapper to your `host.config.js` file
 
 ```javascript
+var webpack = require('webpack-wrapper');
+
 module.exports = {
   functions: {
     // ...
-    webpack: require('webpack-wrapper')
+    webpack: webpack
+  },
+  extendHost: function(host) {
+    webpack.hmr.addTo(host.server);
   }
 };
 ```
@@ -83,6 +88,12 @@ assets = webpack('/path/to/webpack.config.js')
 # Returns a string containing <script> and <link> elements pointing 
 # to the generated assets
 assets.render()
+
+# Returns a string containing <link> elements pointing to any css assets
+assets.render_style_sheets()
+
+# Returns a string containing <script> elements pointing to any js assets
+assets.render_scripts()
 
 # Returns absolute paths to the generated assets on your filesystem
 assets.get_paths()
@@ -184,8 +195,8 @@ Configure webpack to respect your project's configuration
 WEBPACK = {
     'STATIC_ROOT': STATIC_ROOT,
     'STATIC_URL': STATIC_URL,
-    'WATCH_CONFIG_FILES': DEBUG,
     'WATCH_SOURCE_FILES': DEBUG,
+    'HMR': DEBUG,
 }
 ```
 
@@ -238,8 +249,8 @@ DEBUG = True
 settings.configure(
     STATIC_ROOT='/path/to/your/projects/static_root',
     STATIC_URL='/static/',
-    WATCH_CONFIG_FILES=DEBUG,
     WATCH_SOURCE_FILES=DEBUG,
+    HMR=DEBUG,
 )
 ```
 
@@ -266,22 +277,21 @@ This setting **must** be defined.
 Default: `None`
 
 
+### WATCH_SOURCE_FILES
 
-### WATCH_CONFIG_FILES
-
-A boolean flag which indicates that file watchers should be set to watch config files and 
-rebuild the assets whenever a change is detected. 
+A boolean flag which indicates that file watchers should be set to watch the assets's source
+files. When a change is detected, the files which have changed are recompiled in the background
+so that the assets are ready for the next request.
 
 Set this to `True` in development environments.
 
 Default: `False`
 
 
-### WATCH_SOURCE_FILES
+### HMR
 
-A boolean flag which indicates that file watchers should be set to watch the assets's source 
-files. When a change is detected, the files which have changed are recompiled in the background
-so that the assets are ready for the next request.
+A boolean flag indicating that the wrapper should inject a HMR runtime into the generate bundle.
+The runtime communicates with the js-host's webpack wrapper socket endpoint.
 
 Set this to `True` in development environments.
 
@@ -294,15 +304,6 @@ The delay between the detection of a change in your source files and the start o
 rebuild process.
 
 Default: `200`
-
-
-### POLL
-
-Indicates if the watcher should poll for changes, rather than relying on the OS for notifications.
-
-If the compiler is not detecting changes to your files, setting this to `True` may resolve the problem.
-
-Default: `False`
 
 
 ### CACHE
@@ -334,11 +335,34 @@ to js-host's `SOURCE_ROOT` setting (which defaults to your current working direc
 
 Default: '.webpack_cache.json'
 
+
+### WATCH_CONFIG_FILES
+
+A boolean flag which indicates that file watchers should be set to watch config files and
+invalidate the compiler whenever changes are detected.
+
+Note: this functionality has been identified as causing instability in long-running js-host
+instances. It's useful in development, but you should avoid using it with js-host's manager
+functionality.
+
+Default: `False`
+
+
 ### OUTPUT_DIR
 
 The directory in `STATIC_ROOT` which webpack will output any generated bundles or config files.
 
 Default: `'webpack'`
+
+
+### POLL
+
+Indicates if the watcher should poll for changes, rather than relying on the OS for notifications.
+
+If the compiler is not detecting changes to your files, setting this to `True` may resolve the problem.
+
+Default: `False`
+
 
 
 ### BUNDLE_DIR
@@ -354,19 +378,6 @@ The directory into which bundles are placed in the `OUTPUT_DIR`.
 
 Default: `'config_files'`
 
-
-### TAG_TEMPLATES
-
-String templates which are used when rendering compiled assets. `'js'` is used if there is no matching
-file extension on the emitted asset.
-
-Default:
-```python
-{
-    'css': '<link rel="stylesheet" href="{url}">',
-    'js': '<script src="{url}"></script>',
-}
-```
 
 
 Running the tests

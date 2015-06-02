@@ -2,7 +2,6 @@
 
 import subprocess
 import os
-import sys
 import django
 
 print('\n' + '-' * 80)

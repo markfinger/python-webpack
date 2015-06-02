@@ -124,7 +124,7 @@ class TestBundles(unittest.TestCase):
         rendered = bundle.render()
         for url in urls:
             self.assertIn(url, bundle.render())
-        self.assertEqual(rendered, '<script src="' + urls[0] + '"></script><script src="' + urls[1] + '"></script>')
+        self.assertEqual(rendered, '<script src="' + urls[0] + '"></script>\n<script src="' + urls[1] + '"></script>')
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
         bundle = webpack(ConfigFiles.LIBRARY_CONFIG)

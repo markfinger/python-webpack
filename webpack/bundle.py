@@ -1,5 +1,4 @@
 from optional_django.safestring import mark_safe
-from .conf import settings
 
 
 class WebpackBundle(object):
@@ -16,20 +15,24 @@ class WebpackBundle(object):
         return mark_safe(unicode(self.render()))
 
     def render(self):
-        """
-        Returns HTML script elements pointing to the bundle's assets
-        """
-        urls = self.get_urls()
-        if urls:
-            return mark_safe(''.join([self.render_tag(url) for url in urls]))
+        return '{}{}'.format(
+            self.render_style_sheets(),
+            self.render_scripts(),
+        )
+
+    def render_style_sheets(self):
+        if self.stats:
+            rendered = self.stats.get('rendered', None)
+            if rendered:
+                return '\n'.join(rendered['styleSheets'])
         return ''
 
-    @staticmethod
-    def render_tag(url):
-        ext = url.split('.')[-1]
-        if ext not in settings.TAG_TEMPLATES:
-            ext = 'js'
-        return settings.TAG_TEMPLATES[ext].format(url=url)
+    def render_scripts(self):
+        if self.stats:
+            rendered = self.stats.get('rendered', None)
+            if rendered:
+                return '\n'.join(rendered['scripts'])
+        return ''
 
     def get_assets(self):
         if self.stats:
