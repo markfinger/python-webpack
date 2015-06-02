@@ -137,7 +137,7 @@ class TestCache(unittest.TestCase):
         self.assertIn(cache_key, entries)
         self.assertIsInstance(entries[cache_key], dict)
 
-        entry = cache.get(path_to_cache_file, cache_key)
+        entry = cache.get(path_to_cache_file, options)
 
         self.assertEqual(entry, entries[cache_key])
 
@@ -157,7 +157,7 @@ class TestCache(unittest.TestCase):
 
         options = generate_compiler_options(ConfigFiles.CACHED_CONFIG, cache_file=path_to_cache_file)
 
-        entry = cache.get(path_to_cache_file, options['cacheKey'])
+        entry = cache.get(path_to_cache_file, options)
 
         self.assertIsInstance(entry['fileDependencies'], list)
 
@@ -174,9 +174,8 @@ class TestCache(unittest.TestCase):
         )
 
         options = generate_compiler_options(ConfigFiles.CACHED_CONFIG, cache_file=path_to_cache_file)
-        cache_key = options['cacheKey']
 
-        entry = cache.get(path_to_cache_file, cache_key)
+        entry = cache.get(path_to_cache_file, options)
 
         bundle = webpack(ConfigFiles.CACHED_CONFIG, cache_file=path_to_cache_file, use_cache_file=True)
 
@@ -191,13 +190,13 @@ class TestCache(unittest.TestCase):
         self.assertTrue(asset['name'].endswith('.js'))
         self.assertEqual(
             asset['path'],
-            os.path.join(settings.get_path_to_bundle_dir(), asset['name'])
+            os.path.join(settings.get_path_to_bundle_dir(), options['hash'], asset['name'])
         )
         self.assertTrue(os.path.exists(asset['path']))
-        self.assertTrue(os.path.exists(os.path.join(settings.get_path_to_bundle_dir(), asset['name'])))
+        self.assertTrue(os.path.exists(os.path.join(settings.get_path_to_bundle_dir(), options['hash'], asset['name'])))
         self.assertEqual(
             asset['url'],
-            (settings.STATIC_URL + settings.OUTPUT_DIR + '/' + settings.BUNDLE_DIR + '/' + asset['name']).replace('\\', '/'),
+            (settings.STATIC_URL + settings.OUTPUT_DIR + '/' + settings.BUNDLE_DIR + '/' + options['hash'] + '/' + asset['name']).replace('\\', '/'),
         )
         contents = read_file(asset['path'])
         self.assertIn('__DJANGO_WEBPACK_CACHED_TEST__', contents)
@@ -213,7 +212,7 @@ class TestCache(unittest.TestCase):
 
         options = generate_compiler_options(ConfigFiles.CACHED_CONFIG, cache_file=path_to_cache_file)
 
-        entry = cache.get(path_to_cache_file, options['cacheKey'])
+        entry = cache.get(path_to_cache_file, options)
 
         bundle = webpack(ConfigFiles.CACHED_CONFIG, cache_file=path_to_cache_file, use_cache_file=True)
 

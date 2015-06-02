@@ -3,6 +3,6 @@
   "dependencies": {
     "js-host": "^0.11.6",
     "webpack": "^1.9.8",
-    "webpack-wrapper": "^0.5.1"
+    "webpack-wrapper": "^0.6.0"
   }
 }

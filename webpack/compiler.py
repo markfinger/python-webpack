@@ -7,7 +7,7 @@ from js_host.function import Function
 from js_host.exceptions import FunctionError
 from optional_django import six
 from optional_django import staticfiles
-from webpack import conf
+from . import conf, __version__
 from .exceptions import ImproperlyConfigured, ConfigFileNotFound, BundlingError, WebpackWarning
 from .cache import cache
 from .bundle import WebpackBundle
@@ -46,23 +46,29 @@ def generate_compiler_options(config_file, watch_config=None, watch_source=None,
         'watch': watch_source,
         'watchConfig': watch_config,
         'cacheFile': cache_file,
-        'cacheKey': None,
         'outputPath': conf.settings.get_path_to_bundle_dir(),
         'staticRoot': conf.settings.STATIC_ROOT,
         'staticUrl': conf.settings.STATIC_URL,
         'aggregateTimeout': conf.settings.AGGREGATE_TIMEOUT,
-        'poll': conf.settings.POLL,
-        # Prevent cache entries from expiring
-        'cacheTTL': False,
+        # Generated below
+        'cacheKey': None,
+        'hash': None,
     }
 
-    cache_key = options['config']
-    if os.getcwd() in cache_key:
-        cache_key = cache_key.replace(os.getcwd(), '')
-    options['cacheKey'] = 'build__{}__{}'.format(
-        hashlib.md5(json.dumps(options)).hexdigest(),
-        cache_key,
-    )
+    if conf.settings.POLL is not None:
+        options['poll'] = conf.settings.POLL
+
+    options_json = json.dumps(options)
+
+    hashable_content = '{}__{}'.format(options_json, __version__)
+
+    options_hash = hashlib.md5(hashable_content).hexdigest()
+
+    options['hash'] = options_hash
+
+    options['cacheKey'] = '{}__{}'.format(config_file, options_hash)
+
+    options['outputPath'] = os.path.join(options['outputPath'], options_hash)
 
     return options
 
@@ -79,11 +85,11 @@ def webpack(config_file, watch_config=None, watch_source=None, cache_file=None, 
         use_cache_file = conf.settings.USE_CACHE_FILE
 
     if use_cache_file:
-        entry = cache.get(options['cacheFile'], options['cacheKey'])
+        entry = cache.get(options['cacheFile'], options)
 
         assert entry['config'] == options['config']
 
-        return WebpackBundle(entry['stats'])
+        return WebpackBundle(entry['stats'], options)
 
     try:
         output = js_host_function.call(**options)
@@ -100,4 +106,4 @@ def webpack(config_file, watch_config=None, watch_source=None, cache_file=None, 
     if stats['warnings']:
         warnings.warn(stats['warnings'], WebpackWarning)
 
-    return WebpackBundle(stats)
+    return WebpackBundle(stats, options)

@@ -5,8 +5,9 @@ from .conf import settings
 class WebpackBundle(object):
     stats = None
 
-    def __init__(self, stats):
+    def __init__(self, stats, options):
         self.stats = stats
+        self.options = options
 
     def __str__(self):
         return mark_safe(self.render())

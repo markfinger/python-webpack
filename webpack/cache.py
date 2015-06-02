@@ -8,11 +8,13 @@ from . import conf
 class Cache(object):
     data = {}
 
-    def get(self, path_to_cache_file, key):
+    def get(self, path_to_cache_file, options):
         if path_to_cache_file not in self.data:
             with open(path_to_cache_file, 'r') as cache_file:
                 contents = cache_file.read()
             self.data[path_to_cache_file] = json.loads(contents)
+
+        key = options['cacheKey']
 
         if key not in self.data[path_to_cache_file]:
             raise ConfigFileMissingFromCache(
