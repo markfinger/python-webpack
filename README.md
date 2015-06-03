@@ -42,7 +42,7 @@ interoperability with JavaScript. Complete its
 Install webpack's JS dependencies
 
 ```bash
-npm install --save webpack webpack-wrapper
+npm install --save webpack webpack-wrapper@0.2.2
 ```
 
 Add webpack-wrapper to the functions definition of your `host.config.js` file
