@@ -1,8 +1,0 @@
-{
-  "private": true,
-  "dependencies": {
-    "js-host": "^0.12.0",
-    "webpack": "^1.9.8",
-    "webpack-wrapper": "^0.6.1"
-  }
-}

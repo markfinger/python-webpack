@@ -1,8 +1,8 @@
 # Dependencies
 optional-django==0.3.0
+requests==2.7.0
 
 # Dev dependencies
-js-host
 django
 nose==1.3.6
 mock

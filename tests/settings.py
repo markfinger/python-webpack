@@ -1,5 +1,4 @@
 import os
-from js_host.utils import verbosity
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -11,7 +10,6 @@ STATIC_URL = '/static/'
 INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'tests.django_test_app',
-    'js_host',
     'webpack',
 )
 
@@ -33,17 +31,8 @@ STATICFILES_DIRS = (
 WEBPACK = {
     'STATIC_ROOT': STATIC_ROOT,
     'STATIC_URL': STATIC_URL,
-    # Prevent caching across processes
-    'CACHE_FILE': None
+    'CACHE': False
 }
-
-JS_HOST = {
-    'SOURCE_ROOT': BASE_DIR,
-    # Let the manager spin up an instance
-    'USE_MANAGER': True,
-    'VERBOSITY': verbosity.SILENT,
-}
-
 
 TEST_ROOT = os.path.dirname(__file__)
 BUNDLES = os.path.join(TEST_ROOT, 'bundles',)

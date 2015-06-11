@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "dependencies": {
+    "node-libs-browser": "^0.5.2",
+    "webpack": "^1.9.10",
+    "webpack-build": "^0.8.2"
+  },
+  "scripts": {
+    "start": "webpack-build-server"
+  }
+}

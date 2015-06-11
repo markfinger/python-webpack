@@ -46,16 +46,16 @@ class TestDjangoIntegration(unittest.TestCase):
         bundle = webpack('django_test_app/webpack.config.js')
         assets = bundle.get_assets()
         self.assertTrue(len(assets), 1)
-        contents = read_file(assets[0]['path'])
+        contents = read_file(assets[0])
         self.assertIn('__DJANGO_WEBPACK_ENTRY_TEST__', contents)
         self.assertIn('__DJANGO_WEBPACK_STATIC_FILE_FINDER_TEST__', contents)
 
     def test_bundle_urls_can_be_resolved_via_the_static_file_finder_used_by_the_dev_server(self):
         bundle = webpack('django_test_app/webpack.config.js')
-        assets = bundle.get_assets()
-        self.assertTrue(len(assets), 1)
-        relative_url = assets[0]['url'].split('/static/')[-1]
-        self.assertEqual(staticfiles.find(relative_url), assets[0]['path'])
+        urls = bundle.get_urls()
+        self.assertTrue(len(urls['main']['js']), 1)
+        relative_url = urls['main']['js'][0].split('/static/')[-1]
+        self.assertEqual(staticfiles.find(relative_url), bundle.get_assets()[0])
 
     def test_template_tag_can_render_a_basic_bundle(self):
         rendered = render_template_tag(PATH_TO_BASIC_CONFIG)
@@ -72,54 +72,3 @@ class TestDjangoIntegration(unittest.TestCase):
             render_template_tag,
             '/non_existent_path',
         )
-
-    def test_populate_webpack_cache_command(self):
-        path_to_cache_file = os.path.join(DJANGO_SETTINGS.STATIC_ROOT, 'test_populate_webpack_cache_command.json')
-
-        self.assertFalse(os.path.exists(path_to_cache_file))
-
-        new_settings = Conf()
-        new_settings.configure(
-            CACHE=(
-                PATH_TO_BASIC_CONFIG,
-                PATH_TO_MULTIPLE_BUNDLES_CONFIG,
-            ),
-            CACHE_FILE=path_to_cache_file,
-            USE_CACHE_FILE=True,
-            **{k: v for k, v in six.iteritems(DJANGO_SETTINGS.WEBPACK) if k != 'CACHE_FILE'}
-        )
-
-        with mock.patch('webpack.conf.settings', new_settings):
-            call_command('populate_webpack_cache', verbosity=0)
-
-            with open(path_to_cache_file, 'r') as cache_file:
-                contents = cache_file.read()
-
-            entries = json.loads(contents)
-
-            options1 = generate_compiler_options(staticfiles.find(PATH_TO_BASIC_CONFIG))
-            options2 = generate_compiler_options(staticfiles.find(PATH_TO_MULTIPLE_BUNDLES_CONFIG))
-
-            cache_key1 = options1['cacheKey']
-            cache_key2 = options2['cacheKey']
-
-            self.assertIn(cache_key1, entries)
-            self.assertIn(cache_key2, entries)
-
-            self.assertEqual(
-                webpack(PATH_TO_BASIC_CONFIG).stats,
-                entries[cache_key1]['stats'],
-            )
-
-            self.assertEqual(
-                webpack(PATH_TO_MULTIPLE_BUNDLES_CONFIG).stats,
-                entries[cache_key2]['stats'],
-            )
-
-            self.assertRaises(
-                ConfigFileMissingFromCache,
-                webpack,
-                PATH_TO_LIBRARY_CONFIG,
-            )
-
-

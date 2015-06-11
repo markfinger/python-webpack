@@ -4,8 +4,8 @@ from optional_django.safestring import mark_safe
 class WebpackBundle(object):
     stats = None
 
-    def __init__(self, stats, options):
-        self.stats = stats
+    def __init__(self, data, options):
+        self.data = data
         self.options = options
 
     def __str__(self):
@@ -15,54 +15,35 @@ class WebpackBundle(object):
         return mark_safe(unicode(self.render()))
 
     def render(self):
-        return '{}{}'.format(
-            self.render_style_sheets(),
-            self.render_scripts(),
-        )
+        css = self.render_css()
+        js = self.render_js()
+        return '{}{}'.format(css, js)
 
-    def render_style_sheets(self):
-        if self.stats:
-            rendered = self.stats.get('rendered', None)
-            if rendered:
-                return '\n'.join(rendered['styleSheets'])
-        return ''
+    def render_css(self):
+        urls = []
+        for entry in self.get_urls().values():
+            urls += entry['css']
+        rendered = ['<link rel="stylesheet" href="{}">'.format(url) for url in urls]
+        return '\n'.join(rendered)
 
-    def render_scripts(self):
-        if self.stats:
-            rendered = self.stats.get('rendered', None)
-            if rendered:
-                return '\n'.join(rendered['scripts'])
-        return ''
+    def render_js(self):
+        urls = []
+        for entry in self.get_urls().values():
+            urls += entry['js']
+        rendered = ['<script src="{}"></script>'.format(url) for url in urls]
+        return '\n'.join(rendered)
 
     def get_assets(self):
-        if self.stats:
-            assets = []
-            paths_to_assets = self.stats.get('pathsToAssets', {})
-            urls_to_assets = self.stats.get('urlsToAssets', {})
-            for asset in self.stats.get('assets', None):
-                name = asset['name']
-                assets.append({
-                    'name': name,
-                    'path': paths_to_assets.get(name, None),
-                    'url': urls_to_assets.get(name, None),
-                })
-            return assets
+        return self.data['assets']
 
-    def get_paths(self):
-        """
-        Returns paths to the bundle's assets
-        """
-        return [asset['path'] for asset in self.get_assets() if asset['path']]
+    def get_output(self):
+        return self.data['output']
 
     def get_urls(self):
-        """
-        Returns urls to the bundle's assets
-        """
-        return [asset['url'] for asset in self.get_assets() if asset['url']]
+        return self.data['urls']
 
     def get_config(self):
-        if self.stats:
-            return self.stats.get('webpackConfig', None)
+        return self.data['webpackConfig']
 
     def get_library(self):
         config = self.get_config()

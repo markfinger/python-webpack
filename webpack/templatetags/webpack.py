@@ -18,6 +18,8 @@ def webpack_template_tag(path_to_config):
         {% webpack 'path/to/webpack.config.js' %}
     """
 
+    # TODO: allow selection of entries
+
     # Django's template system silently fails on some exceptions
     try:
         bundle = webpack(path_to_config)

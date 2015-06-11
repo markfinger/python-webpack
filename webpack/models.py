@@ -2,7 +2,6 @@
 
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
-import webpack.conf
 
 FINDER_PATH = 'webpack.django_integration.WebpackFinder'
 
@@ -16,6 +15,8 @@ if (
             'STATICFILES_FINDERS setting.'
         ).format(FINDER_PATH)
     )
+
+import webpack.conf
 
 webpack.conf.settings.configure(
     **getattr(settings, 'WEBPACK', {})
