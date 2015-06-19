@@ -10,10 +10,8 @@ env:
 
 install:
   - "npm install -g npm"
+  - "npm install"
   - "pip install Django==$DJANGO_VERSION"
   - "pip install -r requirements.txt"
-  - "cd tests"
-  - "npm install"
-  - "cd .."
 
 script: python runtests.py
