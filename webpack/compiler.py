@@ -17,15 +17,17 @@ def webpack(config_file, watch=None, env=None, cache=None):
 
     error = output['error']
     data = output['data']
+    stats = data and data.get('stats', None)
 
     if error:
-        if data and data.get('stats', None) and data['stats'].get('errors', None):
-            raise BundlingError(
-                '{}\n\n{}'.format(options['config'], '\n\n'.join(data['stats']['errors']))
-            )
-        raise BundlingError(error)
+        message = 'Tried to build {}\n\n'.format(options['config'])
 
-    if data['stats']['warnings']:
-        warnings.warn(data['stats']['warnings'], WebpackWarning)
+        if stats and stats['errors']:
+            raise BundlingError('{}{}'.format(message, '\n\n'.join(stats['errors'])))
+
+        raise BundlingError('{}{}'.format(message, error))
+
+    for warning in data['stats']['warnings']:
+        warnings.warn(warning, WebpackWarning)
 
     return WebpackBundle(data, options)

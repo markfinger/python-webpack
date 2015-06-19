@@ -42,11 +42,9 @@ class WebpackBundle(object):
     def get_urls(self):
         return self.data['urls']
 
-    def get_config(self):
-        return self.data['webpackConfig']
+    def get_output_options(self):
+        return self.data['outputOptions']
 
     def get_library(self):
-        config = self.get_config()
-        if config and 'output' in config:
-            return config['output'].get('library', None)
+        return self.get_output_options().get('library', None)
     get_var = get_library  # Convenience alias

@@ -19,9 +19,7 @@ class BuildServer(object):
         if not self.is_running():
             raise BuildServerConnectionError('Cannot connect to {}'.format(self.url))
 
-        res = requests.post(self.url, json=options)
-
-        # import pdb; pdb.set_trace()
+        res = requests.post('{}/build'.format(self.url), json=options)
 
         if res.status_code != 200:
             raise BuildServerUnexpectedResponse(res.text)

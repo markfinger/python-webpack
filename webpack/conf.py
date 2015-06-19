@@ -19,7 +19,7 @@ class Conf(conf.Conf):
 
     AGGREGATE_TIMEOUT = 200
 
-    POLL = False
+    POLL = None
 
     OUTPUT_DIR = 'webpack'
 
@@ -35,5 +35,11 @@ class Conf(conf.Conf):
 
     def get_path_to_config_dir(self):
         return os.path.join(self.get_path_to_output_dir(), self.CONFIG_DIR)
+
+    def get_public_path(self):
+        static_url = self.STATIC_URL
+        if static_url and static_url.endswith('/'):
+            static_url = static_url[0:-1]
+        return '/'.join([static_url, self.OUTPUT_DIR, self.BUNDLE_DIR])
 
 settings = Conf()

@@ -1,15 +1,16 @@
 var path = require('path');
 var webpack = require('webpack');
-var builds = require('webpack-wrapper/lib/builds');
+var build = require('webpack-build');
 var autoprefixer = require('autoprefixer-core');
+var csswring = require('csswring')
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
-    context: __dirname,
-    entry: './app',
-    output: {
-        filename: '[name]-[hash].js'
-    },
+	context: __dirname,
+	entry: './app',
+	output: {
+		filename: '[name]-[hash].js'
+	},
 	module: {
 		loaders: [
 			{
@@ -27,36 +28,29 @@ module.exports = {
 			}
 		]
 	},
-	postcss: [autoprefixer],
-	builds: {
-    dev: function(config, opts) {
-      // Activate hmr and performant source maps
+	postcss: [autoprefixer, csswring],
+	env: {
+		dev: function(config, opts) {
+			build.env.dev(config, opts);
 
-      config = builds.dev(config, opts);
+			// Enable hmr of stylesheets
+			config.module.loaders.push({
+				test: /\.css$/,
+				loader: 'style!css!postcss'
+			});
+		},
+		prod: function(config, opts) {
+			build.env.prod(config, opts);
 
-      // Enable hmr of stylesheets
-      config.module.loaders.push({
-        test: /\.css$/,
-        loader: 'style-loader!css-loader!postcss-loader'
-      });
+			// Move css assets into separate files
+			config.module.loaders.push({
+				test: /\.css$/,
+				loader: ExtractTextPlugin.extract('style', 'css?-minimize&sourceMap!postcss')
+			});
 
-      return config;
-    },
-    prod: function(config, opts) {
-      // Minify and move css assets into separate files
-
-      config = builds.prod(config, opts);
-
-      config.module.loaders.push({
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract('style-loader', 'css-loader!postcss-loader')
-      });
-
-      config.plugins.push(
-        new ExtractTextPlugin('[name]-[hash].css')
-      );
-
-      return config;
-    }
-  }
+			config.plugins.push(
+				new ExtractTextPlugin('[name]-[hash].css')
+			);
+		}
+	}
 };

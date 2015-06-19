@@ -26,6 +26,9 @@ def generate_compiler_options(config_file, watch=None, cache=None, env=None):
     if watch is None:
         watch = conf.settings.WATCH
 
+    if cache is None:
+        cache = conf.settings.CACHE
+
     if env is None:
         env = conf.settings.ENV
 
@@ -37,6 +40,7 @@ def generate_compiler_options(config_file, watch=None, cache=None, env=None):
         'hmrRoot': server.url,
         'env': env,
         'outputPath': conf.settings.get_path_to_bundle_dir(),
+        'publicPath': conf.settings.get_public_path(),
         'staticRoot': conf.settings.STATIC_ROOT,
         'staticUrl': conf.settings.STATIC_URL,
         'aggregateTimeout': conf.settings.AGGREGATE_TIMEOUT,
@@ -46,12 +50,12 @@ def generate_compiler_options(config_file, watch=None, cache=None, env=None):
     if conf.settings.POLL is not None:
         options['poll'] = conf.settings.POLL
 
+    # Avoid collisions by directing output into unique directories
     hashable_content = '{}__{}'.format(json.dumps(options), __version__)
-
     options_hash = hashlib.md5(hashable_content).hexdigest()
-
-    options['__hash__'] = options_hash
-
     options['outputPath'] = os.path.join(options['outputPath'], options_hash)
+    options['publicPath'] += '/' + options_hash
+
+    options['__python_webpack_hash__'] = options_hash
 
     return options

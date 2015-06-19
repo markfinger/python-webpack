@@ -4,6 +4,7 @@ import atexit
 import subprocess
 import shutil
 
+# Ensure any file caching is cleared before a run
 cache_dir = os.path.join(os.getcwd(), '.webpack_cache')
 if os.path.exists(cache_dir) and os.path.isdir(cache_dir):
     shutil.rmtree(cache_dir)
@@ -15,16 +16,18 @@ if 'nosetests' in sys.argv[0]:
     webpack.conf.settings.configure(**WEBPACK)
 
 process = subprocess.Popen(
-    (os.path.join(os.getcwd(), 'node_modules', '.bin', 'webpack-build-server'),),
+    (os.path.join(os.getcwd(), 'node_modules', '.bin', 'webpack-build'),),
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT
 )
 
+# Ensure the process is killed
 atexit.register(lambda _process: _process.kill(), process)
 
-output = process.stdout.readline()
+output = process.stdout.readline().decode('utf-8')
 
-output = output.decode('utf-8')
+if output.strip() == '':
+    output += process.stdout.readline().decode('utf-8')
 
-if not output.startswith('~'):
-    raise Exception('Unexpected output {}'.format(output))
+if 'webpack-build v' not in output:
+    raise Exception('Unexpected output: "{}"'.format(output))

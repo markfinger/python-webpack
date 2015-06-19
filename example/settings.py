@@ -1,45 +1,18 @@
 import os
-import sys
-from js_host.conf import settings as js_host_settings
-from webpack.conf import settings as webpack_settings
+from webpack.conf import settings
 
 DEBUG = True
-PRECOMPILING = 'precompile.py' in sys.argv
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CONFIG_FILE = os.path.join(BASE_DIR, 'webpack.config.js')
 
-if DEBUG or PRECOMPILING:
-    js_host_settings.configure(
-        USE_MANAGER=DEBUG or PRECOMPILING,
-    )
-
-if DEBUG:
-    WEBPACK_BUILD = 'dev'
-else:
-    WEBPACK_BUILD = 'prod'
-
-webpack_settings.configure(
-    # The root directory that webpack will place files into and infer urls from
+settings.configure(
+    # The root directory that static assets are located in
     STATIC_ROOT=os.path.join(BASE_DIR, 'static'),
-
-    # The root url that webpack will use to determine the urls to bundles
+    # The url that STATIC_ROOT is served from
     STATIC_URL='/static/',
-
-    # In development, a watcher will rebuild a bundle whenever its config file changes
-    WATCH_CONFIG_FILES=DEBUG,
-
-    # In development, a watcher will rebuild a bundle whenever any of its source files change
-    WATCH_SOURCE_FILES=DEBUG,
-
+    # Turn on source watching in development
+    WATCH=DEBUG,
+    # Turn on hmr in development
     HMR=DEBUG,
-
-    # A list of files which are precompiled for a production environment
-    CACHE=(
-        CONFIG_FILE,
-    ),
-
-    # In production, the python process should use the cache file, rather than relying
-    # on an active connection to the compiler
-    USE_CACHE_FILE=not DEBUG,
+    ENV='dev' if DEBUG else 'prod',
 )

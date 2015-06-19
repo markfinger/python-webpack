@@ -32,7 +32,7 @@ class TestBundles(unittest.TestCase):
             asset,
             os.path.join(
                 settings.get_path_to_bundle_dir(),
-                bundle.options['__hash__'],
+                bundle.options['__python_webpack_hash__'],
                 'bundle-{}.js'.format(bundle.data['stats']['hash'])
             )
         )
@@ -45,7 +45,7 @@ class TestBundles(unittest.TestCase):
                 '/' +
                 settings.BUNDLE_DIR +
                 '/' +
-                bundle.options['__hash__'] +
+                bundle.options['__python_webpack_hash__'] +
                 '/' +
                 'bundle-{}.js'.format(bundle.data['stats']['hash'])
             ).replace('\\', '/'),
@@ -65,7 +65,7 @@ class TestBundles(unittest.TestCase):
         self.assertTrue(len(urls['main']['js']), 1)
         self.assertEqual(
             urls['main']['js'][0],
-            '/static/webpack/bundles/' + bundle.options['__hash__'] + '/' + os.path.basename(assets[0]),
+            '/static/webpack/bundles/' + bundle.options['__python_webpack_hash__'] + '/' + os.path.basename(assets[0]),
         )
 
     def test_can_render_a_webpack_bundle(self):
@@ -156,8 +156,8 @@ class TestBundles(unittest.TestCase):
         self.assertIsInstance(data, dict)
         self.assertIn('stats', data)
         self.assertIsInstance(data['stats'], dict)
-        self.assertIn('webpackConfig', data)
-        self.assertIsInstance(data['webpackConfig'], dict)
+        self.assertIn('outputOptions', data)
+        self.assertIsInstance(data['outputOptions'], dict)
         self.assertIn('assets', data)
         self.assertIsInstance(data['assets'], list)
         self.assertIn('output', data)
@@ -165,27 +165,18 @@ class TestBundles(unittest.TestCase):
         self.assertIn('urls', data)
         self.assertIsInstance(data['urls'], dict)
 
-    def test_bundle_can_expose_its_config(self):
+    def test_bundle_can_expose_its_output_options(self):
         bundle = webpack(ConfigFiles.BASIC_CONFIG)
-        config = bundle.get_config()
-        self.assertDictContainsSubset(
-            {
-                'context': os.path.join(BUNDLES, 'basic', 'app'),
-                'entry': './entry.js',
-            },
-            config
-        )
-        self.assertDictContainsSubset(
-            {
-                'path': os.path.join(
-                    settings.STATIC_ROOT,
-                    settings.OUTPUT_DIR,
-                    settings.BUNDLE_DIR,
-                    bundle.options['__hash__']
-                ),
-                'filename': 'bundle-[hash].js'
-            },
-            config['output']
+        output_options = bundle.get_output_options()
+        self.assertEqual(output_options['filename'], 'bundle-[hash].js')
+        self.assertEqual(
+            output_options['path'],
+            os.path.join(
+                settings.STATIC_ROOT,
+                settings.OUTPUT_DIR,
+                settings.BUNDLE_DIR,
+                bundle.options['__python_webpack_hash__']
+            )
         )
 
     def test_bundle_can_expose_its_library_config(self):
