@@ -59,4 +59,4 @@ tests/__STATIC_ROOT__
 tests/bundles/watched_config/webpack.config.js
 tests/bundles/watched_source_and_config/webpack.config.js
 tests/bundles/watched_source_and_config/app/entry2.js
-.webpack_cache
+.webpack
