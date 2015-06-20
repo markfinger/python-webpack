@@ -1,12 +1,11 @@
 from django.core.files.storage import FileSystemStorage
 from django.contrib.staticfiles.finders import BaseStorageFinder
-
 from .conf import settings
 
 
 class WebpackFileStorage(FileSystemStorage):
     """
-    Standard file system storage for files handled by django-webpack.
+    Standard file system storage for files handled by webpack.
     """
     def __init__(self, location=None, base_url=None, *args, **kwargs):
         if location is None:
@@ -20,8 +19,7 @@ class WebpackFinder(BaseStorageFinder):
     """
     A staticfiles finder that looks in webpack.conf.settings.STATIC_ROOT for generated bundles.
 
-    To be used during development with staticfiles' development file server
-    or during deployment.
+    To be used during development with staticfiles' development file server or during deployment.
     """
     storage = WebpackFileStorage
 

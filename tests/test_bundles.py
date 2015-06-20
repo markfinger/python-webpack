@@ -31,7 +31,7 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(
             asset,
             os.path.join(
-                settings.get_path_to_bundle_dir(),
+                settings.get_path_to_output_dir(),
                 bundle.options['__python_webpack_hash__'],
                 'bundle-{}.js'.format(bundle.data['stats']['hash'])
             )
@@ -42,8 +42,6 @@ class TestBundles(unittest.TestCase):
             (
                 settings.STATIC_URL +
                 settings.OUTPUT_DIR +
-                '/' +
-                settings.BUNDLE_DIR +
                 '/' +
                 bundle.options['__python_webpack_hash__'] +
                 '/' +
@@ -65,7 +63,7 @@ class TestBundles(unittest.TestCase):
         self.assertTrue(len(urls['main']['js']), 1)
         self.assertEqual(
             urls['main']['js'][0],
-            '/static/webpack/bundles/' + bundle.options['__python_webpack_hash__'] + '/' + os.path.basename(assets[0]),
+            '/static/webpack/' + bundle.options['__python_webpack_hash__'] + '/' + os.path.basename(assets[0]),
         )
 
     def test_can_render_a_webpack_bundle(self):
@@ -174,7 +172,6 @@ class TestBundles(unittest.TestCase):
             os.path.join(
                 settings.STATIC_ROOT,
                 settings.OUTPUT_DIR,
-                settings.BUNDLE_DIR,
                 bundle.options['__python_webpack_hash__']
             )
         )

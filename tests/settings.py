@@ -31,7 +31,7 @@ STATICFILES_DIRS = (
 WEBPACK = {
     'STATIC_ROOT': STATIC_ROOT,
     'STATIC_URL': STATIC_URL,
-    'CACHE': False
+    'INTERNALS_DIR': os.path.join(STATIC_ROOT, '.webpack_internals_dir'),
 }
 
 TEST_ROOT = os.path.dirname(__file__)

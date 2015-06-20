@@ -41,7 +41,13 @@ class ConfigFile(object):
             if isinstance(obj, six.string_types):
                 content += obj
             else:
-                content += json.dumps(obj, cls=encoder, indent=2, separators=(',', ': '), sort_keys=True)
+                content += json.dumps(
+                    obj,
+                    cls=encoder,
+                    indent=2,
+                    separators=(',', ': '),
+                    sort_keys=True
+                )
 
         for js_literal in js_literals:
             content = content.replace('"{}"'.format(js_literal.token), js_literal.content)
@@ -61,7 +67,7 @@ class ConfigFile(object):
         if prefix:
             filename = prefix + filename
 
-        return os.path.join(settings.get_path_to_config_dir(), filename)
+        return os.path.join(settings.get_path_to_config_files_dir(), filename)
 
     def write(self, path, force=True):
         if not os.path.exists(path) or force:

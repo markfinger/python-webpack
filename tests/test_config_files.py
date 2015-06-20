@@ -85,11 +85,11 @@ module.exports = {
         )
         self.assertEqual(
             config_file.generate_path_to_file(),
-            os.path.join(settings.get_path_to_config_dir(), 'webpack.config.c6e5a2af68c60ee400e408c5638e1513.js')
+            os.path.join(settings.get_path_to_config_files_dir(), 'webpack.config.c6e5a2af68c60ee400e408c5638e1513.js')
         )
         self.assertEqual(
             config_file.generate_path_to_file(prefix='foo.'),
-            os.path.join(settings.get_path_to_config_dir(), 'foo.webpack.config.c6e5a2af68c60ee400e408c5638e1513.js')
+            os.path.join(settings.get_path_to_config_files_dir(), 'foo.webpack.config.c6e5a2af68c60ee400e408c5638e1513.js')
         )
 
     def test_can_write_a_file_containing_the_rendered_content(self):

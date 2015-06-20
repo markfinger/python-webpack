@@ -36,10 +36,11 @@ def generate_compiler_options(config_file, watch=None, cache=None, env=None):
         'config': config_file,
         'watch': watch,
         'cache': cache,
+        'cacheDir': conf.settings.get_path_to_cache_dir(),
         'hmr': conf.settings.HMR,
         'hmrRoot': server.url,
         'env': env,
-        'outputPath': conf.settings.get_path_to_bundle_dir(),
+        'outputPath': conf.settings.get_path_to_output_dir(),
         'publicPath': conf.settings.get_public_path(),
         'staticRoot': conf.settings.STATIC_ROOT,
         'staticUrl': conf.settings.STATIC_URL,
@@ -56,6 +57,7 @@ def generate_compiler_options(config_file, watch=None, cache=None, env=None):
     options['outputPath'] = os.path.join(options['outputPath'], options_hash)
     options['publicPath'] += '/' + options_hash
 
+    # Used in the test suite
     options['__python_webpack_hash__'] = options_hash
 
     return options
