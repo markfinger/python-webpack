@@ -1,5 +1,5 @@
 import os
-from js_host import verbosity
+from js_host.utils import verbosity
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
