@@ -49,7 +49,7 @@ module.exports = {
 			});
 
 			config.plugins.push(
-				new ExtractTextPlugin('[name]-[hash].css')
+				new ExtractTextPlugin('[name]-[contenthash].css')
 			);
 		}
 	}
