@@ -1,9 +1,11 @@
 var path = require('path');
 
-module.exports = {
-    context: __dirname,
-	entry: './entry.js',
-    output: {
-        filename: 'bundle-[hash].js'
-    }
+module.exports = function() {
+	return {
+		context: __dirname,
+		entry: './entry.js',
+		output: {
+			filename: 'bundle-[hash].js'
+		}
+	};
 };
