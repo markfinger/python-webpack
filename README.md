@@ -3,7 +3,7 @@ python-webpack
 
 [![Build Status](https://travis-ci.org/markfinger/python-webpack.svg?branch=master)](https://travis-ci.org/markfinger/python-webpack)
 
-Python bindings to [webpack-build](https://github.com/markfinger/webpack-build).
+Python bindings to webpack via [webpack-build](https://github.com/markfinger/webpack-build).
 
 Parses modules with dependencies and generates static assets representing those modules, enabling you 
 to package your assets so that they can be reused on the client-side.
