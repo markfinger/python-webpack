@@ -39,7 +39,6 @@ def generate_compiler_options(config_file, watch=None, extra_context=None, cache
         'config': config_file,
         'watch': watch,
         'cache': cache,
-        'cacheDir': conf.settings.get_path_to_cache_dir(),
         'hmr': conf.settings.HMR,
         'hmrRoot': server.url,
         'context': context,
@@ -49,6 +48,9 @@ def generate_compiler_options(config_file, watch=None, extra_context=None, cache
         'staticUrl': conf.settings.STATIC_URL,
         'aggregateTimeout': conf.settings.AGGREGATE_TIMEOUT,
     }
+
+    if conf.settings.CACHE_DIR:
+        options['cacheDir'] = conf.settings.CACHE_DIR
 
     # As it defaults to `undefined` it's only defined if necessary
     if conf.settings.POLL is not None:

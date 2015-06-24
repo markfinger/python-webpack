@@ -14,10 +14,6 @@ class WebpackWarning(Warning):
     pass
 
 
-class ConfigFileMissingFromCache(Exception):
-    pass
-
-
 class BuildServerConnectionError(Exception):
     pass
 

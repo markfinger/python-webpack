@@ -34,7 +34,7 @@ WEBPACK = {
     'CONTEXT': {
         'default_context': 'test'
     },
-    'INTERNALS_DIR': os.path.join(STATIC_ROOT, '.webpack_internals_dir'),
+    'CACHE_DIR': os.path.join(STATIC_ROOT, 'cache_dir'),
 }
 
 TEST_ROOT = os.path.dirname(__file__)

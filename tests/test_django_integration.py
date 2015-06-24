@@ -1,15 +1,9 @@
 import os
 import unittest
-import json
-from django.core.management import call_command
-import mock
-from optional_django import six
 from optional_django.env import DJANGO_CONFIGURED
 from optional_django import staticfiles
-from optional_django.env import DJANGO_SETTINGS
-from webpack.compiler import webpack, generate_compiler_options
-from webpack.exceptions import ConfigFileNotFound, ConfigFileMissingFromCache
-from webpack.conf import Conf
+from webpack.compiler import webpack
+from webpack.exceptions import ConfigFileNotFound
 from .utils import clean_static_root, read_file
 
 
