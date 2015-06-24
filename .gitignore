@@ -56,4 +56,4 @@ target/
 node_modules
 example/static/webpack
 tests/__STATIC_ROOT__
-.webpack
+.webpack_build_cache

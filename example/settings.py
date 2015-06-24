@@ -14,5 +14,7 @@ settings.configure(
     WATCH=DEBUG,
     # Turn on hmr in development
     HMR=DEBUG,
-    ENV='dev' if DEBUG else 'prod',
+    CONTEXT={
+        'DEBUG': DEBUG
+    },
 )
