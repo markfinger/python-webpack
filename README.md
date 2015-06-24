@@ -113,6 +113,9 @@ WEBPACK = {
     'STATIC_URL': STATIC_URL,
     'WATCH': DEBUG,
     'HMR': DEBUG,
+    'CONTEXT': {
+        'DEBUG': DEBUG,
+    },
 }
 ```
 
@@ -156,6 +159,9 @@ settings.configure(
     STATIC_URL='/static/',
     WATCH=DEBUG,
     HMR=DEBUG,
+    CONTEXT: {
+        'DEBUG': DEBUG,
+    },
 )
 ```
 
