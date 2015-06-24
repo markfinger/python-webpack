@@ -1,6 +1,6 @@
 import requests
 from .conf import settings
-from webpack.exceptions import BuildServerConnectionError, BuildServerUnexpectedResponse
+from .exceptions import BuildServerConnectionError, BuildServerUnexpectedResponse
 
 
 class BuildServer(object):
