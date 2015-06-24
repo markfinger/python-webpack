@@ -182,3 +182,20 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(bundle.get_var(), 'LIBRARY_TEST')
         bundle = webpack(ConfigFiles.MULTIPLE_BUNDLES_CONFIG)
         self.assertIsNone(bundle.get_library())
+
+    def test_default_context_is_sent(self):
+        bundle = webpack(ConfigFiles.LIBRARY_CONFIG)
+        self.assertIn('default_context', bundle.data['buildOptions']['context'])
+        self.assertEqual(bundle.data['buildOptions']['context']['default_context'], 'test')
+
+    def test_default_context_can_be_extended(self):
+        bundle = webpack(
+            ConfigFiles.LIBRARY_CONFIG,
+            extra_context={
+                'foo': 'bar'
+            },
+        )
+        self.assertIn('default_context', bundle.data['buildOptions']['context'])
+        self.assertEqual(bundle.data['buildOptions']['context']['default_context'], 'test')
+        self.assertIn('foo', bundle.data['buildOptions']['context'])
+        self.assertEqual(bundle.data['buildOptions']['context']['foo'], 'bar')

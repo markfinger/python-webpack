@@ -7,7 +7,7 @@ from .server import server
 from .exceptions import ImproperlyConfigured, ConfigFileNotFound
 
 
-def generate_compiler_options(config_file, watch=None, cache=None, env=None):
+def generate_compiler_options(config_file, watch=None, extra_context=None, cache=None):
     if not conf.settings.STATIC_ROOT:
         raise ImproperlyConfigured('webpack.conf.settings.STATIC_ROOT has not been defined.')
 
@@ -29,8 +29,11 @@ def generate_compiler_options(config_file, watch=None, cache=None, env=None):
     if cache is None:
         cache = conf.settings.CACHE
 
-    if env is None:
-        env = conf.settings.ENV
+    context = {}
+    if conf.settings.CONTEXT:
+        context.update(conf.settings.CONTEXT)
+    if extra_context:
+        context.update(extra_context)
 
     options = {
         'config': config_file,
@@ -39,7 +42,7 @@ def generate_compiler_options(config_file, watch=None, cache=None, env=None):
         'cacheDir': conf.settings.get_path_to_cache_dir(),
         'hmr': conf.settings.HMR,
         'hmrRoot': server.url,
-        'env': env,
+        'context': context,
         'outputPath': conf.settings.get_path_to_output_dir(),
         'publicPath': conf.settings.get_public_path(),
         'staticRoot': conf.settings.STATIC_ROOT,

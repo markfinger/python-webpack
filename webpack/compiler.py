@@ -5,11 +5,11 @@ from .server import server
 from .options import generate_compiler_options
 
 
-def webpack(config_file, watch=None, env=None, cache=None):
+def webpack(config_file, watch=None, extra_context=None, cache=None):
     options = generate_compiler_options(
         config_file=config_file,
         watch=watch,
-        env=env,
+        extra_context=extra_context,
         cache=cache,
     )
 

@@ -11,7 +11,7 @@ class Conf(conf.Conf):
 
     WATCH = True
 
-    ENV = None
+    CONTEXT = None
 
     HMR = False
 
