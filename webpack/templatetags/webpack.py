@@ -15,7 +15,11 @@ def webpack_template_tag(path_to_config):
 
         {% load webpack %}
         
-        {% webpack 'path/to/webpack.config.js' %}
+        {% webpack 'path/to/webpack.config.js' as bundle %}
+
+        {{ bundle.render_css|safe }}
+        
+        {{ bundle.render_js|safe }}
     """
 
     # TODO: allow selection of entries
