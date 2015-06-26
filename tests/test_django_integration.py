@@ -18,7 +18,12 @@ PATH_TO_MULTIPLE_ENTRY_CONFIG = 'multiple_entry/webpack.config.js'
 
 def render_template_tag(path):
     from django.template import Template, Context
-    return Template("{% load webpack %}{% webpack path %}").render(Context({
+    template = Template("""
+        {% load webpack %}
+        {% webpack path as bundle %}
+        {{ bundle.render_js|safe }}
+    """)
+    return template.render(Context({
         'path': path,
     }))
 
@@ -26,7 +31,6 @@ def render_template_tag(path):
 class TestDjangoIntegration(unittest.TestCase):
     # Prevent nose from running these tests
     __test__ = DJANGO_CONFIGURED
-    template = "{% load webpack %}{% webpack path %}"
 
     @classmethod
     def setUpClass(cls):

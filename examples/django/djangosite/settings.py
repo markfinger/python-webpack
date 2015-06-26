@@ -100,3 +100,28 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+INSTALLED_APPS += (
+    'example_app',
+    'webpack',
+)
+
+STATICFILES_FINDERS = (
+    'webpack.django_integration.WebpackFinder',
+)
+
+WEBPACK = dict(
+    STATIC_ROOT=STATIC_ROOT,
+    STATIC_URL=STATIC_URL,
+    CONFIG_DIRS=(
+        os.path.abspath(os.path.join(BASE_DIR, '..')),
+    ),
+    # Turn on source watching in development
+    WATCH=DEBUG,
+    # Turn on hmr in development
+    HMR=DEBUG,
+    CONTEXT={
+        'DEBUG': DEBUG
+    },
+)

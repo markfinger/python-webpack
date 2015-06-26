@@ -131,12 +131,18 @@ such as `/project/app/static/app/webpack.config.js`.
 
 ### Template tags
 
-A template tag is provided as a shorthand for rendering assets.
+A template tag is provided to connect webpack to the template layer.
 
 ```html
 {% load webpack %}
 
-{% webpack 'app/webpack.config.js' %}
+{% webpack 'app/webpack.config.js' as bundle %}
+
+{# renders <link> elements pointing to the css assets #}
+{{ bundle.render_css|safe }}
+
+{# renders <script> elements pointing to the js assets #}
+{{ bundle.render_js|safe }}
 ```
 
 

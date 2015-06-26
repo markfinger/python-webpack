@@ -57,3 +57,4 @@ node_modules
 tests/__STATIC_ROOT__
 .webpack_build_cache
 webpack_assets
+db.sqlite3

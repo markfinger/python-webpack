@@ -13,7 +13,6 @@ settings.configure(
     # The url that STATIC_ROOT is served from
     STATIC_URL='/static/',
     CONFIG_DIRS=(
-        os.path.join(BASE_DIR),
         os.path.join(BASE_DIR, '..'),
     ),
     # Turn on source watching in development
