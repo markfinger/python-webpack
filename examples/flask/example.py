@@ -1,5 +1,7 @@
 import os
+from flask import Flask, render_template
 from webpack.conf import settings
+from webpack.compiler import webpack
 
 DEBUG = True
 
@@ -10,6 +12,10 @@ settings.configure(
     STATIC_ROOT=os.path.join(BASE_DIR, 'static'),
     # The url that STATIC_ROOT is served from
     STATIC_URL='/static/',
+    CONFIG_DIRS=(
+        os.path.join(BASE_DIR),
+        os.path.join(BASE_DIR, '..'),
+    ),
     # Turn on source watching in development
     WATCH=DEBUG,
     # Turn on hmr in development
@@ -18,3 +24,19 @@ settings.configure(
         'DEBUG': DEBUG
     },
 )
+
+app = Flask(__name__)
+app.debug = DEBUG
+
+
+@app.route('/')
+def index():
+    return render_template(
+        'index.html',
+        # Send a request to the build server
+        bundle=webpack('webpack.config.js')
+    )
+
+
+if __name__ == '__main__':
+    app.run()

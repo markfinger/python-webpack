@@ -24,7 +24,7 @@ STATICFILES_FINDERS = (
 STATICFILES_STORAGE = 'webpack.django_integration.WebpackOfflineStaticFilesStorage'
 
 STATICFILES_DIRS = (
-    # Give Django access the the bundles directory.
+    # Allow rel paths to inspect the bundles directory.
     os.path.join(BASE_DIR, 'bundles'),
 )
 
@@ -34,6 +34,9 @@ WEBPACK = {
     'CONTEXT': {
         'default_context': 'test'
     },
+    # While webpack-build's cache will check for asset existence,
+    # watching compiler do not, so we need to ensure that the cache
+    # is cleared between runs
     'CACHE_DIR': os.path.join(STATIC_ROOT, 'cache_dir'),
 }
 

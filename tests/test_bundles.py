@@ -5,7 +5,7 @@ from webpack.bundle import WebpackBundle
 from webpack.compiler import webpack
 from webpack.exceptions import ConfigFileNotFound
 from webpack.conf import settings
-from .settings import BUNDLES, ConfigFiles
+from .settings import ConfigFiles
 from .utils import clean_static_root, read_file
 
 
@@ -63,7 +63,7 @@ class TestBundles(unittest.TestCase):
         self.assertTrue(len(urls['main']['js']), 1)
         self.assertEqual(
             urls['main']['js'][0],
-            '/static/webpack/' + bundle.options['__python_webpack_hash__'] + '/' + os.path.basename(assets[0]),
+            '/static/webpack_assets/' + bundle.options['__python_webpack_hash__'] + '/' + os.path.basename(assets[0]),
         )
 
     def test_can_render_a_webpack_bundle(self):

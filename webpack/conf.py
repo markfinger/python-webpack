@@ -9,6 +9,8 @@ class Conf(conf.Conf):
 
     STATIC_URL = None
 
+    CONFIG_DIRS = None
+
     WATCH = True
 
     CONTEXT = None
@@ -21,7 +23,7 @@ class Conf(conf.Conf):
 
     POLL = None
 
-    OUTPUT_DIR = 'webpack'
+    OUTPUT_DIR = 'webpack_assets'
 
     CACHE_DIR = None
 

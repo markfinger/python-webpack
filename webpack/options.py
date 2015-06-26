@@ -1,33 +1,24 @@
 import json
 import os
 import hashlib
-from optional_django import staticfiles
 from . import conf, __version__
+from .resolver import find_config_file
 from .server import server
-from .exceptions import ImproperlyConfigured, ConfigFileNotFound
+from .exceptions import ImproperlyConfigured
 
 
-def generate_compiler_options(config_file, watch=None, extra_context=None, cache=None):
-    if not conf.settings.STATIC_ROOT:
+def _setting(overrides, key):
+    if overrides and key in overrides:
+        return overrides[key]
+    return getattr(conf.settings, key)
+
+
+def generate_compiler_options(config_file, extra_context=None, overrides=None):
+    if not _setting(overrides, 'STATIC_ROOT'):
         raise ImproperlyConfigured('webpack.conf.settings.STATIC_ROOT has not been defined.')
 
-    if not conf.settings.STATIC_URL:
+    if not _setting(overrides, 'STATIC_URL'):
         raise ImproperlyConfigured('webpack.conf.settings.STATIC_URL has not been defined.')
-
-    if not os.path.isabs(config_file):
-        abs_path = staticfiles.find(config_file)
-        if not abs_path:
-            raise ConfigFileNotFound(config_file)
-        config_file = abs_path
-
-    if not os.path.exists(config_file):
-        raise ConfigFileNotFound(config_file)
-
-    if watch is None:
-        watch = conf.settings.WATCH
-
-    if cache is None:
-        cache = conf.settings.CACHE
 
     context = {}
     if conf.settings.CONTEXT:
@@ -36,25 +27,25 @@ def generate_compiler_options(config_file, watch=None, extra_context=None, cache
         context.update(extra_context)
 
     options = {
-        'config': config_file,
-        'watch': watch,
-        'cache': cache,
-        'hmr': conf.settings.HMR,
+        'config': find_config_file(config_file),
+        'watch': _setting(overrides, 'WATCH'),
+        'cache': _setting(overrides, 'CACHE'),
+        'hmr': _setting(overrides, 'HMR'),
         'hmrRoot': server.url,
         'context': context,
         'outputPath': conf.settings.get_path_to_output_dir(),
         'publicPath': conf.settings.get_public_path(),
-        'staticRoot': conf.settings.STATIC_ROOT,
-        'staticUrl': conf.settings.STATIC_URL,
-        'aggregateTimeout': conf.settings.AGGREGATE_TIMEOUT,
+        'staticRoot': _setting(overrides, 'STATIC_ROOT'),
+        'staticUrl': _setting(overrides, 'STATIC_URL'),
+        'aggregateTimeout': _setting(overrides, 'AGGREGATE_TIMEOUT'),
     }
 
     if conf.settings.CACHE_DIR:
-        options['cacheDir'] = conf.settings.CACHE_DIR
+        options['cacheDir'] = _setting(overrides, 'CACHE_DIR')
 
     # As it defaults to `undefined` it's only defined if necessary
     if conf.settings.POLL is not None:
-        options['poll'] = conf.settings.POLL
+        options['poll'] = _setting(overrides, 'POLL')
 
     # Avoid collisions by directing output into unique directories
     hashable_content = '{}__{}'.format(json.dumps(options), __version__)

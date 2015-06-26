@@ -2,8 +2,6 @@ from optional_django.safestring import mark_safe
 
 
 class WebpackBundle(object):
-    stats = None
-
     def __init__(self, data, options):
         self.data = data
         self.options = options

@@ -136,7 +136,7 @@ A template tag is provided as a shorthand for rendering assets.
 ```html
 {% load webpack %}
 
-{% webpack 'path/to/webpack.config.js' %}
+{% webpack 'app/webpack.config.js' %}
 ```
 
 
@@ -188,6 +188,13 @@ This setting **must** be defined.
 Default: `None`
 
 
+### CONFIG_DIRS
+
+A list of paths that will be used to resolve relative paths to config files.
+
+Default: `None`
+
+
 ### WATCH
 
 A boolean flag which indicates that file watchers should be set to watch the assets's source
@@ -215,7 +222,7 @@ Default: `False`
 
 ### CONTEXT
 
-The default context to provide to config functions. This sets default values for the context object,
+The default context provided to config functions. This sets default values for the context object,
 these values can be overridden when calling `webpack`.
 
 Default: `None`
@@ -230,16 +237,16 @@ Default: `True`
 
 ### CACHE_DIR
 
-An override for the directory that webpack-build uses.
+An override for the directory that webpack-build uses to store cache files.
 
 Default: `None`
 
 
 ### OUTPUT_DIR
 
-The directory in `STATIC_ROOT` which webpack will output any generated bundles or config files.
+The directory in `STATIC_ROOT` which webpack will output all assets to.
 
-Default: `'webpack'`
+Default: `'webpack_assets'`
 
 
 ### AGGREGATE_TIMEOUT

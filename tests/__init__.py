@@ -15,6 +15,15 @@ if 'nosetests' in sys.argv[0]:
     from .settings import WEBPACK
     webpack.conf.settings.configure(**WEBPACK)
 
+from webpack.server import server
+
+if server.is_running():
+    raise Exception(
+        'A build server is already running at {}, this will cause test failures. The server should be stopped'.format(
+            server.url
+        )
+    )
+
 process = subprocess.Popen(
     (os.path.join(os.getcwd(), 'node_modules', '.bin', 'webpack-build'),),
     stdout=subprocess.PIPE,
