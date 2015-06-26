@@ -36,12 +36,15 @@ python-webpack provides a high-level interface to a webpack-build server. To sta
 `node_modules/.bin/webpack-build`.
 
 The build server is fed [config files](https://webpack.github.io/docs/configuration.html) and python-webpack
-returns objects which allow you to interact with the results of the build.
+returns an object which allows you to interact with the results of the build.
 
 ```python
 from webpack.compiler import webpack
 
 bundle = webpack('/path/to/webpack.config.js')
+
+# The raw data returned from webpack-build
+bundle.data
 
 # Returns a string containing <link> elements pointing to any css assets
 bundle.render_css()
@@ -60,10 +63,10 @@ bundle.get_urls()
 
 # Returns a string matching the `library` property of your config file
 bundle.get_library()
-
-# The raw data returned from webpack-build
-bundle.data
 ```
+
+Be aware that webpack-build deviates slightly from webpack's CLI in that it requires config files
+to export a function which accepts options and returns a config object.
 
 To use relative paths to config files, you should specify the `CONFIG_DIRS` setting.
 
