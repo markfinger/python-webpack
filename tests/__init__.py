@@ -2,15 +2,10 @@ import sys
 import os
 import atexit
 import subprocess
-import shutil
 
-# Ensure any file caching is cleared before a run
-cache_dir = os.path.join(os.getcwd(), '.webpack_cache')
-if os.path.exists(cache_dir) and os.path.isdir(cache_dir):
-    shutil.rmtree(cache_dir)
 
 if 'nosetests' in sys.argv[0]:
-    # Configure js-host and webpack before any tests are run
+    # Configure webpack before any tests are run
     import webpack.conf
     from .settings import WEBPACK
     webpack.conf.settings.configure(**WEBPACK)

@@ -1,21 +1,7 @@
-from optional_django.safestring import mark_safe
-
-
 class WebpackBundle(object):
     def __init__(self, data, options):
         self.data = data
         self.options = options
-
-    def __str__(self):
-        return mark_safe(self.render())
-
-    def __unicode__(self):
-        return mark_safe(unicode(self.render()))
-
-    def render(self):
-        css = self.render_css()
-        js = self.render_js()
-        return '{}{}'.format(css, js)
 
     def render_css(self):
         urls = []
@@ -45,4 +31,3 @@ class WebpackBundle(object):
 
     def get_library(self):
         return self.get_output_options().get('library', None)
-    get_var = get_library  # Convenience alias

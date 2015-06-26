@@ -2,14 +2,12 @@ import os
 import unittest
 import time
 from webpack.compiler import webpack
+from .settings import BUNDLES
 from .utils import write_file, read_file, clean_static_root
 
 # The number of seconds that we delay while waiting for
 # file changes to be detected
 WATCH_WAIT = 0.2
-
-TEST_ROOT = os.path.dirname(__file__)
-BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
 
 PATH_TO_WATCHED_SOURCE_CONFIG = os.path.join(BUNDLES, 'watched_source', 'webpack.config.js')
 PATH_TO_WATCHED_SOURCE_ENTRY = os.path.join(BUNDLES, 'watched_source', 'app', 'entry.js')

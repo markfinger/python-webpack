@@ -1,6 +1,5 @@
 import os
 import unittest
-from optional_django import six
 from webpack.bundle import WebpackBundle
 from webpack.compiler import webpack
 from webpack.exceptions import ConfigFileNotFound
@@ -70,15 +69,9 @@ class TestBundles(unittest.TestCase):
         bundle = webpack(ConfigFiles.BASIC_CONFIG)
         urls = bundle.get_urls()
         self.assertTrue(len(urls['main']['js']), 1)
-        rendered = bundle.render()
+        rendered = bundle.render_js()
         self.assertIn(urls['main']['js'][0], rendered)
         self.assertEqual(rendered, '<script src="' + urls['main']['js'][0] + '"></script>')
-
-    def test_bundle_renders_itself_when_coerced_to_strings(self):
-        bundle = webpack(ConfigFiles.BASIC_CONFIG)
-        self.assertEqual(str(bundle), bundle.render())
-        if six.PY2:
-            self.assertEqual(unicode(bundle), unicode(bundle.render()))
 
     def test_bundle_can_handle_a_bundle_with_multiple_entries(self):
         bundle = webpack(ConfigFiles.MULTIPLE_ENTRY_CONFIG)
@@ -96,7 +89,7 @@ class TestBundles(unittest.TestCase):
         bundle = webpack(ConfigFiles.MULTIPLE_ENTRY_CONFIG)
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
-        rendered = bundle.render()
+        rendered = bundle.render_js()
         self.assertIn(urls['main']['js'][0], rendered)
         self.assertEqual(rendered, '<script src="' + urls['main']['js'][0] + '"></script>')
 
@@ -104,7 +97,7 @@ class TestBundles(unittest.TestCase):
         bundle = webpack(ConfigFiles.MULTIPLE_ENTRY_CONFIG)
         urls = bundle.get_urls()
         self.assertTrue(len(urls), 1)
-        rendered = bundle.render()
+        rendered = bundle.render_js()
         self.assertIn(urls['main']['js'][0], rendered)
         self.assertEqual(rendered, '<script src="' + urls['main']['js'][0] + '"></script>')
 
@@ -134,14 +127,14 @@ class TestBundles(unittest.TestCase):
         assets = bundle.get_assets()
         self.assertTrue(len(assets), 2)
         urls = bundle.get_urls()
-        rendered = bundle.render()
+        rendered = bundle.render_js()
         self.assertIn(
             urls['bundle_1']['js'][0],
-            bundle.render()
+            bundle.render_js()
         )
         self.assertIn(
             urls['bundle_2']['js'][0],
-            bundle.render()
+            bundle.render_js()
         )
         self.assertEqual(
             rendered,
@@ -179,7 +172,6 @@ class TestBundles(unittest.TestCase):
     def test_bundle_can_expose_its_library_config(self):
         bundle = webpack(ConfigFiles.LIBRARY_CONFIG)
         self.assertEqual(bundle.get_library(), 'LIBRARY_TEST')
-        self.assertEqual(bundle.get_var(), 'LIBRARY_TEST')
         bundle = webpack(ConfigFiles.MULTIPLE_BUNDLES_CONFIG)
         self.assertIsNone(bundle.get_library())
 

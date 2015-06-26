@@ -21,12 +21,7 @@ STATICFILES_FINDERS = (
     'webpack.django_integration.WebpackFinder',
 )
 
-STATICFILES_STORAGE = 'webpack.django_integration.WebpackOfflineStaticFilesStorage'
-
-STATICFILES_DIRS = (
-    # Allow rel paths to inspect the bundles directory.
-    os.path.join(BASE_DIR, 'bundles'),
-)
+BUNDLES = os.path.join(BASE_DIR, 'bundles',)
 
 WEBPACK = {
     'STATIC_ROOT': STATIC_ROOT,
@@ -34,19 +29,20 @@ WEBPACK = {
     'CONTEXT': {
         'default_context': 'test'
     },
+    'CONFIG_DIRS': (
+        BASE_DIR,
+        BUNDLES,
+    ),
     # While webpack-build's cache will check for asset existence,
-    # watching compiler do not, so we need to ensure that the cache
+    # watching compilers do not, so we need to ensure that the cache
     # is cleared between runs
     'CACHE_DIR': os.path.join(STATIC_ROOT, 'cache_dir'),
 }
 
-TEST_ROOT = os.path.dirname(__file__)
-BUNDLES = os.path.join(TEST_ROOT, 'bundles',)
-
 
 class ConfigFiles(object):
-    BASIC_CONFIG = os.path.join(BUNDLES, 'basic', 'webpack.config.js')
-    LIBRARY_CONFIG = os.path.join(BUNDLES, 'library', 'webpack.config.js')
-    MULTIPLE_BUNDLES_CONFIG = os.path.join(BUNDLES, 'multiple_bundles', 'webpack.config.js')
-    MULTIPLE_ENTRY_CONFIG = os.path.join(BUNDLES, 'multiple_entry', 'webpack.config.js')
-    CACHED_CONFIG = os.path.join(BUNDLES, 'cached', 'webpack.config.js')
+    BASIC_CONFIG = os.path.join('basic', 'webpack.config.js')
+    LIBRARY_CONFIG = os.path.join('library', 'webpack.config.js')
+    MULTIPLE_BUNDLES_CONFIG = os.path.join('multiple_bundles', 'webpack.config.js')
+    MULTIPLE_ENTRY_CONFIG = os.path.join('multiple_entry', 'webpack.config.js')
+    CACHED_CONFIG = os.path.join('cached', 'webpack.config.js')

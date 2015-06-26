@@ -6,6 +6,7 @@ from ..exceptions import BundlingError
 
 register = Library()
 
+
 @register.assignment_tag(name='webpack')
 def webpack_template_tag(path_to_config):
     """
@@ -18,7 +19,7 @@ def webpack_template_tag(path_to_config):
         {% webpack 'path/to/webpack.config.js' as bundle %}
 
         {{ bundle.render_css|safe }}
-        
+
         {{ bundle.render_js|safe }}
     """
 
@@ -26,7 +27,6 @@ def webpack_template_tag(path_to_config):
 
     # Django's template system silently fails on some exceptions
     try:
-        bundle = webpack(path_to_config)
-        return bundle
+        return webpack(path_to_config)
     except (AttributeError, ValueError) as e:
         raise six.reraise(BundlingError, BundlingError(*e.args), sys.exc_info()[2])
