@@ -36,7 +36,7 @@ python-webpack provides a high-level interface to a webpack-build server. To sta
 `node_modules/.bin/webpack-build`.
 
 The build server is fed [config files](https://webpack.github.io/docs/configuration.html) and python-webpack
-returns an object which allows you to interact with the results of the build.
+returns an object that allows you to interact with the results of the build.
 
 ```python
 from webpack.compiler import webpack
