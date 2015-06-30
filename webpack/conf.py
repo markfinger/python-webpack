@@ -3,28 +3,22 @@ from optional_django import conf
 
 
 class Conf(conf.Conf):
-    BUILD_SERVER_URL = 'http://127.0.0.1:9009'
-
+    # Environment configuration
     STATIC_ROOT = None
-
     STATIC_URL = None
-
+    BUILD_SERVER_URL = 'http://127.0.0.1:9009'
+    OUTPUT_DIR = 'webpack_assets'
     CONFIG_DIRS = None
-
-    WATCH = True
-
     CONTEXT = None
 
+    # Watching
+    WATCH = True  # TODO: should default to False
+    AGGREGATE_TIMEOUT = 200
+    POLL = None
     HMR = False
 
+    # Caching
     CACHE = True
-
-    AGGREGATE_TIMEOUT = 200
-
-    POLL = None
-
-    OUTPUT_DIR = 'webpack_assets'
-
     CACHE_DIR = None
 
     def get_path_to_output_dir(self):
