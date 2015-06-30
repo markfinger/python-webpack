@@ -73,7 +73,7 @@ module.exports = function(opts) {
 					NODE_ENV: JSON.stringify('production')
 				}
 			}),
-			new webpack.UglifyJsPlugin()
+			new webpack.optimize.UglifyJsPlugin()
 		);
 	}
 
