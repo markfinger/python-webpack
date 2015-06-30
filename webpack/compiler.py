@@ -46,6 +46,9 @@ def webpack(config_file, extra_context=None, setting_overrides=None):
             else:
                 errors.append(err)
 
-        raise BundlingError('{}{}'.format(message, '\n\n'.join(errors)))
+        if errors:
+            message = message + '\n\n' + '\n\n'.join(errors)
+
+        raise BundlingError(message)
 
     return WebpackBundle(data, options)
