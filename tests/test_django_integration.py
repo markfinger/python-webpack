@@ -3,7 +3,7 @@ from optional_django.env import DJANGO_CONFIGURED
 from optional_django import staticfiles
 from webpack.compiler import webpack
 from webpack.exceptions import ConfigFileNotFound
-from .settings import ConfigFiles, BUNDLES
+from .settings import ConfigFiles
 from .utils import clean_static_root
 
 

@@ -2,7 +2,6 @@ var path = require('path');
 var webpack = require('webpack');
 var build = require('webpack-build');
 var autoprefixer = require('autoprefixer-core');
-var csswring = require('csswring');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = function(opts) {
@@ -31,7 +30,7 @@ module.exports = function(opts) {
 		]
 	};
 
-	if (opts.hmr) {
+	if (opts.hmr && !opts.context.DEBUG) {
 		// Enable hmr of react components and stylesheets
 		config.module.loaders.push(
 			{
@@ -41,7 +40,7 @@ module.exports = function(opts) {
 			},
 			{
 				test: /\.css$/,
-				loader: 'style!css!postcss'
+				loader: 'style!css?sourceMap!postcss'
 			}
 		);
 	} else {
@@ -54,7 +53,7 @@ module.exports = function(opts) {
 			// Move css assets into separate files
 			{
 				test: /\.css$/,
-				loader: ExtractTextPlugin.extract('style', 'css?-minimize&sourceMap!postcss')
+				loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
 			}
 		);
 
@@ -77,20 +76,15 @@ module.exports = function(opts) {
 		);
 	} else {
 		config.devtool = 'source-map';
-		
+
 		config.plugins.push(
 			new webpack.optimize.DedupePlugin(),
-			new webpack.optimize.UglifyJsPlugin(),
 			new webpack.DefinePlugin({
 				'process.env': {
 					NODE_ENV: JSON.stringify('production')
 				}
 			})
 		);
-		
-		// TODO: this was needed at one point for source-maps, should check if it's still the case
-		// Compress CSS with csswring, rather than using webpack's clean-css
-		config.postcss.push(csswring);
 	}
 
 	return config;
