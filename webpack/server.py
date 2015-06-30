@@ -1,6 +1,4 @@
-import sys
 import requests
-from optional_django import six
 from .conf import settings
 from .exceptions import BuildServerConnectionError, BuildServerUnexpectedResponse
 
@@ -18,13 +16,15 @@ class BuildServer(object):
         return res.status_code == 200 and 'webpack-build' in res.text
 
     def build(self, options):
+        url = '{}/build'.format(self.url)
+
         try:
-            res = requests.post('{}/build'.format(self.url), json=options)
-        except requests.ConnectionError as e:
-            raise six.reraise(BuildServerConnectionError, BuildServerConnectionError(*e.args), sys.exc_info()[2])
+            res = requests.post(url, json=options)
+        except requests.ConnectionError:
+            raise BuildServerConnectionError('Tried to send build request to {}'.format(url))
 
         if res.status_code != 200:
-            raise BuildServerUnexpectedResponse(res.text)
+            raise BuildServerUnexpectedResponse('{}: {}'.format(res.status_code, res.text))
 
         return res.json()
 
