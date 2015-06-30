@@ -1,5 +1,4 @@
 import warnings
-from optional_django import six
 from .exceptions import BundlingError, WebpackWarning
 from .bundle import WebpackBundle
 from .server import server
@@ -19,13 +18,15 @@ def webpack(config_file, extra_context=None, setting_overrides=None):
     data = output['data']
     stats = data and data.get('stats', None)
 
-    if data:
-        for warning in data['stats']['warnings']:
+    if stats:
+        for warning in stats['warnings']:
             warnings.warn(warning, WebpackWarning)
 
     if error:
         message = 'Tried to build {}\n\n'.format(options['config'])
 
+        # webpack-build spits up the first error that it sees, but sometimes the most
+        # informative errors are in the `stats.errors` object
         if stats and stats['errors']:
             error_objects = stats['errors']
         else:
@@ -33,12 +34,15 @@ def webpack(config_file, extra_context=None, setting_overrides=None):
 
         errors = []
         for err in error_objects:
-            if isinstance(err, six.string_types):
-                errors.append(err)
-            elif err.get('stack', None):
-                errors.append(err['stack'])
-            elif err.get('message', None):
-                errors.append(err['message'])
+            if isinstance(err, dict):
+                message = err.get('message', None)
+                stack = err.get('stack', None)
+                if message and stack:
+                    errors.append('{}\n{}'.format(message, stack))
+                elif stack:
+                    errors.append(stack)
+                else:
+                    errors.append(message)
             else:
                 errors.append(err)
 
