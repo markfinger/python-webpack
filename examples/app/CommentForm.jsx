@@ -14,18 +14,18 @@ export default React.createClass({
 	},
 	render() {
 		return (
-			<form method="POST" action={this.props.url} onSubmit={this.handleSubmit}>
+			<form onSubmit={this.handleSubmit}>
 				<h2>Submit a comment</h2>
 				<div className="form-group">
 					<label>
 						Your name
-						<input type="text" className="form-control" name="author" ref="author" placeholder="..." />
+						<input type="text" className="form-control" ref="author" placeholder="..." />
 					</label>
 				</div>
 				<div className="form-group">
 					<label>
 						Say something...
-						<textarea className="form-control" name="text" ref="text" placeholder="..." />
+						<textarea className="form-control" ref="text" placeholder="..." />
 					</label>
 				</div>
 				<div className="text-right">
