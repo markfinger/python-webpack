@@ -5,6 +5,17 @@ var autoprefixer = require('autoprefixer-core');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = function(opts) {
+	var jsLoader = {
+		test: /\.jsx?$/,
+		exclude: /(node_modules|bower_components)/,
+		loaders: ['babel-loader']
+	};
+
+	var cssLoader = {
+		test: /\.css$/,
+		loaders: ['css-loader?sourceMap', 'postcss-loader']
+	};
+
 	var config = {
 		context: __dirname,
 		entry: './app',
@@ -13,13 +24,15 @@ module.exports = function(opts) {
 		},
 		module: {
 			loaders: [
+				jsLoader,
+				cssLoader,
 				{
 					test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-					loader: "url-loader?limit=10000&mimetype=application/font-woff"
+					loaders: ['url-loader?limit=10000&mimetype=application/font-woff']
 				},
 				{
 					test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-					loader: "file-loader"
+					loaders: ['file-loader']
 				}
 			]
 		},
@@ -30,43 +43,20 @@ module.exports = function(opts) {
 		]
 	};
 
-	if (opts.hmr && !opts.context.DEBUG) {
+	if (opts.hmr) {
 		// Enable hmr of react components and stylesheets
-		config.module.loaders.push(
-			{
-				test: /\.jsx?$/,
-				exclude: /(node_modules|bower_components)/,
-				loader: 'react-hot-loader!babel-loader'
-			},
-			{
-				test: /\.css$/,
-				loader: 'style!css?sourceMap!postcss'
-			}
-		);
+		jsLoader.loaders.unshift('react-hot-loader');
+		cssLoader.loaders.unshift('style');
 	} else {
-		config.module.loaders.push(
-			{
-				test: /\.jsx?$/,
-				exclude: /(node_modules|bower_components)/,
-				loader: 'babel-loader'
-			},
-			// Move css assets into separate files
-			{
-				test: /\.css$/,
-				loader: ExtractTextPlugin.extract('style', 'css?sourceMap!postcss')
-			}
-		);
-
-		config.plugins.push(
-			new ExtractTextPlugin('[name]-[contenthash].css')
-		);
+		// Move css assets into separate files
+		cssLoader.loader = ExtractTextPlugin.extract('style', cssLoader.loaders.join('!'));
+		delete cssLoader.loaders;
+		config.plugins.push(new ExtractTextPlugin('[name]-[contenthash].css'));
 	}
 
 	if (opts.context.DEBUG) {
-		config.devtool = 'inline-source-map';
-
+		config.devtool = 'eval-source-map';
 		config.output.pathinfo = true;
-
 		config.plugins.push(
 			new webpack.DefinePlugin({
 				'process.env': {
@@ -76,14 +66,14 @@ module.exports = function(opts) {
 		);
 	} else {
 		config.devtool = 'source-map';
-
 		config.plugins.push(
 			new webpack.optimize.DedupePlugin(),
 			new webpack.DefinePlugin({
 				'process.env': {
 					NODE_ENV: JSON.stringify('production')
 				}
-			})
+			}),
+			new webpack.UglifyJsPlugin()
 		);
 	}
 
