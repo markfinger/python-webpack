@@ -5,7 +5,7 @@ module.exports = function() {
 		context: path.join(__dirname, 'static', 'django_test_app'),
 		entry: './entry.js',
 		output: {
-			filename: 'bundle-[hash].js'
+			filename: 'bundle.js'
 		}
 	};
 };

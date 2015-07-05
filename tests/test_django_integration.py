@@ -39,8 +39,8 @@ class TestDjangoIntegration(unittest.TestCase):
         self.assertEqual(staticfiles.find(relative_url), bundle.get_assets()[0])
 
     def test_template_tag_can_render_a_basic_bundle(self):
-        rendered = render_template_tag(ConfigFiles.BASIC_CONFIG)
-        self.assertIn('710e9657b7951fbc79b6.js', rendered)
+        rendered = render_template_tag('django_test_app/webpack.config.js')
+        self.assertIn('bundle.js', rendered)
 
     def test_template_tag_can_render_multiple_assets(self):
         rendered = render_template_tag(ConfigFiles.MULTIPLE_BUNDLES_CONFIG)
