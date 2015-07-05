@@ -12,7 +12,7 @@ class Conf(conf.Conf):
     CONTEXT = None
 
     # Watching
-    WATCH = True  # TODO: should default to False
+    WATCH = False
     AGGREGATE_TIMEOUT = 200
     POLL = None
     HMR = False
