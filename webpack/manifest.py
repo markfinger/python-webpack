@@ -28,7 +28,7 @@ def generate_manifest(entries, settings=None):
 
 
 def write_manifest(path, manifest):
-    content = json.dumps(manifest)
+    content = json.dumps(manifest, indent=4, sort_keys=True)
 
     with open(path, 'w') as manifest_file:
         manifest_file.write(content)

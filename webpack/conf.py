@@ -24,7 +24,7 @@ class Conf(conf.Conf):
     # Manifest
     MANIFEST = None
     USE_MANIFEST = False
-    MANIFEST_PATH = 'manifest.json'
+    MANIFEST_PATH = None
 
     def get_path_to_output_dir(self):
         return os.path.join(self.STATIC_ROOT, self.OUTPUT_DIR)
@@ -35,10 +35,5 @@ class Conf(conf.Conf):
             static_url = static_url[:-1]
 
         return '/'.join([static_url, self.OUTPUT_DIR])
-
-    def get_manifest_path(self):
-        if os.path.isabs(self.MANIFEST_PATH):
-            return self.MANIFEST_PATH
-        return os.path.join(self.OUTPUT_DIR, self.MANIFEST_PATH)
 
 settings = Conf()
