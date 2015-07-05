@@ -37,6 +37,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'example_app',
+    'webpack',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -100,28 +102,26 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
 
 STATIC_URL = '/static/'
+
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
-INSTALLED_APPS += (
-    'example_app',
-    'webpack',
-)
-
 STATICFILES_FINDERS = (
+    # Defaults
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    # Webpack
     'webpack.django_integration.WebpackFinder',
 )
 
-WEBPACK = dict(
-    STATIC_ROOT=STATIC_ROOT,
-    STATIC_URL=STATIC_URL,
-    CONFIG_DIRS=(
+WEBPACK = {
+    'STATIC_ROOT': STATIC_ROOT,
+    'STATIC_URL': STATIC_URL,
+    'CONFIG_DIRS': (
         os.path.abspath(os.path.join(BASE_DIR, '..')),
     ),
-    # Turn on source watching in development
-    WATCH=DEBUG,
-    # Turn on hmr in development
-    HMR=DEBUG,
-    CONTEXT={
+    'WATCH': DEBUG,
+    'HMR': DEBUG,
+    'CONTEXT': {
         'DEBUG': DEBUG
     },
-)
+}

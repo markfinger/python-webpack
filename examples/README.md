@@ -13,3 +13,9 @@ npm install
 # start the build server
 npm start
 ```
+
+An example Flask project lives in ./flask
+
+An example Django project lives in ./django
+
+Both projects use a shared JS codebase, which lives in ./app, and a shared config file, ./example.webpack.js
