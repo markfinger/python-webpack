@@ -183,7 +183,7 @@ class TestBundles(unittest.TestCase):
     def test_default_context_can_be_extended(self):
         bundle = webpack(
             ConfigFiles.LIBRARY_CONFIG,
-            extra_context={
+            context={
                 'foo': 'bar'
             },
         )

@@ -13,11 +13,11 @@ def _setting(overrides, key):
     return getattr(conf.settings, key)
 
 
-def generate_compiler_options(config_file, extra_context=None, overrides=None):
-    if not _setting(overrides, 'STATIC_ROOT'):
+def generate_compiler_options(config_file, extra_context=None, setting_overrides=None):
+    if not _setting(setting_overrides, 'STATIC_ROOT'):
         raise ImproperlyConfigured('webpack.conf.settings.STATIC_ROOT has not been defined.')
 
-    if not _setting(overrides, 'STATIC_URL'):
+    if not _setting(setting_overrides, 'STATIC_URL'):
         raise ImproperlyConfigured('webpack.conf.settings.STATIC_URL has not been defined.')
 
     context = {}
@@ -28,24 +28,24 @@ def generate_compiler_options(config_file, extra_context=None, overrides=None):
 
     options = {
         'config': find_config_file(config_file),
-        'watch': _setting(overrides, 'WATCH'),
-        'cache': _setting(overrides, 'CACHE'),
-        'hmr': _setting(overrides, 'HMR'),
+        'watch': _setting(setting_overrides, 'WATCH'),
+        'cache': _setting(setting_overrides, 'CACHE'),
+        'hmr': _setting(setting_overrides, 'HMR'),
         'hmrRoot': server.url,
         'context': context,
         'outputPath': conf.settings.get_path_to_output_dir(),
         'publicPath': conf.settings.get_public_path(),
-        'staticRoot': _setting(overrides, 'STATIC_ROOT'),
-        'staticUrl': _setting(overrides, 'STATIC_URL'),
-        'aggregateTimeout': _setting(overrides, 'AGGREGATE_TIMEOUT'),
+        'staticRoot': _setting(setting_overrides, 'STATIC_ROOT'),
+        'staticUrl': _setting(setting_overrides, 'STATIC_URL'),
+        'aggregateTimeout': _setting(setting_overrides, 'AGGREGATE_TIMEOUT'),
     }
 
     if conf.settings.CACHE_DIR:
-        options['cacheDir'] = _setting(overrides, 'CACHE_DIR')
+        options['cacheDir'] = _setting(setting_overrides, 'CACHE_DIR')
 
     # As it defaults to `undefined` it's only defined if necessary
     if conf.settings.POLL is not None:
-        options['poll'] = _setting(overrides, 'POLL')
+        options['poll'] = _setting(setting_overrides, 'POLL')
 
     # Avoid collisions by directing output into unique directories
     hashable_content = '{}__{}'.format(json.dumps(options), __version__)

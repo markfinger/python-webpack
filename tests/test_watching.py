@@ -45,7 +45,7 @@ class TestWatching(unittest.TestCase):
     def test_source_files_can_be_watched_to_rebuild_a_bundle(self):
         self.assertEqual(read_file(PATH_TO_WATCHED_SOURCE_ENTRY), WATCHED_SOURCE_CONTENT)
 
-        bundle = webpack(PATH_TO_WATCHED_SOURCE_CONFIG, setting_overrides={'WATCH': True})
+        bundle = webpack(PATH_TO_WATCHED_SOURCE_CONFIG, settings={'WATCH': True})
 
         assets = bundle.get_assets()
         self.assertTrue(len(assets), 1)
@@ -57,7 +57,7 @@ class TestWatching(unittest.TestCase):
         write_file(PATH_TO_WATCHED_SOURCE_ENTRY, """module.exports = '__DJANGO_WEBPACK_WATCH_SOURCE_TWO__';""")
         time.sleep(WATCH_WAIT)
 
-        bundle = webpack(PATH_TO_WATCHED_SOURCE_CONFIG, setting_overrides={'WATCH': True})
+        bundle = webpack(PATH_TO_WATCHED_SOURCE_CONFIG, settings={'WATCH': True})
 
         assets = bundle.get_assets()
         self.assertTrue(len(assets), 1)

@@ -71,7 +71,7 @@ to export a function which accepts options and returns a config object.
 To use relative paths to config files, you should specify the `CONFIG_DIRS` setting.
 
 To pass context down to the config function, you can specify it in the `CONTEXT` setting. You can also
-provide context by using the `extra_context` argument on the `webpack.compiler.webpack` function.
+provide context by using the `context` argument on the `webpack.compiler.webpack` function.
 
 Be aware that the `output.path` property is overridden on config objects. You can leave the property
 undefined and everything will be written within the directory specified by the `STATIC_ROOT` setting.

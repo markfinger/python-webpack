@@ -5,11 +5,11 @@ from .server import server
 from .options import generate_compiler_options
 
 
-def webpack(config_file, extra_context=None, setting_overrides=None):
+def webpack(config_file, context=None, settings=None):
     options = generate_compiler_options(
         config_file=config_file,
-        extra_context=extra_context,
-        overrides=setting_overrides,
+        extra_context=context,
+        setting_overrides=settings,
     )
 
     output = server.build(options)
@@ -23,8 +23,6 @@ def webpack(config_file, extra_context=None, setting_overrides=None):
             warnings.warn(warning, WebpackWarning)
 
     if error:
-        message = 'Tried to build {}\n\n'.format(options['config'])
-
         # webpack-build spits up the first error that it sees, but sometimes the most
         # informative errors are in the `stats.errors` object
         if stats and stats['errors']:
@@ -38,7 +36,7 @@ def webpack(config_file, extra_context=None, setting_overrides=None):
                 message = err.get('message', None)
                 stack = err.get('stack', None)
                 if message and stack:
-                    errors.append('{}\n{}'.format(message, stack))
+                    errors.append('Message: {}\n\nStack trace: {}'.format(message, stack))
                 elif stack:
                     errors.append(stack)
                 else:
@@ -46,8 +44,9 @@ def webpack(config_file, extra_context=None, setting_overrides=None):
             else:
                 errors.append(err)
 
+        message = 'Tried to build {}'.format(options['config'])
         if errors:
-            message = message + '\n\n' + '\n\n'.join(errors)
+            message += '\n\n' + '\n\n'.join(errors)
 
         raise BundlingError(message)
 
