@@ -33,7 +33,7 @@ def index():
     return render_template(
         'index.html',
         # Send a request to the build server
-        bundle=webpack('webpack.config.js')
+        bundle=webpack('example.webpack.js')
     )
 
 

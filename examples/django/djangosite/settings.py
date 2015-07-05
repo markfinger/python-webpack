@@ -117,7 +117,7 @@ WEBPACK = {
     'STATIC_ROOT': STATIC_ROOT,
     'STATIC_URL': STATIC_URL,
     'CONFIG_DIRS': (
-        os.path.abspath(os.path.join(BASE_DIR, '..')),
+        os.path.join(BASE_DIR, '..'),
     ),
     'WATCH': DEBUG,
     'HMR': DEBUG,
