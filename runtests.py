@@ -4,15 +4,15 @@ import subprocess
 import os
 import django
 
-print('\n' + '-' * 80)
+print('\n' + '=' * 80)
 print('Running tests without django')
-print('-' * 80)
+print('=' * 80)
 
 subprocess.call(('nosetests', '--nocapture'))
 
-print('\n' + '-' * 80)
+print('\n' + '=' * 80)
 print('Running tests with django')
-print('-' * 80)
+print('=' * 80)
 
 os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 if hasattr(django, 'setup'):  # Only compatible with Django >= 1.7
