@@ -177,7 +177,20 @@ Default: `None`
 
 A dictionary of config files and context objects that is used to populate manifest files. The keys
 should be paths to config files and the values should be either `None` or an iterable of context objects
-that are used to generate unique builds of each config file.
+that are used to generate multiple builds from a single config file.
+
+Example:
+```python
+{
+    # Build from the config file
+    'path/to/webpack.config.js': None,
+    # Generate multiple builds for each context provided
+    'path/to/boilerplate.config.js': (
+        {'entry': './foo.js'},
+        {'entry': './bar.js'},
+    ),
+}
+```
 
 Default: `None`
 
