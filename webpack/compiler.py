@@ -1,8 +1,12 @@
 import warnings
+from . import conf
 from .exceptions import BundlingError, WebpackWarning
 from .bundle import WebpackBundle
 from .server import server
 from .options import generate_compiler_options
+from .manifest import Manifest
+
+manifest = Manifest()
 
 
 def webpack(config_file, context=None, settings=None):
@@ -11,6 +15,14 @@ def webpack(config_file, context=None, settings=None):
         extra_context=context,
         setting_overrides=settings,
     )
+
+    use_manifest = conf.settings.USE_MANIFEST
+    if settings:
+        use_manifest = settings.get('USE_MANIFEST', use_manifest)
+
+    if use_manifest:
+        data = manifest.read(config_file, context)
+        return WebpackBundle(data, options)
 
     output = server.build(options)
 

@@ -20,3 +20,11 @@ class BuildServerConnectionError(Exception):
 
 class BuildServerUnexpectedResponse(Exception):
     pass
+
+
+class ManifestMissingEntry(Exception):
+    pass
+
+
+class ManifestDoesNotExist(Exception):
+    pass

@@ -1,9 +1,11 @@
 import unittest
 import os
 import json
-from webpack.manifest import generate_manifest, generate_key, write_manifest, read_manifest
+import mock
+from webpack.conf import Conf
+from webpack.manifest import generate_manifest, generate_key, write_manifest, read_manifest, populate_manifest_file
 from webpack.compiler import webpack
-from .settings import ConfigFiles, STATIC_ROOT
+from .settings import ConfigFiles, STATIC_ROOT, WEBPACK
 from .utils import clean_static_root
 
 
@@ -105,3 +107,59 @@ class TestManifest(unittest.TestCase):
 
         # Convenience check
         self.assertEqual(read_manifest(path), manifest)
+
+    @staticmethod
+    def _raise_if_called(*args, **kwargs):
+        raise Exception('method called with args: {} and kwargs: {}'.format(args, kwargs))
+
+    def test_the_manifest_is_used_by_the_compiler(self):
+        manifest = generate_manifest({
+            ConfigFiles.BASIC_CONFIG: (),
+        })
+        key = generate_key(ConfigFiles.BASIC_CONFIG)
+        self.assertIn(key, manifest)
+
+        path = os.path.join(STATIC_ROOT, 'test_manifest.json')
+        write_manifest(path, manifest)
+
+        with mock.patch('webpack.server.server.build', self._raise_if_called):
+            mock_settings = Conf()
+            mock_settings.configure(
+                **dict(
+                    WEBPACK,
+                    USE_MANIFEST=True,
+                    MANIFEST_PATH=path,
+                )
+            )
+
+            with mock.patch('webpack.conf.settings', mock_settings):
+                bundle = webpack(ConfigFiles.BASIC_CONFIG)
+                self.assertEqual(bundle.data, manifest[key])
+
+    def test_the_manifest_can_be_populated_from_settings(self):
+        path = os.path.join(STATIC_ROOT, 'test_populate_manifest_file.json')
+
+        mock_settings = Conf()
+        mock_settings.configure(
+            **dict(
+                WEBPACK,
+                USE_MANIFEST=True,
+                MANIFEST_PATH=path,
+                MANIFEST={
+                    ConfigFiles.BASIC_CONFIG: (),
+                }
+            )
+        )
+
+        with mock.patch('webpack.conf.settings', mock_settings):
+            populate_manifest_file()
+
+            with open(path, 'r') as manifest_file:
+                content = manifest_file.read()
+            manifest = json.loads(content)
+
+            expected = generate_manifest({
+                ConfigFiles.BASIC_CONFIG: (),
+            })
+
+            self.assertEqual(manifest, expected)
