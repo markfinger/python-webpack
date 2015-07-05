@@ -12,6 +12,7 @@ Documentation
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
 - [Config files](#config-files)
+- [Hot module replacement](#hot-module-replacement)
 - [Usage in production](#usage-in-production)
 - [Settings](#settings)
 - [Django integration](#django-integration)
