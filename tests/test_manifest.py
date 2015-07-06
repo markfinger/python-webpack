@@ -19,6 +19,20 @@ class TestManifest(unittest.TestCase):
         clean_static_root()
 
     def test_a_manifest_can_be_generated(self):
+        manifest = generate_manifest(
+            (ConfigFiles.BASIC_CONFIG,)
+        )
+        self.assertIsInstance(manifest, dict)
+        self.assertEqual(len(manifest.keys()), 1)
+
+        key = generate_key(ConfigFiles.BASIC_CONFIG)
+        self.assertIn(key, manifest)
+        entry = manifest[key]
+
+        bundle = webpack(ConfigFiles.BASIC_CONFIG)
+        self.assertEqual(entry, bundle.data)
+
+    def test_a_manifest_can_be_generated_from_a_dictionary(self):
         manifest = generate_manifest({
             ConfigFiles.BASIC_CONFIG: ()
         })
@@ -33,6 +47,30 @@ class TestManifest(unittest.TestCase):
         self.assertEqual(entry, bundle.data)
 
     def test_a_manifest_can_be_generated_from_multiple_config_files(self):
+        manifest = generate_manifest(
+            (
+                ConfigFiles.BASIC_CONFIG,
+                ConfigFiles.LIBRARY_CONFIG,
+            ),
+        )
+        self.assertIsInstance(manifest, dict)
+        self.assertEqual(len(manifest.keys()), 2)
+
+        key1 = generate_key(ConfigFiles.BASIC_CONFIG)
+        self.assertIn(key1, manifest)
+        entry1 = manifest[key1]
+
+        bundle1 = webpack(ConfigFiles.BASIC_CONFIG)
+        self.assertEqual(entry1, bundle1.data)
+
+        key2 = generate_key(ConfigFiles.LIBRARY_CONFIG)
+        self.assertIn(key2, manifest)
+        entry2 = manifest[key2]
+
+        bundle2 = webpack(ConfigFiles.LIBRARY_CONFIG)
+        self.assertEqual(entry2, bundle2.data)
+
+    def test_a_manifest_can_be_generated_from_multiple_config_files_in_a_dictionary(self):
         manifest = generate_manifest({
             ConfigFiles.BASIC_CONFIG: (),
             ConfigFiles.LIBRARY_CONFIG: (),
@@ -138,6 +176,34 @@ class TestManifest(unittest.TestCase):
 
     def test_the_manifest_can_be_populated_from_settings(self):
         path = os.path.join(STATIC_ROOT, 'test_populate_manifest_file.json')
+
+        mock_settings = Conf()
+        mock_settings.configure(
+            **dict(
+                WEBPACK,
+                USE_MANIFEST=True,
+                MANIFEST_PATH=path,
+                MANIFEST=(
+                    ConfigFiles.BASIC_CONFIG,
+                )
+            )
+        )
+
+        with mock.patch('webpack.conf.settings', mock_settings):
+            populate_manifest_file()
+
+            with open(path, 'r') as manifest_file:
+                content = manifest_file.read()
+            manifest = json.loads(content)
+
+            expected = generate_manifest(
+                (ConfigFiles.BASIC_CONFIG,)
+            )
+
+            self.assertEqual(manifest, expected)
+
+    def test_the_manifest_can_be_populated_from_a_dictionary(self):
+        path = os.path.join(STATIC_ROOT, 'test_populate_dict_manifest_file.json')
 
         mock_settings = Conf()
         mock_settings.configure(

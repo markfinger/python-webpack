@@ -21,11 +21,17 @@ def generate_manifest(entries, settings=None):
 
     manifest = {}
 
-    for config_file, contexts in six.iteritems(entries):
-        contexts = contexts or (None,)
-        for context in contexts:
-            key = generate_key(config_file, context)
-            bundle = webpack(config_file, context=context, settings=settings)
+    if isinstance(entries, dict):
+        for config_file, contexts in six.iteritems(entries):
+            contexts = contexts or (None,)
+            for context in contexts:
+                key = generate_key(config_file, context)
+                bundle = webpack(config_file, context=context, settings=settings)
+                manifest[key] = bundle.data
+    else:
+        for config_file in entries:
+            key = generate_key(config_file, None)
+            bundle = webpack(config_file, context=None, settings=settings)
             manifest[key] = bundle.data
 
     return manifest
