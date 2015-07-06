@@ -59,12 +59,19 @@ def populate_manifest_file():
     if not conf.settings.MANIFEST_PATH:
         raise ImproperlyConfigured('webpack\'s MANIFEST_PATH setting has not been defined')
 
-    manifest = generate_manifest(conf.settings.MANIFEST, {
-        'USE_MANIFEST': False,
-        'HMR': False,
-    })
+    path = conf.settings.MANIFEST
 
-    write_manifest(conf.settings.MANIFEST_PATH, manifest)
+    manifest = generate_manifest(
+        path,
+        {
+            # Force the compiler to connect to the build server
+            'USE_MANIFEST': False,
+            # Ensure that the server does not add a hmr runtime
+            'HMR': False,
+        }
+    )
+
+    write_manifest(path, manifest)
 
 
 class Manifest(object):
