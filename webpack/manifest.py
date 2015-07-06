@@ -7,6 +7,9 @@ from .exceptions import ImproperlyConfigured, ManifestMissingEntry, ManifestDoes
 
 
 def generate_key(config_file, context=None):
+    if not context:
+        return config_file
+
     context_hash = hashlib.md5(json.dumps(context)).hexdigest()
     return '{}__{}'.format(config_file, context_hash)
 

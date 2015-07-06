@@ -22,7 +22,13 @@ class TestManifest(unittest.TestCase):
     def test_a_manifest_key_is_relative(self):
         key = generate_key(ConfigFiles.BASIC_CONFIG)
 
-        expected = os.path.join('basic', 'webpack.config.js') + '__' + hashlib.md5(json.dumps(None)).hexdigest()
+        self.assertEqual(key, os.path.join('basic', 'webpack.config.js'))
+
+    def test_a_manifest_key_contains_the_context(self):
+        context = {'foo': 'bar'}
+
+        key = generate_key(ConfigFiles.BASIC_CONFIG, context)
+        expected = os.path.join('basic', 'webpack.config.js') + '__' + hashlib.md5(json.dumps(context)).hexdigest()
 
         self.assertEqual(key, expected)
 
