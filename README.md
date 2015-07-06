@@ -44,7 +44,7 @@ Basic usage
 -----------
 
 python-webpack provides a high-level interface to a webpack-build server, enabling you to send build 
-requests an receive an object describing the outcome.
+requests and receive an object describing the outcome.
 
 To start the server, run 
 
@@ -160,7 +160,7 @@ The `CONTEXT` setting defines global defaults, but you can also specify per-buil
 the `context` argument to the `webpack` function.
 
 Using context allows you to treat config functions as factories or templates, which can assist you to reduce 
-boilerplate by allowing config files to be reused in multiple contexts.
+boilerplate and reuse config files across multiple contexts.
 
 
 ### Using relative paths to config files
@@ -204,8 +204,8 @@ Generating offline manifests
 ----------------------------
 
 Offline manifests are JSON files which allow python-webpack to cache the output from webpack-build. Manifests 
-are useful as an optimisation for production environments or other situations where you do not want a build 
-server running. The easiest way to generate manifests is to define the `MANIFEST` and `MANIFEST_PATH` settings. 
+are useful as an optimisation for production environments where you do not want a build server running. The 
+easiest way to generate manifests is to define the `MANIFEST` and `MANIFEST_PATH` settings.
 
 The `MANIFEST` setting should an iterable containing config files. For example:
 
