@@ -10,12 +10,6 @@ manifest = Manifest()
 
 
 def webpack(config_file, context=None, settings=None):
-    options = generate_compiler_options(
-        config_file=config_file,
-        extra_context=context,
-        setting_overrides=settings,
-    )
-
     use_manifest = conf.settings.USE_MANIFEST
 
     # Allow the USE_MANIFEST setting to be overridden when populating the manifest
@@ -24,7 +18,13 @@ def webpack(config_file, context=None, settings=None):
 
     if use_manifest:
         data = manifest.read(config_file, context)
-        return WebpackBundle(data, options)
+        return WebpackBundle(data)
+
+    options = generate_compiler_options(
+        config_file=config_file,
+        extra_context=context,
+        setting_overrides=settings,
+    )
 
     output = server.build(options)
 

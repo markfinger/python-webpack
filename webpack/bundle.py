@@ -1,5 +1,5 @@
 class WebpackBundle(object):
-    def __init__(self, data, options):
+    def __init__(self, data, options=None):
         self.data = data
         self.options = options
 
