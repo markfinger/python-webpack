@@ -14,23 +14,25 @@ def generate_key(config_file, context=None):
     return '{}__{}'.format(config_file, context_hash)
 
 
-def generate_manifest(entries, settings=None):
+def _add_entry_to_manifest(manifest, settings, config_file, context=None):
     from .compiler import webpack  # Avoiding a circular import
 
+    key = generate_key(config_file, context)
+    bundle = webpack(config_file, context=context, settings=settings)
+    manifest[key] = bundle.data
+
+
+def generate_manifest(entries, settings=None):
     manifest = {}
 
     if isinstance(entries, dict):
         for config_file, contexts in six.iteritems(entries):
             contexts = contexts or (None,)
             for context in contexts:
-                key = generate_key(config_file, context)
-                bundle = webpack(config_file, context=context, settings=settings)
-                manifest[key] = bundle.data
+                _add_entry_to_manifest(manifest, settings, config_file, context)
     else:
         for config_file in entries:
-            key = generate_key(config_file, None)
-            bundle = webpack(config_file, context=None, settings=settings)
-            manifest[key] = bundle.data
+            _add_entry_to_manifest(manifest, settings, config_file)
 
     return manifest
 
@@ -59,10 +61,8 @@ def populate_manifest_file():
     if not conf.settings.MANIFEST_PATH:
         raise ImproperlyConfigured('webpack\'s MANIFEST_PATH setting has not been defined')
 
-    path = conf.settings.MANIFEST
-
     manifest = generate_manifest(
-        path,
+        conf.settings.MANIFEST,
         {
             # Force the compiler to connect to the build server
             'USE_MANIFEST': False,
@@ -71,7 +71,7 @@ def populate_manifest_file():
         }
     )
 
-    write_manifest(path, manifest)
+    write_manifest(conf.settings.MANIFEST_PATH, manifest)
 
 
 class Manifest(object):
