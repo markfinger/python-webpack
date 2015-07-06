@@ -12,12 +12,15 @@ Documentation
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
 - [Config files](#config-files)
+  - [Config functions](#config-functions)
   - [Configuring the build](#configuring-the-build)
   - [Passing data to the config layer](#passing-data-to-the-config-layer)
   - [Using relative paths to config files](#using-relative-paths-to-config-files)
   - [Output paths](#output-paths)
 - [Hot module replacement](#hot-module-replacement)
 - [Generating offline manifests](#generating-offline-manifests)
+  - [Using context in a manifest](#using-context-in-a-manifest)
+  - [Manifest keys](#manifest-keys)
 - [Settings](#settings)
 - [Django integration](#django-integration)
 - [Running the tests](#running-the-tests)
@@ -41,7 +44,7 @@ Basic usage
 -----------
 
 python-webpack provides a high-level interface to a webpack-build server, enabling you to send build 
-requests and receive an receive an object describing the outcome.
+requests an receive an object describing the outcome.
 
 To start the server, run 
 
@@ -67,9 +70,19 @@ Config files
 
 For webpack's config reference, refer to the [official docs](https://webpack.github.io/docs/configuration.html).
 
-Be aware that webpack-build deviates slightly from webpack's CLI in that it requires config files
-to export a function which returns a config object. If you are already using config files which export an 
-object, wrap the generation of the object in a function. For example:
+
+### Config functions
+
+webpack-build uses config files which export a function that returns config objects. 
+
+Using config functions provide a number of benefits:
+  - functions can generate config objects which reflect the data sent from your python system
+  - functions can generate multiple config objects, enabling your config files to act as templates
+  - functions enable webpack-build to safely mutate the object without causing unintended side effects for 
+    successive builds
+
+If you are already using config files which export an object, wrap the generation of the object in a 
+function. For example:
 
 ```javascript
 // if you currently have
@@ -85,10 +98,8 @@ module.exports = function() {
 };
 ```
 
-Using functions instead of objects provides two primary benefits:
-  - you can generate config objects which reflect the data sent from your python system
-  - config functions enable webpack-build to safely mutate the object without causing unintended side 
-    effects for successive builds
+To avoid unintended side-effects and inexplicable behaviour, ensure that your functions are both idempotent and
+always return an entirely new object. Extending mutable objects is an easy recipe for unhappiness.
 
 
 ### Configuring the build
@@ -97,7 +108,7 @@ The data sent from python-webpack is available in your config function as the fi
 you to generate a config object which reflects the state of your python system. 
 
 A typical use-case is injecting loaders that enable hot module replacement. For example, if you always want
-to use the babel loader, but you only want `react-hot-loader` when the HMR is available:
+to use the `babel-loader`, but you only want `react-hot-loader` when hot module replacement is available:
 
 ```javascript
 module.exports = function(opts) {
@@ -116,15 +127,16 @@ module.exports = function(opts) {
 };
 ```
 
-The `opts` object provided is sent from python-webpack and follows 
-[webpack-build's API](https://github.com/markfinger/webpack-build).
+The `opts` object provided to your functions is sent from python-webpack and follows 
+[webpack-build's configuration](https://github.com/markfinger/webpack-build).
 
 
 ### Passing data to the config layer
 
-You can send extra data to your config function by specifying the `CONTEXT` setting. For example, if
-your `CONTEXT` setting looked like `{'COMPRESS': True}`, your function could use the `COMPRESS` flag to
-activate compression:
+You can send extra data to your config function by specifying the `CONTEXT` setting. 
+
+For example, if your `CONTEXT` setting looked like `{'COMPRESS': True}`, your function could use the 
+`COMPRESS` flag to activate compression:
 
 ```javascript
 var webpack = require('webpack');
@@ -147,8 +159,8 @@ module.exports = function(opts) {
 The `CONTEXT` setting defines global defaults, but you can also specify per-build values by providing
 the `context` argument to the `webpack` function.
 
-Using context allows you to treat config functions as factories or templates, which can assist with 
-reducing boilerplate and allowing small systems to grow safely.
+Using context allows you to treat config functions as factories or templates, which can assist you to reduce 
+boilerplate by allowing config files to be reused in multiple contexts.
 
 
 ### Using relative paths to config files
@@ -204,8 +216,8 @@ The `MANIFEST` setting should an iterable containing config files. For example:
 )
 ```
 
-The `MANIFEST_PATH` setting should be an absolute path to a file that the manifest will be stored in. For 
-example:
+The `MANIFEST_PATH` setting should be an absolute path to a file that the manifest will be written to and 
+read from. For example:
 
 ```python
 os.path.join(os.getcwd(), 'webpack.manifest.json')
@@ -220,7 +232,14 @@ populate_manifest_file()
 ```
 
 Once your manifest has been generated, the `USE_MANIFEST` setting is used to indicate that all data should
-be served from the manifest file.
+be served from the manifest file. When `USE_MANIFEST` is True, any requests which are not contained within
+the manifest will cause errors to be raised.
+
+Note: the `HMR` setting is set to False when populating manifests. This prevents HMR runtimes from being
+injected into your bundles.
+
+
+### Using context in a manifest
 
 If you want to generate a manifest which contains specific context for each config file, set `MANIFEST` to
 a dictionary where the keys are config files and the values are iterables containing context objects. For 
@@ -242,18 +261,23 @@ example:
 }
 ```
 
-Because manifest keys are generated from hashes of the context objects, you **must** specify the exact same 
-context when you call `webpack` with `USE_MANIFEST` set to True.
+Note: when calling `webpack`, you **must** specify the exact same context as defined in the `MANIFEST` setting.
 
-Note: the `HMR` setting is set to False when populating manifests. This prevents HMR runtimes from being
-injected into your bundles.
+
+### Manifest keys
+
+Manifest keys are the paths to the config files. If you want to deploy your manifests to another environment,
+you will likely need to use relative paths in coordination with the `CONFIG_DIRS` setting.
+
+If have specified context for a config file, the keys are generated be appending a hash of the context to the 
+path. Hence, you **must** specify the exact same context when calling `webpack`.
 
 
 Settings
 --------
 
 Settings can be defined by calling `webpack.conf.settings.configure` with keyword arguments matching 
-the setting that you want to define. For example
+the setting that you want to define. For example:
 
 ```python
 from webpack.conf import settings
@@ -268,7 +292,7 @@ settings.configure(
 )
 ```
 
-Note: in a Django project, you should define the settings within a dictionary named `WEBPACK` within 
+Note: in a Django project, you should declare the settings as keys in a dictionary named `WEBPACK` within 
 your settings file. python-webpack introspects Django's settings during startup and will configure itself
 from the `WEBPACK` dictionary.
 
@@ -318,45 +342,31 @@ Default: `False`
 
 ### CONTEXT
 
-The default context provided to config functions. You can use this to pass data and flags down to your 
-config functions.
+The default context provided to config functions - you can use this to pass data and flags down to your 
+config functions. If defined, the setting should be a dictionary.
 
 Default: `None`
 
 
 ### CONFIG_DIRS
 
-An iterable of directories that python-webpack will use to resolve relative paths to config files.
+An iterable of directories that will be used to resolve relative paths to config files.
 
 Default: `None`
 
 
 ### MANIFEST
 
-A dictionary of config files and context objects that is used to populate manifest files. The keys
-should be paths to config files and the values should be either `None` or an iterable of context objects
-that are used to generate multiple builds from a single config file.
-
-Example:
-```python
-{
-    # Build from the config file
-    'path/to/webpack.config.js': None,
-    # Generate multiple builds for each context provided
-    'path/to/boilerplate.config.js': (
-        {'entry': './foo.js'},
-        {'entry': './bar.js'},
-    ),
-}
-```
+An object containing config files which are used to populate an offline manifest. Can be either an iterable
+of paths or a dictionary mapping paths to context objects.
 
 Default: `None`
 
 
 ### USE_MANIFEST
 
-A flag indicating that python-webpack should use the manifest file, rather than opening connections to
-the build server.
+A flag indicating that python-webpack should use the manifest file, rather than opening connections to a 
+build server.
 
 Default: `False`
 
