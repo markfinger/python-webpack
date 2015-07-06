@@ -12,6 +12,7 @@ Documentation
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
 - [Config files](#config-files)
+  - [Config functions](#config-functions)
   - [Configuring the build](#configuring-the-build)
   - [Passing data to the config layer](#passing-data-to-the-config-layer)
   - [Using relative paths to config files](#using-relative-paths-to-config-files)
@@ -43,7 +44,7 @@ Basic usage
 -----------
 
 python-webpack provides a high-level interface to a webpack-build server, enabling you to send build 
-requests and receive an receive an object describing the outcome.
+requests an receive an object describing the outcome.
 
 To start the server, run 
 
@@ -69,9 +70,18 @@ Config files
 
 For webpack's config reference, refer to the [official docs](https://webpack.github.io/docs/configuration.html).
 
-Be aware that webpack-build deviates slightly from webpack's CLI in that it requires config files
-to export a function which returns a config object. If you are already using config files which export an 
-object, wrap the generation of the object in a function. For example:
+
+### Config functions
+
+webpack-build uses config files which export a function that returns config objects. Using config 
+functions provide a number of benefits:
+  - you can generate config objects which reflect the data sent from your python system
+  - functions can generate multiple config objects, enabling your config files to act as templates
+  - config functions enable webpack-build to safely mutate the object without causing unintended side 
+    effects for successive builds
+
+If you are already using config files which export an object, wrap the generation of the object in a 
+function. For example:
 
 ```javascript
 // if you currently have
@@ -87,10 +97,8 @@ module.exports = function() {
 };
 ```
 
-Using functions instead of objects provides two primary benefits:
-  - you can generate config objects which reflect the data sent from your python system
-  - config functions enable webpack-build to safely mutate the object without causing unintended side 
-    effects for successive builds
+To avoid unintended side-effects and inexplicable behaviour, ensure that your functions are both idempotent and
+always return an entirely new object. Providing or extending mutable objects is an easy recipe for unhappiness.
 
 
 ### Configuring the build
