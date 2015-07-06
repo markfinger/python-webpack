@@ -2,6 +2,7 @@ import unittest
 import os
 import json
 import mock
+import hashlib
 from webpack.conf import Conf
 from webpack.manifest import generate_manifest, generate_key, write_manifest, read_manifest, populate_manifest_file
 from webpack.compiler import webpack
@@ -17,6 +18,13 @@ class TestManifest(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         clean_static_root()
+
+    def test_a_manifest_key_is_relative(self):
+        key = generate_key(ConfigFiles.BASIC_CONFIG)
+
+        expected = os.path.join('basic', 'webpack.config.js') + '__' + hashlib.md5(json.dumps(None)).hexdigest()
+
+        self.assertEqual(key, expected)
 
     def test_a_manifest_can_be_generated(self):
         manifest = generate_manifest(

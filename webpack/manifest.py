@@ -3,17 +3,12 @@ import hashlib
 import os
 from optional_django import six
 from . import conf
-from .options import generate_compiler_options
 from .exceptions import ImproperlyConfigured, ManifestMissingEntry, ManifestDoesNotExist
 
 
 def generate_key(config_file, context=None):
-    options = generate_compiler_options(config_file, context)
-
-    abs_path = options['config']
     context_hash = hashlib.md5(json.dumps(context)).hexdigest()
-
-    return '{}__{}'.format(abs_path, context_hash)
+    return '{}__{}'.format(config_file, context_hash)
 
 
 def generate_manifest(entries, settings=None):
