@@ -3,19 +3,19 @@ python-webpack
 
 [![Build Status](https://travis-ci.org/markfinger/python-webpack.svg?branch=master)](https://travis-ci.org/markfinger/python-webpack)
 
-Python bindings to webpack via [webpack-build](https://github.com/markfinger/webpack-build).
-
-Parses modules with dependencies and generates static assets representing those modules, enabling you 
-to package your assets so that they can be reused on the client-side.
+Python bindings to webpack, via [webpack-build](https://github.com/markfinger/webpack-build)
 
 
 Documentation
 -------------
 
 - [Installation](#installation)
-- [Usage](#usage)
-- [Django integration](#django-integration)
+- [Basic usage](#basic-usage)
+- [Config files](#config-files)
+- [Hot module replacement](#hot-module-replacement)
+- [Usage in production](#usage-in-production)
 - [Settings](#settings)
+- [Django integration](#django-integration)
 - [Running the tests](#running-the-tests)
 
 
@@ -24,121 +24,79 @@ Installation
 
 ```
 pip install python-webpack
+```
 
+And install the JS dependencies with
+
+```
 npm install webpack webpack-build --save
 ```
 
 
-Usage
------
+Basic usage
+-----------
 
 python-webpack provides a high-level interface to a webpack-build server. To start the server, run
-`node_modules/.bin/webpack-build`.
+`node_modules/.bin/webpack-build`. Requests are sent to the build server and python-webpack returns objects 
+that allows you to interact with the results of the build.
 
-The build server is fed [config files](https://webpack.github.io/docs/configuration.html) and python-webpack
-returns an object that allows you to interact with the results of the build.
+Build requests should be sent with the path to the config file
 
 ```python
 from webpack.compiler import webpack
 
-bundle = webpack('/path/to/webpack.config.js')
-
-# The raw data returned from webpack-build
-bundle.data
-
-# Returns a string containing <link> elements pointing to any css assets
-bundle.render_css()
-
-# Returns a string containing <script> elements pointing to any js assets
-bundle.render_js()
-
-# Returns absolute paths to the generated assets on your filesystem
-bundle.get_assets()
-
-# Returns absolute paths to the generated assets, grouped by entry
-bundle.get_output()
-
-# Returns urls to the generated assets, grouped by entry
-bundle.get_urls()
-
-# Returns a string matching the `library` property of your config file
-bundle.get_library()
+bundle = webpack('path/to/webpack.config.js')
 ```
+
+Once the build has completed, you can pass the returned object directly into your templates. The object
+provides two convenience methods, `render_css` and `render_js` which emit `<link>` and `<script>` elements
+pointing to the generated assets.
+
+
+Config files
+------------
+
+For webpack's config reference, refer to the [official docs](https://webpack.github.io/docs/configuration.html).
 
 Be aware that webpack-build deviates slightly from webpack's CLI in that it requires config files
-to export a function which accepts options and returns a config object.
+to export a function which accepts options and returns a config object. Consult 
+[webpack-build's docs](https://github.com/markfinger/webpack-build) for more information.
 
-To use relative paths to config files, you should specify the `CONFIG_DIRS` setting.
+If you want to use relative paths to config files, you should specify the `CONFIG_DIRS` setting.
 
-To pass context down to the config function, you can specify it in the `CONTEXT` setting. You can also
-provide context by using the `context` argument on the `webpack.compiler.webpack` function.
+Config functions are provided with the options sent from python-webpack, you can set conditionals to change
+your setup based on the flags sent to webpack-build.
 
-Be aware that the `output.path` property is overridden on config objects. You can leave the property
-undefined and everything will be written within the directory specified by the `STATIC_ROOT` setting.
+To pass context down to your config function, you can specify defaults in the `CONTEXT` setting. You can 
+also provide per-build context by using the `context` argument on the `webpack.compiler.webpack` function.
+In your config functions, you can access the context via the options object's `context` property.
 
-
-Django integration
-------------------
-
-### Installation and configuration
-
-The following configuration should be placed in your settings files to enable webpack to function with Django.
-
-Add `'webpack'` to your `INSTALLED_APPS`
-
-```python
-INSTALLED_APPS = (
-    # ...
-    'webpack',
-)
-```
-
-Add `'webpack.django_integration.WebpackFinder'` to your `STATICFILES_FINDERS`
-
-```python
-STATICFILES_FINDERS = (
-    # ...
-    'webpack.django_integration.WebpackFinder',
-)
-```
-
-Configure webpack to respect your project's configuration
-
-```python
-WEBPACK = {
-    'STATIC_ROOT': STATIC_ROOT,
-    'STATIC_URL': STATIC_URL,
-    'WATCH': DEBUG,
-    'HMR': DEBUG,
-    'CONTEXT': {
-        'DEBUG': DEBUG,
-    },
-}
-```
+Be aware that the `output.path` property on config objects is overridden. All output is automatically 
+redirected to directories within the `STATIC_ROOT`.
 
 
-### Template tags
+Hot module replacement
+----------------------
 
-A template tag is provided to integrate webpack at the template layer.
+If you set the `HMR` setting to True, assets that are rendered on the client-side will open sockets to webpack-build's server and listen for change notifications. When the assets have been rebuilt, they
+will attempt to automatically update themselves. If they are unable to, they will log to the console 
+indicating that you will need to refresh.
 
-```html
-{% load webpack %}
+If you want to change your config for situations where the python layer has requested HMR, use the `hmr` 
+flag on the options argument provided to config functions.
 
-{% webpack 'path/to/webpack.config.js' as bundle %}
 
-{{ bundle.render_css|safe }}
+Usage in production
+-------------------
 
-{{ bundle.render_js|safe }}
-```
+**TODO**
 
 
 Settings
 --------
 
-If you are using this library in a Django project, please refer to the [Django integration](#django-integration)
-section of the documentation for the incantation necessary to declare settings. For non-django projects, settings
-can be defined by calling `webpack.conf.settings.configure` with keyword arguments matching the setting that you
-want to define. For example
+Settings can be defined by calling `webpack.conf.settings.configure` with keyword arguments matching 
+the setting that you want to define. For example
 
 ```python
 from webpack.conf import settings
@@ -150,18 +108,17 @@ settings.configure(
     STATIC_URL='/static/',
     WATCH=DEBUG,
     HMR=DEBUG,
-    CONTEXT: {
-        'DEBUG': DEBUG,
-    },
 )
 ```
+
+In a Django project, you should define the settings within your settings file. Add them to a dictionary 
+named `WEBPACK` and python-webpack will introspect your settings during startup.
 
 
 ### STATIC_ROOT
 
-An absolute path to the root directory that you use for static assets.
-
-For example, `'/path/to/your/projects/static_root'`.
+An absolute path to the root directory that you use for static assets. For example, 
+`'/path/to/your/projects/static_root'`.
 
 This setting **must** be defined.
 
@@ -170,9 +127,7 @@ Default: `None`
 
 ### STATIC_URL
 
-The root url that your static assets are served from.
-
-For example, `'/static/'`.
+The root url that your static assets are served from. For example, `'/static/'`.
 
 This setting **must** be defined.
 
@@ -190,21 +145,14 @@ Default: `None`
 
 A boolean flag which indicates that file watchers should be set to watch the assets's source
 files. When a change is detected, the files which have changed are recompiled in the background
-so that the assets are ready for the next request.
-
-Set this to `True` in development environments.
+so that the assets are ready for the next request. Set this to `True` in development environments.
 
 Default: `False`
 
 
 ### HMR
 
-A boolean flag indicating that webpack-build should inject a hmr runtime into the generate bundle.
-When the runtime is loaded on a page, it opens sockets to the build server and wait for signals
-that the assets have changed. When a change signal is received, the hmr runtime will attempt to
-safely update the page. If the page cannot be updated safely, console logs will indicate that
-a refresh is required.
-
+A boolean flag indicating that webpack-build should inject a hmr runtime into the generated assets.
 Set this to `True` in development environments.
 
 Default: `False`
@@ -212,15 +160,60 @@ Default: `False`
 
 ### CONTEXT
 
-The default context provided to config functions. This sets default values for the context object
-passed to webpack-build.
+The default context provided to config functions. You can use this to pass data and flags down to your 
+config functions.
+
+Default: `None`
+
+
+### CONFIG_DIRS
+
+An iterable of directories that python-webpack will use to resolve relative paths to config files.
+
+Default: `None`
+
+
+### MANIFEST
+
+A dictionary of config files and context objects that is used to populate manifest files. The keys
+should be paths to config files and the values should be either `None` or an iterable of context objects
+that are used to generate multiple builds from a single config file.
+
+Example:
+```python
+{
+    # Build from the config file
+    'path/to/webpack.config.js': None,
+    # Generate multiple builds for each context provided
+    'path/to/boilerplate.config.js': (
+        {'entry': './foo.js'},
+        {'entry': './bar.js'},
+    ),
+}
+```
+
+Default: `None`
+
+
+### USE_MANIFEST
+
+A flag indicating that python-webpack should use the manifest file, rather than opening connections to
+the build server.
+
+Default: `False`
+
+
+### MANIFEST_PATH
+
+An absolute path to the file used to store the manifest.
 
 Default: `None`
 
 
 ### CACHE
 
-A flag indicating that webpack-build should maintain a persistent file cache.
+A flag indicating that webpack-build should maintain a persistent file cache. The file cache is used to 
+improve response times for builds that have already been completed.
 
 Default: `True`
 
@@ -255,6 +248,59 @@ than relying on the OS for notifications.
 If the compiler is not detecting changes to your files, setting this to `True` may resolve the problem.
 
 Default: `None`
+
+
+Django integration
+------------------
+
+### Installation and configuration
+
+The following configuration should be placed in your settings files to enable python-webpack to function 
+with Django.
+
+Add `'webpack'` to your `INSTALLED_APPS`
+
+```python
+INSTALLED_APPS = (
+    # ...
+    'webpack',
+)
+```
+
+Add `'webpack.django_integration.WebpackFinder'` to your `STATICFILES_FINDERS`
+
+```python
+STATICFILES_FINDERS = (
+    # ...
+    'webpack.django_integration.WebpackFinder',
+)
+```
+
+Configure webpack to respect your project's configuration
+
+```python
+WEBPACK = {
+    'STATIC_ROOT': STATIC_ROOT,
+    'STATIC_URL': STATIC_URL,
+    'WATCH': DEBUG,
+    'HMR': DEBUG,
+}
+```
+
+
+### Template tags
+
+A template tag is provided to integrate webpack at the template layer.
+
+```html
+{% load webpack %}
+
+{% webpack 'path/to/webpack.config.js' as bundle %}
+
+{{ bundle.render_css|safe }}
+
+{{ bundle.render_js|safe }}
+```
 
 
 Running the tests
