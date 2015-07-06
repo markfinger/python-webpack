@@ -73,12 +73,13 @@ For webpack's config reference, refer to the [official docs](https://webpack.git
 
 ### Config functions
 
-webpack-build uses config files which export a function that returns config objects. Using config 
-functions provide a number of benefits:
-  - you can generate config objects which reflect the data sent from your python system
+webpack-build uses config files which export a function that returns config objects. 
+
+Using config functions provide a number of benefits:
+  - functions can generate config objects which reflect the data sent from your python system
   - functions can generate multiple config objects, enabling your config files to act as templates
-  - config functions enable webpack-build to safely mutate the object without causing unintended side 
-    effects for successive builds
+  - functions enable webpack-build to safely mutate the object without causing unintended side effects for 
+    successive builds
 
 If you are already using config files which export an object, wrap the generation of the object in a 
 function. For example:
@@ -98,7 +99,7 @@ module.exports = function() {
 ```
 
 To avoid unintended side-effects and inexplicable behaviour, ensure that your functions are both idempotent and
-always return an entirely new object. Providing or extending mutable objects is an easy recipe for unhappiness.
+always return an entirely new object. Extending mutable objects is an easy recipe for unhappiness.
 
 
 ### Configuring the build
@@ -107,7 +108,7 @@ The data sent from python-webpack is available in your config function as the fi
 you to generate a config object which reflects the state of your python system. 
 
 A typical use-case is injecting loaders that enable hot module replacement. For example, if you always want
-to use the babel loader, but you only want `react-hot-loader` when the HMR is available:
+to use the `babel-loader`, but you only want `react-hot-loader` when hot module replacement is available:
 
 ```javascript
 module.exports = function(opts) {
@@ -126,15 +127,16 @@ module.exports = function(opts) {
 };
 ```
 
-The `opts` object provided is sent from python-webpack and follows 
-[webpack-build's API](https://github.com/markfinger/webpack-build).
+The `opts` object provided to your functions is sent from python-webpack and follows 
+[webpack-build's configuration](https://github.com/markfinger/webpack-build).
 
 
 ### Passing data to the config layer
 
-You can send extra data to your config function by specifying the `CONTEXT` setting. For example, if
-your `CONTEXT` setting looked like `{'COMPRESS': True}`, your function could use the `COMPRESS` flag to
-activate compression:
+You can send extra data to your config function by specifying the `CONTEXT` setting. 
+
+For example, if your `CONTEXT` setting looked like `{'COMPRESS': True}`, your function could use the 
+`COMPRESS` flag to activate compression:
 
 ```javascript
 var webpack = require('webpack');
@@ -157,8 +159,8 @@ module.exports = function(opts) {
 The `CONTEXT` setting defines global defaults, but you can also specify per-build values by providing
 the `context` argument to the `webpack` function.
 
-Using context allows you to treat config functions as factories or templates, which can assist with 
-reducing boilerplate and allowing small systems to grow safely.
+Using context allows you to treat config functions as factories or templates, which can assist you to reduce 
+boilerplate by allowing config files to be reused in multiple contexts.
 
 
 ### Using relative paths to config files
