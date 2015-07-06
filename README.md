@@ -18,6 +18,8 @@ Documentation
   - [Output paths](#output-paths)
 - [Hot module replacement](#hot-module-replacement)
 - [Generating offline manifests](#generating-offline-manifests)
+  - [Using context in a manifest](#using-context-in-a-manifest)
+  - [Manifest keys](#manifest-keys)
 - [Settings](#settings)
 - [Django integration](#django-integration)
 - [Running the tests](#running-the-tests)
@@ -204,8 +206,8 @@ The `MANIFEST` setting should an iterable containing config files. For example:
 )
 ```
 
-The `MANIFEST_PATH` setting should be an absolute path to a file that the manifest will be stored in. For 
-example:
+The `MANIFEST_PATH` setting should be an absolute path to a file that the manifest will be written to and 
+read from. For example:
 
 ```python
 os.path.join(os.getcwd(), 'webpack.manifest.json')
@@ -220,7 +222,14 @@ populate_manifest_file()
 ```
 
 Once your manifest has been generated, the `USE_MANIFEST` setting is used to indicate that all data should
-be served from the manifest file.
+be served from the manifest file. When `USE_MANIFEST` is True, any requests which are not contained within
+the manifest will cause errors to be raised.
+
+Note: the `HMR` setting is set to False when populating manifests. This prevents HMR runtimes from being
+injected into your bundles.
+
+
+### Using context in a manifest
 
 If you want to generate a manifest which contains specific context for each config file, set `MANIFEST` to
 a dictionary where the keys are config files and the values are iterables containing context objects. For 
@@ -242,18 +251,23 @@ example:
 }
 ```
 
-Because manifest keys are generated from hashes of the context objects, you **must** specify the exact same 
-context when you call `webpack` with `USE_MANIFEST` set to True.
+Note: when calling `webpack`, you **must** specify the exact same context as defined in the `MANIFEST` setting.
 
-Note: the `HMR` setting is set to False when populating manifests. This prevents HMR runtimes from being
-injected into your bundles.
+
+### Manifest keys
+
+Manifest keys are the paths to the config files. If you want to deploy your manifests to another environment,
+you will likely need to use relative paths in coordination with the `CONFIG_DIRS` setting.
+
+If have specified context for a config file, the keys are generated be appending a hash of the context to the 
+path. Hence, you **must** specify the exact same context when calling `webpack`.
 
 
 Settings
 --------
 
 Settings can be defined by calling `webpack.conf.settings.configure` with keyword arguments matching 
-the setting that you want to define. For example
+the setting that you want to define. For example:
 
 ```python
 from webpack.conf import settings
@@ -268,7 +282,7 @@ settings.configure(
 )
 ```
 
-Note: in a Django project, you should define the settings within a dictionary named `WEBPACK` within 
+Note: in a Django project, you should declare the settings as keys in a dictionary named `WEBPACK` within 
 your settings file. python-webpack introspects Django's settings during startup and will configure itself
 from the `WEBPACK` dictionary.
 
@@ -318,45 +332,31 @@ Default: `False`
 
 ### CONTEXT
 
-The default context provided to config functions. You can use this to pass data and flags down to your 
-config functions.
+The default context provided to config functions - you can use this to pass data and flags down to your 
+config functions. If defined, the setting should be a dictionary.
 
 Default: `None`
 
 
 ### CONFIG_DIRS
 
-An iterable of directories that python-webpack will use to resolve relative paths to config files.
+An iterable of directories that will be used to resolve relative paths to config files.
 
 Default: `None`
 
 
 ### MANIFEST
 
-A dictionary of config files and context objects that is used to populate manifest files. The keys
-should be paths to config files and the values should be either `None` or an iterable of context objects
-that are used to generate multiple builds from a single config file.
-
-Example:
-```python
-{
-    # Build from the config file
-    'path/to/webpack.config.js': None,
-    # Generate multiple builds for each context provided
-    'path/to/boilerplate.config.js': (
-        {'entry': './foo.js'},
-        {'entry': './bar.js'},
-    ),
-}
-```
+An object containing config files which are used to populate an offline manifest. Can be either an iterable
+of paths or a dictionary mapping paths to context objects.
 
 Default: `None`
 
 
 ### USE_MANIFEST
 
-A flag indicating that python-webpack should use the manifest file, rather than opening connections to
-the build server.
+A flag indicating that python-webpack should use the manifest file, rather than opening connections to a 
+build server.
 
 Default: `False`
 
