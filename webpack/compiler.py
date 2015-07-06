@@ -17,6 +17,8 @@ def webpack(config_file, context=None, settings=None):
     )
 
     use_manifest = conf.settings.USE_MANIFEST
+
+    # Allow the USE_MANIFEST setting to be overridden when populating the manifest
     if settings:
         use_manifest = settings.get('USE_MANIFEST', use_manifest)
 
