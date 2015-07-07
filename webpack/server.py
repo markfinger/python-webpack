@@ -16,12 +16,10 @@ class BuildServer(object):
         return res.status_code == 200 and 'webpack-build' in res.text
 
     def build(self, options):
-        url = '{}/build'.format(self.url)
-
         try:
-            res = requests.post(url, json=options)
+            res = requests.post(self.url, json=options)
         except requests.ConnectionError:
-            raise BuildServerConnectionError('Tried to send build request to {}'.format(url))
+            raise BuildServerConnectionError('Tried to send build request to {}'.format(self.url))
 
         if res.status_code != 200:
             raise BuildServerUnexpectedResponse('{}: {}'.format(res.status_code, res.text))
@@ -29,4 +27,4 @@ class BuildServer(object):
         return res.json()
 
 
-server = BuildServer(settings.BUILD_SERVER_URL)
+server = BuildServer(settings.BUILD_URL)

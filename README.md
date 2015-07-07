@@ -344,6 +344,13 @@ This setting **must** be defined.
 Default: `None`
 
 
+### BUILD_URL
+
+The url that build requests are sent to.
+
+Default: `'http://127.0.0.1:9009/build'`
+
+
 ### CONFIG_DIRS
 
 A list of directories that will be used to resolve relative paths to config files.

@@ -6,10 +6,12 @@ class Conf(conf.Conf):
     # Environment configuration
     STATIC_ROOT = None
     STATIC_URL = None
-    BUILD_SERVER_URL = 'http://127.0.0.1:9009'
     OUTPUT_DIR = 'webpack_assets'
     CONFIG_DIRS = None
     CONTEXT = None
+
+    # Build server
+    BUILD_URL = 'http://127.0.0.1:9009/build'
 
     # Watching
     WATCH = False
