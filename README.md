@@ -18,7 +18,8 @@ Documentation
   - [Using relative paths to config files](#using-relative-paths-to-config-files)
   - [Output paths](#output-paths)
 - [Hot module replacement](#hot-module-replacement)
-- [Generating offline manifests](#generating-offline-manifests)
+- [Offline manifests](#generating-offline-manifests)
+  - [Generating manifests](#generating-manifests)
   - [Using context in a manifest](#using-context-in-a-manifest)
   - [Manifest keys](#manifest-keys)
 - [Settings](#settings)
@@ -33,7 +34,7 @@ Installation
 pip install python-webpack
 ```
 
-And install the JS dependencies with
+and install the JS dependencies with
 
 ```
 npm install webpack webpack-build --save
@@ -159,8 +160,8 @@ module.exports = function(opts) {
 The `CONTEXT` setting defines global defaults, but you can also specify per-build values by providing
 the `context` argument to the `webpack` function.
 
-Using context allows you to treat config functions as factories or templates, which can assist you to reduce 
-boilerplate and reuse config files across multiple contexts.
+Using context allows you to treat config functions as factories or templates, which can assist with 
+reducing boilerplate and reusing config files across multiple contexts.
 
 
 ### Using relative paths to config files
@@ -200,12 +201,16 @@ If you want to change your config for situations where the python layer has requ
 flag on the options argument provided to config functions.
 
 
-Generating offline manifests
-----------------------------
+Offline manifests
+-----------------
 
 Offline manifests are JSON files which allow python-webpack to cache the output from webpack-build. Manifests 
-are useful as an optimisation for production environments where you do not want a build server running. The 
-easiest way to generate manifests is to define the `MANIFEST` and `MANIFEST_PATH` settings.
+are useful as an optimisation for production environments where you do not want a build server running. 
+
+
+### Generating manifests
+
+The easiest way to generate manifests is to define the `MANIFEST` and `MANIFEST_PATH` settings.
 
 The `MANIFEST` setting should an iterable containing config files. For example:
 
@@ -271,6 +276,29 @@ you will likely need to use relative paths in coordination with the `CONFIG_DIRS
 
 If have specified context for a config file, the keys are generated be appending a hash of the context to the 
 path. Hence, you **must** specify the exact same context when calling `webpack`.
+
+
+### Ensuring portability
+
+The manifest handler that ships with webpack depends heavily on path resolution and context hashes to map
+requests to entries in the manifest. While this behaviour ensures an explicit and deterministic outcome, it 
+can make it difficult to ensure portablity when deploying manifests to other locations or servers. 
+
+If you want to make changes to the manifest reader, you can monkey-patch `webpack.compiler.manifest` 
+with your handler. For example:
+
+```
+class MyManifest():
+    def read(config_file, context):
+        """This method is called by the compiler and should return an object"""
+        return {
+          # ...
+        }
+        
+import webpack.compiler
+webpack.compiler.manifest = MyManifest()
+```
+
 
 
 Settings
