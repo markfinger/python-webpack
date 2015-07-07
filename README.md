@@ -346,7 +346,7 @@ Default: `None`
 
 ### BUILD_URL
 
-The url that build requests are sent to.
+The url that build requests are sent to, this url should expose webpack-build.
 
 Default: `'http://127.0.0.1:9009/build'`
 
