@@ -250,7 +250,7 @@ If you want to generate a manifest which contains specific context for each conf
 a dictionary where the keys are config files and the values are iterables containing context objects. For 
 example:
 
-```
+```python
 {
     # Build this file with a context
     'path/to/some/webpack.config.js': (
@@ -287,7 +287,7 @@ can make it difficult to ensure portablity when deploying manifests to other loc
 If you want to make changes to the manifest reader, you can monkey-patch `webpack.compiler.manifest` 
 with your handler. For example:
 
-```
+```python
 class MyManifest():
     def read(config_file, context):
         """This method is called by the compiler and should return an object"""
