@@ -31,7 +31,6 @@ def generate_compiler_options(config_file, extra_context=None, setting_overrides
         'watch': _setting(setting_overrides, 'WATCH'),
         'cache': _setting(setting_overrides, 'CACHE'),
         'hmr': _setting(setting_overrides, 'HMR'),
-        'hmrRoot': server.url,
         'context': context,
         'outputPath': conf.settings.get_path_to_output_dir(),
         'publicPath': conf.settings.get_public_path(),
