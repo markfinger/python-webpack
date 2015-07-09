@@ -415,7 +415,7 @@ Default: `None`
 
 ### MANIFEST_SETTINGS
 
-A dictionary of values that are used to override to python-webpack's settings when generating the manifest.
+A dictionary of values that are used during manifest generation to override python-webpack's settings.
 
 Default:
 ```python
