@@ -63,12 +63,7 @@ def populate_manifest_file():
 
     manifest = generate_manifest(
         conf.settings.MANIFEST,
-        {
-            # Force the compiler to connect to the build server
-            'USE_MANIFEST': False,
-            # Ensure that the server does not add a hmr runtime
-            'HMR': False,
-        }
+        conf.settings.MANIFEST_SETTINGS,
     )
 
     write_manifest(conf.settings.MANIFEST_PATH, manifest)

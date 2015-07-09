@@ -27,6 +27,12 @@ class Conf(conf.Conf):
     MANIFEST = None
     USE_MANIFEST = False
     MANIFEST_PATH = None
+    MANIFEST_SETTINGS = {
+        # Force the compiler to connect to the build server
+        'USE_MANIFEST': False,
+        # Ensure that the server does not add a hmr runtime
+        'HMR': False,
+    }
 
     def get_path_to_output_dir(self):
         return os.path.join(self.STATIC_ROOT, self.OUTPUT_DIR)
