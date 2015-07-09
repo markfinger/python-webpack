@@ -413,6 +413,21 @@ An absolute path to the file used to store the manifest.
 Default: `None`
 
 
+### MANIFEST_SETTINGS
+
+A dictionary of values that are used to override to python-webpack's settings when generating the manifest.
+
+Default:
+```python
+{
+	# Force the compiler to connect to the build server
+	'USE_MANIFEST': False,
+	# Ensure that the server does not add a hmr runtime
+	'HMR': False,
+}
+```
+
+
 ### CACHE
 
 A flag indicating that webpack-build should maintain a persistent file cache. The file cache is used to 
