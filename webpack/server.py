@@ -22,7 +22,9 @@ class BuildServer(object):
             raise BuildServerConnectionError('Tried to send build request to {}'.format(self.url))
 
         if res.status_code != 200:
-            raise BuildServerUnexpectedResponse('{}: {}'.format(res.status_code, res.text))
+            raise BuildServerUnexpectedResponse(
+                'Unexpected response from {} - {}: {}'.format(self.url, res.status_code, res.text)
+            )
 
         return res.json()
 
