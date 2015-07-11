@@ -44,8 +44,9 @@ npm install webpack webpack-build --save
 Basic usage
 -----------
 
-python-webpack provides a high-level interface to a webpack-build server, enabling you to send build 
-requests and receive an object describing the outcome.
+python-webpack provides a high-level interface to a 
+[webpack-build server](https://github.com/markfinger/webpack-build#build-server), enabling you to send 
+build requests and receive an object describing the outcome.
 
 To start the server, run 
 
@@ -79,8 +80,8 @@ webpack-build uses config files which export a function that returns config obje
 Using config functions provide a number of benefits:
   - functions can generate config objects which reflect the data sent from your python system
   - functions can generate multiple config objects, enabling your config files to act as templates
-  - functions enable webpack-build to safely mutate the object without causing unintended side effects for 
-    successive builds
+  - idempotent functions enable webpack-build to safely mutate the object without causing unintended side 
+    effects for successive builds
 
 If you are already using config files which export an object, wrap the generation of the object in a 
 function. For example:
@@ -129,7 +130,7 @@ module.exports = function(opts) {
 ```
 
 The `opts` object provided to your functions is sent from python-webpack and follows 
-[webpack-build's configuration](https://github.com/markfinger/webpack-build).
+[webpack-build's build options](https://github.com/markfinger/webpack-build#build-options).
 
 
 ### Passing data to the config layer
