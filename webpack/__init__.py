@@ -1,3 +1,3 @@
-__version__ = '4.1.1'
+__version__ = '5.0.0'
 
 default_app_config = 'webpack.apps.WebpackConfig'
