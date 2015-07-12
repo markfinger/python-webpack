@@ -11,7 +11,9 @@ Documentation
 
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
-- [webpack](#webpack)
+- [API](#api)
+  - [webpack](#webpack)
+  - [populate_manifest_file](#populate_manifest_file)
 - [Config files](#config-files)
   - [Config functions](#config-functions)
   - [Configuring the build](#configuring-the-build)
@@ -21,7 +23,7 @@ Documentation
 - [Build server](#build-server)
   - [Hot module replacement](#hot-module-replacement)
   - [Overriding the build server](#overriding-the-build-server)
-- [Offline manifests](#generating-offline-manifests)
+- [Offline manifests](#offline-manifests)
   - [Generating manifests](#generating-manifests)
   - [Using context in a manifest](#using-context-in-a-manifest)
   - [Manifest keys](#manifest-keys)
@@ -71,8 +73,11 @@ and &lt;link&gt; elements into your page. The object provides two convenience me
 `render_css` which emit elements pointing to the generated assets.
 
 
-webpack
--------
+API
+---
+
+
+### webpack
 
 `webpack.compiler.webpack` allows you to request data from the build server and the manifest reader.
 
@@ -87,7 +92,15 @@ The following optional arguments are also accepted:
 - `settings` - a dictionary of keys which can be used to override settings. In most cases, you'll want to define 
   settings in `webpack.conf.settings`, but it can be useful to provide overrides without monkey-patching.
 - `manifest` - an override for the default manifest reader. Should expose a `read` method.
-- `compiler` - an override for the default compiler - a webpack-build build server). Should expose a `build` method.
+- `compiler` - an override for the default compiler - a webpack-build build server. Should expose a `build` method.
+
+
+### populate_manifest_file
+
+`webpack.manifest.populate_manifest_file` generates a manifest file containing the contents of the `MANIFEST` 
+setting, at the location specified by the `MANIFEST_PATH` setting.
+
+If you want to override settings during the build process - for example to provide a different `STATIC_URL` setting - the `MANIFEST_SETTINGS` setting can be used.
 
 
 Config files
@@ -213,7 +226,7 @@ Build server
 
 python-webpack relies on [webpack-build](https://github.com/markfinger/webpack-build) to expose a high-level 
 API around webpack such that it can be easily integrated into an external system. webpack-build's 
-[build server](https://github.com/markfinger/webpack-build#build-server) is used to provide network access 
+[server](https://github.com/markfinger/webpack-build#build-server) is used to provide network access 
 to the library's functionality.
 
 A build server can be started with
@@ -225,8 +238,8 @@ node_modules/.bin/webpack-build
 ### Hot module replacement
 
 If you set the `HMR` setting to True, assets that are rendered on the client-side will open sockets to the 
-build server server and listen for change notifications. When the assets have been rebuilt, they will attempt 
-to automatically update themselves within the browser. If they are unable to, they will log to the console 
+build server and listen for change notifications. When the assets have been rebuilt, they will attempt to
+automatically update themselves within the browser. If they are unable to, they will log to the console 
 indicating that you will need to refresh for the changes to be applied.
 
 When `HMR` is True, webpack-build will automatically mutate config objects by: 
@@ -244,7 +257,7 @@ flag on the options argument provided to config functions.
 If you want to replace the build server with your own compiler, you can use the `compiler` argument on the
 `webpack` function. Composing a wrapper around `webpack` is one solution, for example:
 
-```
+```python
 from webpack.compiler import webpack
 
 class MyCompiler:
@@ -298,9 +311,6 @@ Once your manifest has been generated, the `USE_MANIFEST` setting is used to ind
 be served from the manifest file. When `USE_MANIFEST` is True, any requests which are not contained within
 the manifest will cause errors to be raised.
 
-Note: the `HMR` setting is set to False when populating manifests. This prevents HMR runtimes from being
-injected into your bundles.
-
 
 ### Using context in a manifest
 
@@ -324,7 +334,8 @@ example:
 }
 ```
 
-Note: when calling `webpack`, you **must** specify the exact same context as defined in the `MANIFEST` setting.
+Note: if you call `webpack` with the `USE_MANIFEST` setting activated, you **must** specify the exact same 
+context as defined in the `MANIFEST` setting. 
 
 
 ### Manifest keys
