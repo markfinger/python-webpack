@@ -1,6 +1,58 @@
 Change log
 ==========
 
+### 5.0.0 (12/7/2015)
+
+#### ADDITIONS
+
+**API**
+
+- Added the `populate_manifest_file` function
+
+**Settings**
+
+- Added the `HMR` setting, which toggles support for hot module replacement
+- Added the `USE_MANIFEST`, `MANIFEST`, `MANIFEST_PATH`, and `MANIFEST_SETTINGS` settings, which provide
+  support for offline manifests
+- Added the `POLL` setting, which toggles the behaviour of webpack's file watcher in non-OSX environments
+- Added the `BUILD_URL` setting, which denotes a url to an endpoint exposing webpack-build
+- Added the `CONFIG_DIRS` setting, which enables lookups for relative paths to config files
+- Added the `CONTEXT` setting, which denotes the default context sent to config functions
+- Added the `CACHE` and `CACHE_DIR` settings, which control webpack-build's persistent file cache
+
+
+#### CHANGES
+
+**API**
+
+- `webpack.compiler.webpack` now accepts the signature `(config_file, [context], [settings], [manifest], [compiler])`
+
+**Settings**
+
+- `OUTPUT_DIR` now defaults to 'webpack_assets'
+- `BUNDLE_URL` is now `STATIC_URL`
+- `BUNDLE_ROOT` is now `STATIC_ROOT`
+- `WATCH_SOURCE_FILES` is now `WATCH`
+- `WATCH_DELAY` is now `AGGREGATE_TIMEOUT`
+
+**Dependencies**
+
+- Replaced the js-host dependency with webpack-build
+
+
+#### REMOVED
+
+**API**
+
+- Removed the undocumented config file writer
+
+**Settings**
+
+- Removed the BUNDLE_DIR and CONFIG_DIR settings
+- Removed the WATCH_CONFIG_FILES setting. In practice it proved to introduced memory leaks leading to
+  inevitable segmentation faults
+
+
 ### 4.1.1 (11/5/2015)
 
 - Python 3 fixes.
