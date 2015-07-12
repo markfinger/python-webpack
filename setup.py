@@ -4,7 +4,11 @@ import webpack
 setup(
     name='webpack',
     version=webpack.__version__,
-    packages=['webpack'],
+    packages=[
+        'webpack',
+        'webpack.templatetags',
+        'webpack.management.commands',
+    ],
     install_requires=[
         'requests>=2.5.0',
         'optional-django==0.3.0'
