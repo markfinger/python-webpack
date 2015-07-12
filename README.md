@@ -3,7 +3,7 @@ python-webpack
 
 [![Build Status](https://travis-ci.org/markfinger/python-webpack.svg?branch=master)](https://travis-ci.org/markfinger/python-webpack)
 
-Python bindings to webpack, via [webpack-build](httpsa://github.com/markfinger/webpack-build)
+Python bindings to webpack, via [webpack-build](https://github.com/markfinger/webpack-build)
 
 
 Documentation
