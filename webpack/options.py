@@ -3,7 +3,6 @@ import os
 import hashlib
 from . import conf, __version__
 from .resolver import find_config_file
-from .server import server
 from .exceptions import ImproperlyConfigured
 
 

@@ -2,14 +2,15 @@ import warnings
 from . import conf
 from .exceptions import BundlingError, WebpackWarning
 from .bundle import WebpackBundle
-from .server import server
+from .build_server import BuildServer
 from .options import generate_compiler_options
-from .manifest import Manifest
+from .manifest import ManifestReader
 
-manifest = Manifest()
+manifest_reader = ManifestReader()
+build_server = BuildServer(conf.settings.BUILD_URL)
 
 
-def webpack(config_file, context=None, settings=None):
+def webpack(config_file, context=None, settings=None, manifest=manifest_reader, compiler=build_server):
     use_manifest = conf.settings.USE_MANIFEST
 
     # Allow the USE_MANIFEST setting to be overridden when populating the manifest
@@ -26,7 +27,7 @@ def webpack(config_file, context=None, settings=None):
         setting_overrides=settings,
     )
 
-    output = server.build(options)
+    output = compiler.build(options)
 
     error = output['error']
     data = output['data']

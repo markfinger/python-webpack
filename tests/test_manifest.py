@@ -174,7 +174,7 @@ class TestManifest(unittest.TestCase):
         path = os.path.join(STATIC_ROOT, 'test_manifest.json')
         write_manifest(path, manifest)
 
-        with mock.patch('webpack.server.server.build', self._raise_if_called):
+        with mock.patch('webpack.compiler.build_server.build', self._raise_if_called):
             mock_settings = Conf()
             mock_settings.configure(
                 **dict(

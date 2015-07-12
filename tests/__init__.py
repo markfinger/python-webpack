@@ -10,12 +10,12 @@ if 'nosetests' in sys.argv[0]:
     from .settings import WEBPACK
     webpack.conf.settings.configure(**WEBPACK)
 
-from webpack.server import server
+from webpack.compiler import build_server
 
-if server.is_running():
+if build_server.is_running():
     raise Exception(
         'A build server is already running at {}, this will cause test failures. The server should be stopped'.format(
-            server.url
+            build_server.url
         )
     )
 

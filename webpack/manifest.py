@@ -69,7 +69,7 @@ def populate_manifest_file():
     write_manifest(conf.settings.MANIFEST_PATH, manifest)
 
 
-class Manifest(object):
+class ManifestReader(object):
     manifest = None
 
     def read(self, config_file, context):

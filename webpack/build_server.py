@@ -1,5 +1,4 @@
 import requests
-from .conf import settings
 from .exceptions import BuildServerConnectionError, BuildServerUnexpectedResponse
 
 
@@ -27,6 +26,3 @@ class BuildServer(object):
             )
 
         return res.json()
-
-
-server = BuildServer(settings.BUILD_URL)
