@@ -11,17 +11,23 @@ Documentation
 
 - [Installation](#installation)
 - [Basic usage](#basic-usage)
+- [API](#api)
+  - [webpack](#webpack)
+  - [populate_manifest_file](#populate_manifest_file)
 - [Config files](#config-files)
   - [Config functions](#config-functions)
   - [Configuring the build](#configuring-the-build)
   - [Passing data to the config layer](#passing-data-to-the-config-layer)
   - [Using relative paths to config files](#using-relative-paths-to-config-files)
   - [Output paths](#output-paths)
-- [Hot module replacement](#hot-module-replacement)
-- [Offline manifests](#generating-offline-manifests)
+- [Build server](#build-server)
+  - [Hot module replacement](#hot-module-replacement)
+  - [Overriding the build server](#overriding-the-build-server)
+- [Offline manifests](#offline-manifests)
   - [Generating manifests](#generating-manifests)
   - [Using context in a manifest](#using-context-in-a-manifest)
   - [Manifest keys](#manifest-keys)
+  - [Overriding the manifest reader](#overriding-the-manifest-reader)
 - [Settings](#settings)
 - [Django integration](#django-integration)
 - [Running the tests](#running-the-tests)
@@ -65,6 +71,36 @@ bundle = webpack('path/to/webpack.config.js')
 The object returned can be passed directly into your template layer, enabling you to inject &lt;script&gt; 
 and &lt;link&gt; elements into your page. The object provides two convenience methods, `render_js` and 
 `render_css` which emit elements pointing to the generated assets.
+
+
+API
+---
+
+
+### webpack
+
+`webpack.compiler.webpack` allows you to request data from the build server and the manifest reader.
+
+The function requires one argument: 
+
+- `config_file` - a path to a config file
+
+The following optional arguments are also accepted:
+
+- `context` - a dictionary that provides context data that is passed to the config file. In most cases, the 
+  `CONTEXT` setting should be used instead as it allows you to set global defaults.
+- `settings` - a dictionary of keys which can be used to override settings. In most cases, you'll want to define 
+  settings in `webpack.conf.settings`, but it can be useful to provide overrides without monkey-patching.
+- `manifest` - an override for the default manifest reader. Should expose a `read` method.
+- `compiler` - an override for the default compiler - a webpack-build build server. Should expose a `build` method.
+
+
+### populate_manifest_file
+
+`webpack.manifest.populate_manifest_file` generates a manifest file containing the contents of the `MANIFEST` 
+setting, at the location specified by the `MANIFEST_PATH` setting.
+
+If you want to override settings during the build process - for example to provide a different `STATIC_URL` setting - the `MANIFEST_SETTINGS` setting can be used.
 
 
 Config files
@@ -185,12 +221,26 @@ os.path.join(STATIC_ROOT, 'webpack_assets', options_hash)
 ```
 
 
-Hot module replacement
-----------------------
+Build server
+------------
 
-If you set the `HMR` setting to True, assets that are rendered on the client-side will open sockets to webpack-build's server and listen for change notifications. When the assets have been rebuilt, they
-will attempt to automatically update themselves. If they are unable to, they will log to the console 
-indicating that you will need to refresh.
+python-webpack relies on [webpack-build](https://github.com/markfinger/webpack-build) to expose a high-level 
+API around webpack such that it can be easily integrated into an external system. webpack-build's 
+[server](https://github.com/markfinger/webpack-build#build-server) is used to provide network access 
+to the library's functionality.
+
+A build server can be started with
+
+```
+node_modules/.bin/webpack-build
+```
+
+### Hot module replacement
+
+If you set the `HMR` setting to True, assets that are rendered on the client-side will open sockets to the 
+build server and listen for change notifications. When the assets have been rebuilt, they will attempt to
+automatically update themselves within the browser. If they are unable to, they will log to the console 
+indicating that you will need to refresh for the changes to be applied.
 
 When `HMR` is True, webpack-build will automatically mutate config objects by: 
  - adding a HMR client to the generated bundle
@@ -200,6 +250,26 @@ When `HMR` is True, webpack-build will automatically mutate config objects by:
 
 If you want to change your config for situations where the python layer has requested HMR, use the `hmr` 
 flag on the options argument provided to config functions.
+
+
+### Overriding the build server
+
+If you want to replace the build server with your own compiler, you can use the `compiler` argument on the
+`webpack` function. Composing a wrapper around `webpack` is one solution, for example:
+
+```python
+from webpack.compiler import webpack
+
+class MyCompiler:
+    def build(config_file, *args, **kwargs):
+        # ...
+    
+my_compiler = MyCompiler()
+        
+def my_webpack_function(*args, **kwargs):
+    kwargs['compiler'] = my_compiler
+    return webpack(*args, **kwargs)
+```
 
 
 Offline manifests
@@ -241,9 +311,6 @@ Once your manifest has been generated, the `USE_MANIFEST` setting is used to ind
 be served from the manifest file. When `USE_MANIFEST` is True, any requests which are not contained within
 the manifest will cause errors to be raised.
 
-Note: the `HMR` setting is set to False when populating manifests. This prevents HMR runtimes from being
-injected into your bundles.
-
 
 ### Using context in a manifest
 
@@ -267,7 +334,8 @@ example:
 }
 ```
 
-Note: when calling `webpack`, you **must** specify the exact same context as defined in the `MANIFEST` setting.
+Note: if you call `webpack` with the `USE_MANIFEST` setting activated, you **must** specify the exact same 
+context as defined in the `MANIFEST` setting. 
 
 
 ### Manifest keys
@@ -279,27 +347,29 @@ If have specified context for a config file, the keys are generated be appending
 path. Hence, you **must** specify the exact same context when calling `webpack`.
 
 
-### Ensuring portability
+### Overriding the manifest reader
 
 The manifest handler that ships with webpack depends heavily on path resolution and context hashes to map
 requests to entries in the manifest. While this behaviour ensures an explicit and deterministic outcome, it 
 can make it difficult to ensure portablity when deploying manifests to other locations or servers. 
 
-If you want to make changes to the manifest reader, you can monkey-patch `webpack.compiler.manifest` 
-with your handler. For example:
+If you want to use your own manifest reader, one solution is to compose a wrapper function around `webpack`
+and override the `manifest` argument. For example:
 
 ```python
+from webpack.compiler import webpack
+
 class MyManifest():
     def read(config_file, context):
         """This method is called by the compiler and should return an object"""
-        return {
-          # ...
-        }
+        # ...
         
-import webpack.compiler
-webpack.compiler.manifest = MyManifest()
+my_manifest = MyManifest()
+        
+def my_webpack_function(*args, **kwargs):
+    kwargs['manifest'] = my_manifest
+    return webpack(*args, **kwargs)
 ```
-
 
 
 Settings
