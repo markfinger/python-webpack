@@ -3,6 +3,7 @@ import hashlib
 import os
 from optional_django import six
 from . import conf
+from .bundle import WebpackBundle
 from .exceptions import ImproperlyConfigured, ManifestMissingEntry, ManifestDoesNotExist
 
 
@@ -83,4 +84,6 @@ class ManifestReader(object):
                 'Key "{}" missing from manifest file {}"'.format(key, conf.settings.MANIFEST_PATH)
             )
 
-        return self.manifest[key]
+        data = self.manifest[key]
+
+        return WebpackBundle(data)
