@@ -20,6 +20,10 @@ Change log
 - Added the `CONTEXT` setting, which denotes the default context sent to config functions
 - Added the `CACHE` and `CACHE_DIR` settings, which control webpack-build's persistent file cache
 
+**Dependencies**
+
+- Added a dependency on the webpack-build JS package
+
 
 #### CHANGES
 
@@ -35,10 +39,6 @@ Change log
 - `WATCH_SOURCE_FILES` is now `WATCH`
 - `WATCH_DELAY` is now `AGGREGATE_TIMEOUT`
 
-**Dependencies**
-
-- Replaced the js-host dependency with webpack-build
-
 
 #### REMOVED
 
@@ -51,6 +51,12 @@ Change log
 - Removed the BUNDLE_DIR and CONFIG_DIR settings
 - Removed the WATCH_CONFIG_FILES setting. In practice it proved to introduced memory leaks leading to
   inevitable segmentation faults
+
+**Dependencies**
+
+- Removed the js-host dependency.
+- Removed the python-js-host dependency.
+- Removed the webpack-wrapper dependency.
 
 
 ### 4.1.1 (11/5/2015)
