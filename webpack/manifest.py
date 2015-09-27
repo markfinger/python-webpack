@@ -11,7 +11,8 @@ def generate_key(config_file, context=None):
     if not context:
         return config_file
 
-    context_hash = hashlib.md5(json.dumps(context)).hexdigest()
+    hashable_context = json.dumps(context).encode('utf-8')
+    context_hash = hashlib.md5(hashable_context).hexdigest()
     return '{}__{}'.format(config_file, context_hash)
 
 

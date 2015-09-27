@@ -47,6 +47,7 @@ def generate_compiler_options(config_file, extra_context=None, setting_overrides
 
     # Avoid collisions by directing output into unique directories
     hashable_content = '{}__{}'.format(json.dumps(options), __version__)
+    hashable_content = hashable_content.encode('utf-8')
     options_hash = hashlib.md5(hashable_content).hexdigest()
     options['outputPath'] = os.path.join(options['outputPath'], options_hash)
     options['publicPath'] += '/' + options_hash

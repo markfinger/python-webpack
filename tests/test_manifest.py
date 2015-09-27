@@ -28,7 +28,8 @@ class TestManifest(unittest.TestCase):
         context = {'foo': 'bar'}
 
         key = generate_key(ConfigFiles.BASIC_CONFIG, context)
-        expected = os.path.join('basic', 'webpack.config.js') + '__' + hashlib.md5(json.dumps(context)).hexdigest()
+        hashed_context = hashlib.md5(json.dumps(context).encode('utf-8')).hexdigest()
+        expected = os.path.join('basic', 'webpack.config.js') + '__' + hashed_context
 
         self.assertEqual(key, expected)
 

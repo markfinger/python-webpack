@@ -136,10 +136,9 @@ class TestBundles(unittest.TestCase):
             urls['bundle_2']['js'][0],
             bundle.render_js()
         )
-        self.assertEqual(
-            rendered,
-            '<script src="' + urls['bundle_1']['js'][0] + '"></script>\n<script src="' + urls['bundle_2']['js'][0] + '"></script>',
-        )
+        self.assertIn('<script src="' + urls['bundle_1']['js'][0] + '"></script>', rendered)
+        self.assertIn('\n', rendered)
+        self.assertIn('<script src="' + urls['bundle_2']['js'][0] + '"></script>', rendered)
 
     def test_bundle_can_expose_the_bundling_processes_output(self):
         bundle = webpack(ConfigFiles.LIBRARY_CONFIG)
