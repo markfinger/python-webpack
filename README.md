@@ -37,7 +37,7 @@ Installation
 ------------
 
 ```
-pip install python-webpack
+pip install webpack
 ```
 
 and install the JS dependencies with
