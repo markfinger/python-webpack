@@ -2,6 +2,7 @@ import sys
 import os
 import atexit
 import subprocess
+import time
 
 
 if 'nosetests' in sys.argv[0]:
@@ -20,7 +21,10 @@ if build_server.is_running():
     )
 
 process = subprocess.Popen(
-    (os.path.join(os.getcwd(), 'node_modules', '.bin', 'webpack-build'),),
+    (
+        os.path.join(os.getcwd(), 'node_modules', '.bin', 'webpack-build'),
+        '-s'
+    ),
     stdout=subprocess.PIPE,
     stderr=subprocess.STDOUT
 )
@@ -35,3 +39,12 @@ if output.strip() == '':
 
 if 'webpack-build v' not in output:
     raise Exception('Unexpected output: "{}"'.format(output))
+
+time.sleep(0.5)
+
+if not build_server.is_running():
+    raise Exception(
+        'The build server appears to have booted, but it is not responding at {} within the expected time period'.format(
+            build_server.url
+        )
+    )

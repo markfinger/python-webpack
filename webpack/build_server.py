@@ -12,11 +12,16 @@ class BuildServer(object):
 
     def is_running(self):
         try:
-            res = requests.get(self.url)
+            res = requests.post(self.url)
         except requests.ConnectionError:
             return False
 
-        return res.status_code == 200 and 'webpack-build' in res.text
+        # Hacky, but it works for now
+        return (
+            res.status_code == 200 and
+            'webpack-build' in res.text and
+            'Config file not defined' in res.text
+        )
 
     def build(self, config_file, extra_context, setting_overrides):
         options = generate_compiler_options(

@@ -57,7 +57,7 @@ build requests and receive an object describing the outcome.
 To start the server, run 
 
 ```
-node_modules/.bin/webpack-build
+node_modules/.bin/webpack-build -s
 ```
 
 Build requests should provide a path to a config file
@@ -232,7 +232,7 @@ to the library's functionality.
 A build server can be started with
 
 ```
-node_modules/.bin/webpack-build
+node_modules/.bin/webpack-build -s
 ```
 
 ### Hot module replacement
