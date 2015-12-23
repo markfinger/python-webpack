@@ -1,6 +1,12 @@
 Change log
 ==========
 
+### 6.0.0 (24/12/2015)
+
+Updated to support webpack-build@1.0.0. Note that webpack-build needs to be invoked with
+the `-s` flag to boot the server. For example, `node_modules/.bin/webpack-build -s`.
+
+
 ### 5.0.0 (12/7/2015)
 
 #### ADDITIONS
