@@ -37,6 +37,10 @@ output = process.stdout.readline().decode('utf-8')
 if output.strip() == '':
     output += process.stdout.readline().decode('utf-8')
 
+if process.returncode == 1:
+    print(process.stdout.readline().decode('utf-8'))
+    raise Exception('bad output')
+
 if 'webpack-build v' not in output:
     raise Exception('Unexpected output: "{}"'.format(output))
 
