@@ -3,6 +3,6 @@
   "dependencies": {
     "node-libs-browser": "^0.5.2",
     "webpack": "^1.10.1",
-    "webpack-build": "^1.0.0"
+    "webpack-build": "git@github.com:markfinger/webpack-build.git#58e515adb34efbfee4a653556b333586f3b049ff"
   }
 }
