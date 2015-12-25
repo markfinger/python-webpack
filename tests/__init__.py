@@ -37,12 +37,13 @@ output = process.stdout.readline().decode('utf-8')
 if output.strip() == '':
     output += process.stdout.readline().decode('utf-8')
 
-if process.returncode == 1:
-    print(process.stdout.readline().decode('utf-8'))
-    raise Exception('bad output')
-
 if 'webpack-build v' not in output:
-    raise Exception('Unexpected output: "{}"'.format(output))
+    # Trying to detect issues on Travis
+    # raise Exception('Unexpected output: "{}"'.format(output))
+
+    print(output)
+    while True:
+        print(process.stdout.readline().decode('utf-8'))
 
 time.sleep(0.5)
 
