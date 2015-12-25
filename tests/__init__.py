@@ -45,8 +45,13 @@ if 'webpack-build v' not in output:
     while True:
         print(process.stdout.readline().decode('utf-8'))
 
-time.sleep(0.5)
+# Travis takes a while to boot the server up
+if os.environ['TRAVIS']:
+    for i in xrange(5):
+        if not build_server.is_running():
+            time.sleep(1)
 
+time.sleep(0.5)
 if not build_server.is_running():
     raise Exception(
         'The build server appears to have booted, but it is not responding at {} within the expected time period'.format(
