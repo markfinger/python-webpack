@@ -10,11 +10,16 @@ class BuildServer(object):
     def __init__(self, url):
         self.url = url
 
-    def is_running(self):
+    def is_running(self, debug=False):
         try:
             res = requests.post(self.url)
         except requests.ConnectionError:
+            if debug:
+                print('connection error')
             return False
+
+        if debug:
+            print('res', 'static_code', res.status_code, 'text', res.text)
 
         # Hacky, but it works for now
         return (

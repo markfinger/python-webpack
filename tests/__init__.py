@@ -49,7 +49,7 @@ if 'webpack-build v' not in output:
 print('****travis**** ', os.environ.get('TRAVIS', None), '***CI****', os.environ.get('CI', None))
 if os.environ.get('TRAVIS', None):
     for i in xrange(5):
-        if not build_server.is_running():
+        if not build_server.is_running(True):
             time.sleep(1)
 
 time.sleep(0.5)
