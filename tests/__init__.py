@@ -46,6 +46,7 @@ if 'webpack-build v' not in output:
         print(process.stdout.readline().decode('utf-8'))
 
 # Travis takes a while to boot the server up
+print('****travis**** ', os.environ.get('TRAVIS', None), '***CI****', os.environ.get('CI', None))
 if os.environ.get('TRAVIS', None):
     for i in xrange(5):
         if not build_server.is_running():
