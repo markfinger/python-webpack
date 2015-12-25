@@ -38,17 +38,11 @@ if output.strip() == '':
     output += process.stdout.readline().decode('utf-8')
 
 if 'webpack-build v' not in output:
-    # Trying to detect issues on Travis
-    # raise Exception('Unexpected output: "{}"'.format(output))
+    raise Exception('Unexpected output: "{}"'.format(output))
 
-    print(output)
-    while True:
-        print(process.stdout.readline().decode('utf-8'))
-
-# Travis takes a while to boot the server up
-print('****travis**** ', os.environ.get('TRAVIS', None), '***CI****', os.environ.get('CI', None))
+# Travis can take a while to boot the server up
 if os.environ.get('TRAVIS', None):
-    for i in xrange(5):
+    for i in range(5):
         if not build_server.is_running(True):
             time.sleep(1)
 
