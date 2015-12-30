@@ -22,6 +22,3 @@ class WebpackFinder(BaseStorageFinder):
     To be used during development with staticfiles' development file server or during deployment.
     """
     storage = WebpackFileStorage
-
-    def list(self, *args, **kwargs):
-        return []
