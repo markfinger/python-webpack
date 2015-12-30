@@ -13,8 +13,8 @@ def _setting(overrides, key):
 
 
 def generate_compiler_options(config_file, extra_context=None, setting_overrides=None):
-    if not _setting(setting_overrides, 'STATIC_ROOT'):
-        raise ImproperlyConfigured('webpack.conf.settings.STATIC_ROOT has not been defined.')
+    if not _setting(setting_overrides, 'OUTPUT_ROOT'):
+        raise ImproperlyConfigured('webpack.conf.settings.OUTPUT_ROOT has not been defined.')
 
     if not _setting(setting_overrides, 'STATIC_URL'):
         raise ImproperlyConfigured('webpack.conf.settings.STATIC_URL has not been defined.')
@@ -33,7 +33,7 @@ def generate_compiler_options(config_file, extra_context=None, setting_overrides
         'context': context,
         'outputPath': conf.settings.get_path_to_output_dir(),
         'publicPath': conf.settings.get_public_path(),
-        'staticRoot': _setting(setting_overrides, 'STATIC_ROOT'),
+        'staticRoot': _setting(setting_overrides, 'OUTPUT_ROOT'),
         'staticUrl': _setting(setting_overrides, 'STATIC_URL'),
         'aggregateTimeout': _setting(setting_overrides, 'AGGREGATE_TIMEOUT'),
     }

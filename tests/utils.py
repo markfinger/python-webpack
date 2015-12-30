@@ -13,7 +13,7 @@ def read_file(file_name):
         return _file.read()
 
 
-def clean_static_root():
+def clean_output_root():
     # Clean out any files generated from previous test runs
-    if os.path.exists(settings.STATIC_ROOT):
-        shutil.rmtree(settings.STATIC_ROOT)
+    if os.path.exists(settings.OUTPUT_ROOT):
+        shutil.rmtree(settings.OUTPUT_ROOT)

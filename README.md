@@ -211,13 +211,13 @@ a match.
 ### Output paths
 
 Be aware that the `output.path` property on config objects is overridden automatically, you can leave
-the setting undefined and webpack-build will redirect all output to your `STATIC_ROOT`.
+the setting undefined and webpack-build will redirect all output to your `OUTPUT_ROOT`.
 
 To avoid file name collisions, builds are uniquely identified by hashing the options object sent to
 webpack-build. By default, your assets are placed in a directory equivalent to 
 
 ```python
-os.path.join(STATIC_ROOT, 'webpack_assets', options_hash)
+os.path.join(OUTPUT_ROOT, 'webpack_assets', options_hash)
 ```
 
 
@@ -384,7 +384,7 @@ from webpack.conf import settings
 DEBUG = True
 
 settings.configure(
-    STATIC_ROOT='/path/to/your/projects/static_root',
+    OUTPUT_ROOT='/path/to/your/output_root',
     STATIC_URL='/static/',
     WATCH=DEBUG,
     HMR=DEBUG,
@@ -396,10 +396,10 @@ your settings file. python-webpack introspects Django's settings during startup 
 from the `WEBPACK` dictionary.
 
 
-### STATIC_ROOT
+### OUTPUT_ROOT
 
 An absolute path to the root directory that you use for static assets. For example, 
-`'/path/to/your/projects/static_root'`.
+`'/path/to/your/output_root'`.
 
 This setting **must** be defined.
 
@@ -516,7 +516,7 @@ Default: `None`
 
 ### OUTPUT_DIR
 
-The directory in `STATIC_ROOT` which webpack will output all assets to.
+The directory in `OUTPUT_ROOT` which webpack will output all assets to.
 
 Default: `'webpack_assets'`
 
@@ -569,7 +569,7 @@ Configure webpack to respect your project's configuration
 
 ```python
 WEBPACK = {
-    'STATIC_ROOT': STATIC_ROOT,
+    'OUTPUT_ROOT': '/path/to/your/output_root',
     'STATIC_URL': STATIC_URL,
     'WATCH': DEBUG,
     'HMR': DEBUG,

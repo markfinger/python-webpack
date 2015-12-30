@@ -9,7 +9,7 @@ class WebpackFileStorage(FileSystemStorage):
     """
     def __init__(self, location=None, base_url=None, *args, **kwargs):
         if location is None:
-            location = settings.STATIC_ROOT
+            location = settings.OUTPUT_ROOT
         if base_url is None:
             base_url = settings.STATIC_URL
         super(WebpackFileStorage, self).__init__(location, base_url, *args, **kwargs)
@@ -17,7 +17,7 @@ class WebpackFileStorage(FileSystemStorage):
 
 class WebpackFinder(BaseStorageFinder):
     """
-    A staticfiles finder that looks in webpack.conf.settings.STATIC_ROOT for generated bundles.
+    A staticfiles finder that looks in webpack.conf.settings.OUTPUT_ROOT for generated bundles.
 
     To be used during development with staticfiles' development file server or during deployment.
     """

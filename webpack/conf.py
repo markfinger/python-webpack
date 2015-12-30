@@ -4,7 +4,7 @@ from optional_django import conf
 
 class Conf(conf.Conf):
     # Environment configuration
-    STATIC_ROOT = None
+    OUTPUT_ROOT = None
     STATIC_URL = None
     OUTPUT_DIR = 'webpack_assets'
     CONFIG_DIRS = None
@@ -35,7 +35,7 @@ class Conf(conf.Conf):
     }
 
     def get_path_to_output_dir(self):
-        return os.path.join(self.STATIC_ROOT, self.OUTPUT_DIR)
+        return os.path.join(self.OUTPUT_ROOT, self.OUTPUT_DIR)
 
     def get_public_path(self):
         static_url = self.STATIC_URL
