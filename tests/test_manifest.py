@@ -6,18 +6,18 @@ import hashlib
 from webpack.conf import Conf
 from webpack.manifest import generate_manifest, generate_key, write_manifest, read_manifest, populate_manifest_file
 from webpack.compiler import webpack
-from .settings import ConfigFiles, STATIC_ROOT, WEBPACK
-from .utils import clean_static_root
+from .settings import ConfigFiles, OUTPUT_ROOT, WEBPACK
+from .utils import clean_output_root
 
 
 class TestManifest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     def test_a_manifest_key_is_relative(self):
         key = generate_key(ConfigFiles.BASIC_CONFIG)
@@ -149,7 +149,7 @@ class TestManifest(unittest.TestCase):
             ),
         })
 
-        path = os.path.join(STATIC_ROOT, 'foo.json')
+        path = os.path.join(OUTPUT_ROOT, 'foo.json')
 
         write_manifest(path, manifest)
 
@@ -172,7 +172,7 @@ class TestManifest(unittest.TestCase):
         key = generate_key(ConfigFiles.BASIC_CONFIG)
         self.assertIn(key, manifest)
 
-        path = os.path.join(STATIC_ROOT, 'test_manifest.json')
+        path = os.path.join(OUTPUT_ROOT, 'test_manifest.json')
         write_manifest(path, manifest)
 
         with mock.patch('webpack.compiler.build_server.build', self._raise_if_called):
@@ -190,7 +190,7 @@ class TestManifest(unittest.TestCase):
                 self.assertEqual(bundle.data, manifest[key])
 
     def test_the_manifest_can_be_populated_from_settings(self):
-        path = os.path.join(STATIC_ROOT, 'test_populate_manifest_file.json')
+        path = os.path.join(OUTPUT_ROOT, 'test_populate_manifest_file.json')
 
         mock_settings = Conf()
         mock_settings.configure(
@@ -218,7 +218,7 @@ class TestManifest(unittest.TestCase):
             self.assertEqual(manifest, expected)
 
     def test_the_manifest_can_be_populated_from_a_dictionary(self):
-        path = os.path.join(STATIC_ROOT, 'test_populate_dict_manifest_file.json')
+        path = os.path.join(OUTPUT_ROOT, 'test_populate_dict_manifest_file.json')
 
         mock_settings = Conf()
         mock_settings.configure(

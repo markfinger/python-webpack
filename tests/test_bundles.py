@@ -5,17 +5,17 @@ from webpack.compiler import webpack
 from webpack.exceptions import ConfigFileNotFound
 from webpack.conf import settings
 from .settings import ConfigFiles
-from .utils import clean_static_root, read_file
+from .utils import clean_output_root, read_file
 
 
 class TestBundles(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     def test_bundle_raises_config_file_not_found_exception_for_nonexistent_config_files(self):
         self.assertRaises(ConfigFileNotFound, webpack, '/file/that/does/not/exist.js')
@@ -162,7 +162,7 @@ class TestBundles(unittest.TestCase):
         self.assertEqual(
             output_options['path'],
             os.path.join(
-                settings.STATIC_ROOT,
+                settings.OUTPUT_ROOT,
                 settings.OUTPUT_DIR,
                 bundle.options['__python_webpack_hash__']
             )

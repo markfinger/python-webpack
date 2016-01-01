@@ -3,7 +3,7 @@ import unittest
 import time
 from webpack.compiler import webpack
 from .settings import BUNDLES
-from .utils import write_file, read_file, clean_static_root
+from .utils import write_file, read_file, clean_output_root
 
 # The number of seconds that we delay while waiting for
 # file changes to be detected
@@ -36,11 +36,11 @@ class TestWatching(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     def test_source_files_can_be_watched_to_rebuild_a_bundle(self):
         self.assertEqual(read_file(PATH_TO_WATCHED_SOURCE_ENTRY), WATCHED_SOURCE_CONTENT)

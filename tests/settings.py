@@ -22,9 +22,10 @@ STATICFILES_FINDERS = (
 )
 
 BUNDLES = os.path.join(BASE_DIR, 'bundles',)
+OUTPUT_ROOT = os.path.join(BASE_DIR, 'generated_assets')
 
 WEBPACK = {
-    'STATIC_ROOT': STATIC_ROOT,
+    'OUTPUT_ROOT': OUTPUT_ROOT,
     'STATIC_URL': STATIC_URL,
     'CONTEXT': {
         'default_context': 'test'
@@ -36,7 +37,7 @@ WEBPACK = {
     # While webpack-build's cache will check for asset existence,
     # watching compilers do not, so we need to ensure that the cache
     # is cleared between runs
-    'CACHE_DIR': os.path.join(STATIC_ROOT, 'cache_dir'),
+    'CACHE_DIR': os.path.join(OUTPUT_ROOT, 'cache_dir'),
 }
 
 

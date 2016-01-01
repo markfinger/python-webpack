@@ -4,7 +4,7 @@ from optional_django import staticfiles
 from webpack.compiler import webpack
 from webpack.exceptions import ConfigFileNotFound
 from .settings import ConfigFiles
-from .utils import clean_static_root
+from .utils import clean_output_root
 
 
 def render_template_tag(path):
@@ -25,11 +25,11 @@ class TestDjangoIntegration(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     @classmethod
     def tearDownClass(cls):
-        clean_static_root()
+        clean_output_root()
 
     def test_bundle_urls_can_be_resolved_via_the_static_file_finder_used_by_the_dev_server(self):
         bundle = webpack('django_test_app/webpack.config.js')
