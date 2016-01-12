@@ -1,3 +1,11 @@
+Unmaintained
+============
+
+This project is unmaintained as it's a complicated solution to a simple problem.
+
+You should try using either https://github.com/owais/django-webpack-loader or https://github.com/markfinger/python-webpack-manifest.
+
+
 python-webpack
 ==============
 
